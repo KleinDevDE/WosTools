@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('user_invitations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('invited_by')->constrained()->cascadeOnDelete();
-            $table->foreignId('revoked_by')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('invited_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('revoked_by')->nullable()->constrained('users')->cascadeOnDelete();
             $table->string('token')->unique();
             $table->string('status')->default('pending');
             $table->timestamp('accepted_at')->nullable();

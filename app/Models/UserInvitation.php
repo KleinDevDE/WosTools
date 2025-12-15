@@ -23,12 +23,8 @@ class UserInvitation extends Model
     public const STATUS_REVOKED = 'revoked';
 
     protected $fillable = [
-        'username', 'invited_by', 'revoked_by',
+        'user_id', 'invited_by', 'revoked_by',
         'token', 'status', 'accepted_at', 'revoked_at'
-    ];
-
-    protected $hidden = [
-        'token'
     ];
 
     protected function casts(): array

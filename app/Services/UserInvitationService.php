@@ -16,17 +16,23 @@ class UserInvitationService
             throw new \Exception('User already exists');
         }
 
+        \DB::beginTransaction();
+
         $user = User::create([
             'username' => $username,
+            'password' => \Hash::make(Str::random(100)),
             'status' => User::STATUS_PENDING
         ]);
         $user->assignRole('user');
 
-        $userInvitation = $user->ownInvitation()->create([
+        $userInvitation = UserInvitation::create([
+            'user_id' => $user->id,
             'invited_by' => auth()->id(),
             'token' => Str::random(16),
             'status' => UserInvitation::STATUS_PENDING
         ]);
+
+        \DB::commit();
 
         event(new UserInvitationCreatedEvent($userInvitation));
 
