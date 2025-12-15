@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
@@ -15,9 +16,12 @@ Route::middleware(['guest'])->group(function() {
 
 Route::middleware(['auth'])->group(function() {
     Route::get('/', [DashboardController::class, 'show'])->name('dashboard');
+    Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-    Route::prefix('users')->middleware('can:view users')->group(function() {
-        Route::get('/', [UserController::class, 'list'])->name('users.list');
-        Route::post('/table', [UserController::class, 'table'])->name('users.table');
+    Route::prefix('/admin')->group(function() {
+        Route::prefix('users')->middleware('can:view users')->group(function() {
+            Route::get('/', [UserController::class, 'list'])->name('admin.users.list');
+            Route::post('/table', [UserController::class, 'table'])->name('admin.users.table');
+        });
     });
 });
