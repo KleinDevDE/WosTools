@@ -6,6 +6,8 @@ use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Forms\Components\Select;
+use Filament\Support\Enums\IconPosition;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
 use Livewire\Component;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -37,6 +39,8 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ->sortable(),
             TextColumn::make('username')
                 ->searchable()
+                ->iconPosition(IconPosition::After)->icon(Heroicon::Clipboard)
+                ->copyable()->copyMessage("Username copied to clipboard!")
                 ->sortable(),
             TextColumn::make('last_login_at', 'last_login_at')
                 ->sortable(),
