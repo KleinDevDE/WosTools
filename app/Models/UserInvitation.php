@@ -45,7 +45,7 @@ class UserInvitation extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function invitationURLAttribute(): Attribute
+    public function invitationURL(): Attribute
     {
         return Attribute::make(
             get: fn() => URL::signedRoute('auth.register', ['token' => $this->token])

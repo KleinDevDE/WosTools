@@ -3,9 +3,17 @@
 namespace App\Livewire\Tables;
 
 use App\Models\User;
+use App\Services\UserInvitationService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
+use Filament\Schemas\Components\Flex;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Support\Colors\Color;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Collection;
@@ -70,8 +78,40 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
     protected function getTableHeaderActions(): array
     {
         return [
-            Action::make('Create User')
+            Action::make('inviteUser')
+                ->label('Invite User')
                 ->icon('heroicon-o-plus')
+                ->schema([
+                    TextInput::make('username')
+                        ->required()
+                        ->rule('unique:users,username'),
+                ])
+                ->action(function (array $data, Action $action) {
+                    $invitation = UserInvitationService::inviteUser($data['username']);
+                    if (!$invitation) {
+                        Notification::make()
+                            ->title('Error creating invitation')
+                            ->danger()
+                            ->send();
+                        $action->halt();
+                    }
+
+                    //Show modal/schema with token
+                    Notification::make()
+                        ->title('Invitation created')
+                        ->success()
+                        ->id("copy-inv-url-{$invitation->id}")
+                        ->body($invitation->invitationURL)
+                        ->duration(10000)
+                        ->actions([
+                            Action::make("copy-inv-url-$invitation->id")
+                                ->label('Copy')
+                                ->button()
+                                ->extraAttributes(['id' => "copy-inv-url-$invitation->id"])
+                                ->dispatch('copy-to-clipboard', ['text' => $invitation->invitationURL, 'element' => "copy-inv-url-$invitation->id"])
+                        ])
+                        ->send();
+                }),
         ];
     }
 

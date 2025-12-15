@@ -7,11 +7,12 @@
     </head>
 
     <body class="min-h-screen center bg-gray-100">
-        <livewire:toasts />
+{{--        <livewire:toasts />--}}
         {{ $slot }}
         @vite(['resources/js/app.js'])
         @livewireScriptConfig
         @filamentScripts
+        @livewire('notifications')
         <script>
             document.addEventListener('livewire:init', () => {
                 console.log("Init")
