@@ -21,7 +21,7 @@ class UserInvitationService
             $user = User::create([
                 'username' => $username,
                 'password' => \Hash::make(Str::random(100)),
-                'status' => User::STATUS_PENDING
+                'status' => User::STATUS_INVITED
             ]);
             $user->assignRole('user');
 
