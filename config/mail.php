@@ -94,7 +94,13 @@ return [
                 'ses',
                 'postmark',
             ],
-            'retry_after' => 60,
+        ],
+
+        'mailgun' => [
+            'transport' => 'mailgun',
+            // 'client' => [
+            //     'timeout' => 5,
+            // ],
         ],
 
     ],
@@ -114,5 +120,4 @@ return [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
-
 ];

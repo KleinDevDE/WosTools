@@ -21,7 +21,6 @@ Route::middleware(['auth'])->group(function() {
     Route::prefix('/admin')->group(function() {
         Route::prefix('users')->middleware('can:view users')->group(function() {
             Route::get('/', [UserController::class, 'list'])->name('admin.users.list');
-            Route::post('/table', [UserController::class, 'table'])->name('admin.users.table');
         });
     });
 });

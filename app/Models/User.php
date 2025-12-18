@@ -68,6 +68,5 @@ class User extends Authenticatable
     public function ownInvitation():BelongsTo
     {
         return $this->belongsTo(UserInvitation::class, 'id', 'user_id');
-
     }
 }

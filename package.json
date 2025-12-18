@@ -15,6 +15,13 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "@alpinejs/collapse": "^3.15.2",
+        "@alpinejs/intersect": "^3.15.2",
+        "@alpinejs/persist": "^3.15.2",
+        "@fortawesome/fontawesome-free": "^7.1.0",
+        "@tailwindcss/postcss": "^4.1.18",
+        "alpinejs": "^3.15.2",
+        "autoprefixer": "^10.4.23",
         "flowbite": "^4.0.1",
         "jquery": "^3.7.1",
         "js-sha256": "^0.11.1"

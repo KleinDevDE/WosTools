@@ -32,7 +32,7 @@ return [
     */
 
     'deprecations' => [
-        'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'null'),
+        'channel' => env('LOG_DEPRECATIONS_CHANNEL', 'system_deprecation'),
         'trace' => env('LOG_DEPRECATIONS_TRACE', false),
     ],
 
@@ -45,16 +45,22 @@ return [
     | utilizes the Monolog PHP logging library, which includes a variety
     | of powerful log handlers and formatters that you're free to use.
     |
-    | Available drivers: "single", "daily", "slack", "syslog",
+    | Available Drivers: "single", "daily", "slack", "syslog",
     |                    "errorlog", "monolog", "custom", "stack"
     |
     */
 
     'channels' => [
+        'auth' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/auth.log'),
+            'level' => 'debug'
+        ],
+
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
+            'channels' => explode(',', env('LOG_STACK', 'single')),
             'ignore_exceptions' => false,
         ],
 
@@ -125,6 +131,18 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        //Log channel for deprecation-warnings, update notices etc.
+        'system_deprecation' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/system/deprecation.log'),
+            'level' => 'debug'
+        ],
+        'system_security' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/system/security.log'),
+            'level' => 'debug'
         ],
 
     ],
