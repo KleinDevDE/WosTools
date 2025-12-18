@@ -1,0 +1,11 @@
+{
+    "name": "Puzzles",
+    "alias": "puzzles",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Puzzles\\Providers\\PuzzlesServiceProvider"
+    ],
+    "files": []
+}
