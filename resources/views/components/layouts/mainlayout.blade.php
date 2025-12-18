@@ -44,12 +44,29 @@
                             </a>
                         </li>
 
-                        {{--                        <li>--}}
-                        {{--                            <a href="{{ route('puzzles.*') }}"--}}
-                        {{--                               class="{{ $isActive('puzzles.*') }}">--}}
-                        {{--                                Puzzles--}}
-                        {{--                            </a>--}}
-                        {{--                        </li>--}}
+                        <li x-data="{ open: false }" class="relative">
+                            <button
+                                @click="open = !open"
+                                class="flex items-center gap-1 {{ $isActive('module.puzzles.*') }}"
+                            >
+                                Puzzles
+                                <x-heroicon-o-chevron-down class="w-4 h-4"/>
+                            </button>
+
+                            <div
+                                x-show="open"
+                                @click.outside="open = false"
+                                x-transition
+                                class="absolute left-0 mt-2 w-44 rounded-md
+                               bg-navy-750 border border-navy-600 shadow-lg"
+                            >
+                                <a href="{{ route('modules.puzzles.list') }}"
+                                   class="block px-4 py-2 text-sm hover:bg-navy-700
+                                  {{ $isActive('admin.users.*') }}">
+                                    Users
+                                </a>
+                            </div>
+                        </li>
 
                         {{-- Administration Dropdown --}}
                         <li x-data="{ open: false }" class="relative">
@@ -107,7 +124,7 @@
                     </span>
                         </div>
 
-                        <form method="POST" action="{{ route('auth.logout') }}">
+                        <form method="GET" action="{{ route('auth.logout') }}">
                             @csrf
                             <button type="submit"
                                     class="w-full text-left px-4 py-2 text-sm
@@ -127,10 +144,12 @@
         </main>
 
         {{-- Notifications / Scripts --}}
+{{--        @livewireScripts--}}
         @vite(['resources/js/app.js'])
         @livewireScriptConfig
         @filamentScripts
         @livewire('notifications')
+        @vite(['resources/js/app.js'])
 
         {{-- Clipboard helper --}}
         <script>
