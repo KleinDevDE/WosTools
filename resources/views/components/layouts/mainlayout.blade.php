@@ -149,6 +149,9 @@
         @livewireScriptConfig
         @filamentScripts
         @livewire('notifications')
+        @auth
+            @livewire('database-notifications')
+        @endauth
         @vite(['resources/js/app.js'])
 
         {{-- Clipboard helper --}}
