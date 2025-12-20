@@ -36,15 +36,15 @@ window.$ = window.jQuery = $;
 
 document.addEventListener('alpine:init', () => {
     console.log('alpine:init')
-    Alpine.plugin(persist);
-    Alpine.plugin(collapse);
-    Alpine.plugin(intersect);
-
-    // Alpine.magic("notification", () => notification);
-    // window.notification = notification;
-    Alpine.magic("clipboard", () => copyToClipboard);
 });
+// Alpine.plugin(persist);
+Alpine.plugin(collapse);
+Alpine.plugin(intersect);
 
+// Alpine.magic("notification", () => notification);
+// window.notification = notification;
+Alpine.magic("clipboard", () => copyToClipboard);
+// Alpine.start()
 Livewire.start();
 
 // import.meta.glob([
