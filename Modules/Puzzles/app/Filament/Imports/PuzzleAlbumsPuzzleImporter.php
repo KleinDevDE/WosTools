@@ -23,6 +23,10 @@ class PuzzleAlbumsPuzzleImporter extends Importer
 
     public function resolveRecord(): PuzzlesAlbumPuzzle
     {
+        if (str_starts_with($this->data['album'], '{')) {
+            $this->data['album'] = json_decode($this->data['album'], true)['name'] ?? null;
+        }
+
         $album = PuzzlesAlbum::query()->firstOrCreate([
             'name' => $this->data['album'],
         ]);
