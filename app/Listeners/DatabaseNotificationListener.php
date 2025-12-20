@@ -44,6 +44,9 @@ class DatabaseNotificationListener
             ->whereDate('created_at', '>=', now()->subMinutes(5)) // Limit to last 5 minutes to avoid updating old notifications
             ->orderBy('created_at', 'desc')
             ->first();
+        if (!$databaseNotification) {
+            return;
+        }
 
         $databaseNotification->data = array_merge($databaseNotification->data, [
             'notified_at' => null
