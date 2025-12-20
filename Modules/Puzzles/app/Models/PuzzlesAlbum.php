@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PuzzlesAlbum extends Model
 {
     protected $fillable = [
-        'name'
+        'name', 'position'
     ];
 
     public function puzzles(): HasMany

@@ -5,6 +5,7 @@ namespace Modules\Puzzles\Filament\Imports;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Number;
 use Modules\Puzzles\Models\PuzzlesAlbum;
 use Modules\Puzzles\Models\PuzzlesAlbumPuzzle;
@@ -21,20 +22,41 @@ class PuzzleAlbumsPuzzleImporter extends Importer
         ];
     }
 
-    public function resolveRecord(): PuzzlesAlbumPuzzle
+    public function remapData(): void
     {
+        parent::remapData();
+        Log::info("Data:", $this->data);
         if (str_starts_with($this->data['album'], '{')) {
             $this->data['album'] = json_decode($this->data['album'], true)['name'] ?? null;
         }
 
-        $album = PuzzlesAlbum::query()->firstOrCreate([
-            'name' => $this->data['album'],
-        ]);
+        $albumPosition = PuzzlesAlbum::query()->max('position') ?? 1;
+        $album = PuzzlesAlbum::query()->firstOrCreate(
+            ['name' => $this->data['album']],
+            ['position' => $albumPosition + 1]
+        );
+        Log::info("Album:", $album->toArray());
 
-        return PuzzlesAlbumPuzzle::query()->firstOrCreate([
+        $puzzlePosition = PuzzlesAlbumPuzzle::query()->where('puzzles_album_id', $album->id)->max('position') ?? 1;
+        $this->data = [
             'puzzles_album_id' => $album->id,
-            'name' => $this->data['name'],
-        ]);
+            'name' => str_replace(["\"", "."], "", $this->data['name']),
+            'position' => $puzzlePosition + 1
+        ];
+        Log::info("Data:", $this->data);
+    }
+
+    public function resolveRecord(): ?PuzzlesAlbumPuzzle
+    {
+        return PuzzlesAlbumPuzzle::query()->firstOrNew(
+            [
+                'puzzles_album_id' => $this->data['puzzles_album_id'],
+                'name' => $this->data['name'],
+            ],
+            [
+                'position' => $this->data['position'],
+            ]
+        );
     }
 
     public static function getCompletedNotificationBody(Import $import): string
