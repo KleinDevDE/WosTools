@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Listeners;
+
+use Filament\Notifications\Events\DatabaseNotificationsSent;
+use Filament\Notifications\Notification;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+
+class DatabaseNotificationListener
+{
+    /**
+     * Create the event listener.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * Handle the event.
+     */
+    public function handle(DatabaseNotificationsSent $event): void
+    {
+        try {
+            $reflection = new \ReflectionClass(DatabaseNotificationsSent::class);
+            $property = $reflection->getProperty('user');
+            $property->setAccessible(true);
+            $currentUser = $property->getValue($event);
+        } catch (\ReflectionException $exception) {
+            report($exception);
+            return;
+        }
+
+        if ($currentUser === null) {
+            return;
+        }
+
+        //Get last notification
+        $databaseNotification = DatabaseNotification::query()
+            ->whereMorphedTo('notifiable', $currentUser)
+            ->where('data', 'NOT LIKE', '%notified_at%')
+            ->whereDate('created_at', '>=', now()->subMinutes(5)) // Limit to last 5 minutes to avoid updating old notifications
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        $databaseNotification->data = array_merge($databaseNotification->data, [
+            'notified_at' => null
+        ]);
+        $databaseNotification->save();
+    }
+}
