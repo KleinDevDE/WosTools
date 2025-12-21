@@ -6,6 +6,8 @@
         "build": "vite build",
         "build:all": "vite build && npm run build:puzzles",
         "build:puzzles": "cd Modules/Puzzles && npm run build",
+        "i:all": "npm i && npm run i:puzzles",
+        "i:puzzles": "npm install && cd Modules/Puzzles && npm install",
         "dev": "vite"
     },
     "devDependencies": {
