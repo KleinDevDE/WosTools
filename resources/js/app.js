@@ -1,7 +1,7 @@
 import {Alpine, Livewire} from '../../vendor/livewire/livewire/dist/livewire.esm';
 
 // AlpineJS Plugins
-import persist from "@alpinejs/persist"; // @see https://alpinejs.dev/plugins/persist
+// import persist from "@alpinejs/persist"; // @see https://alpinejs.dev/plugins/persist
 import collapse from "@alpinejs/collapse"; // @see https://alpinejs.dev/plugins/collapse
 import intersect from "@alpinejs/intersect"; // @see https://alpinejs.dev/plugins/intersect
 

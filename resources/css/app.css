@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @import "./filament.css";
 @import "flowbite/src/themes/default.css";
+@import "../../Modules/Puzzles/resources/assets/css/app.css";
 
 @plugin "flowbite/plugin";
 
@@ -9,7 +10,6 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 @source '../**/*.{php,html,js,jsx,ts,tsx,vue}';
-@source '../../Modules/*/resources/**/*.{php,html,js,jsx,ts,tsx,vue}';
 @source '../node_modules/flowbite';
 /*@source '../node_modules/';*/
 

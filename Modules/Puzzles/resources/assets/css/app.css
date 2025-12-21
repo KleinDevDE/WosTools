@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source '../**/*.{php,html,js,jsx,ts,tsx,vue}';
 
 @theme {
   /* Navy color scheme */
