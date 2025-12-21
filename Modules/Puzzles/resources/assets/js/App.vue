@@ -12,11 +12,16 @@
 import { onMounted } from 'vue';
 import { useAlbumStore } from './stores/albumStore';
 import { useUserStateStore } from './stores/userStateStore';
+import { initializeSanctumAuth } from './utils/api';
 
 const albumStore = useAlbumStore();
 const userStateStore = useUserStateStore();
 
 onMounted(async () => {
+  // Initialize Sanctum authentication first
+  await initializeSanctumAuth();
+
+  // Then fetch data
   await Promise.all([
     albumStore.fetchAlbums(),
     userStateStore.fetchUserStates(),
