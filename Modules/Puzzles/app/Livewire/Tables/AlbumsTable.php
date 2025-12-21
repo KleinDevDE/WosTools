@@ -2,13 +2,14 @@
 
 namespace Modules\Puzzles\Livewire\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ImportAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Grouping\Group;
@@ -27,6 +28,7 @@ use Modules\Puzzles\Filament\Exports\PuzzlesAlbumPuzzleExporter;
 use Modules\Puzzles\Filament\Imports\PuzzleAlbumsPuzzleImporter;
 use Modules\Puzzles\Models\PuzzlesAlbum;
 use Modules\Puzzles\Models\PuzzlesAlbumPuzzle;
+use Modules\Puzzles\Models\PuzzlesAlbumPuzzlePiece;
 
 class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
 {
@@ -43,7 +45,7 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
                 Group::make('album.name')
                     ->label('Album: ')
                     ->getDescriptionFromRecordUsing(
-                        fn(PuzzlesAlbumPuzzle $record): string => 'Anzahl Puzzles: ' . $record->album->puzzles->count()
+                        fn(PuzzlesAlbumPuzzle $record): string => 'Count Puzzles: ' . $record->album->puzzles->count()
                     )
                     ->collapsible()
             ])
@@ -60,12 +62,17 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
     public function getTableColumns(): array
     {
         return [
-            TextColumn::make('id')
+            TextColumn::make('position')
                 ->sortable()
                 ->label(""),
             TextColumn::make('name')
                 ->searchable()
                 ->sortable(),
+            //Count pieces
+            TextColumn::make('pieces_count')
+            ->getStateUsing(fn (PuzzlesAlbumPuzzle $record) => $record->pieces->count())
+            ->label('Pieces')
+            ->sortable(),
         ];
     }
 
@@ -99,7 +106,7 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
     {
         return [
             CreateAction::make()
-                ->label('Mehrere Puzzles anlegen')
+                ->label('Add Multiple Puzzles')
                 ->schema([
                     Select::make('puzzles_album_id')
                         ->options(PuzzlesAlbum::query()->pluck('name', 'id'))
@@ -107,12 +114,12 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
                         ->string()
                         ->required(),
                     Textarea::make('names')
-                        ->label('Puzzle-Namen (je Zeile ein Name)')
+                        ->label('Puzzle-Names (one name per line)')
                         ->rows(5)
                         ->autofocus()
                         ->required()
                         ->string()
-                        ->helperText('Leere/doppelte Zeilen werden ignoriert.')
+                        ->helperText('Empty lines will be ignored.')
                 ])
                 ->using(function (array $data) {
                     // Zerlegen: je Zeile ein Name, trimmen, Leere/Duplikate entfernen
@@ -126,26 +133,66 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
                         ->whereIn('name', $puzzles)
                         ->pluck('name')->toArray();
                     $puzzles = $puzzles->diff($existingPuzzles);
-                    debugbar()->debug($puzzles);
                     $puzzles->each(function ($name) use ($data, &$created) {
+                        $puzzlePosition = PuzzlesAlbumPuzzle::query()->where('puzzles_album_id', $data['puzzles_album_id'])->max('position') ?? 1;
                         $created = PuzzlesAlbumPuzzle::query()->create([
                             'puzzles_album_id' => $data['puzzles_album_id'],
                             'name' => $name,
+                            'position' => $puzzlePosition + 1
                         ]);
                     });
 
                     // Rückgabe eines (beliebigen) angelegten Datensatzes für Filament
                     return $created;
                 }),
-            ImportAction::make("Import from Excel")
-            ->importer(PuzzleAlbumsPuzzleImporter::class)
-            ->icon(Heroicon::DocumentArrowUp),
+
+            ActionGroup::make([
+                ExportAction::make("Export")
+                    ->label("Export")
+                    ->exporter(PuzzlesAlbumPuzzleExporter::class)
+                    ->icon(Heroicon::DocumentChartBar),
+                ImportAction::make("Import")
+                    ->label("Import")
+                    ->importer(PuzzleAlbumsPuzzleImporter::class)
+                    ->icon(Heroicon::DocumentArrowUp),
+            ]),
         ];
     }
 
     protected function getTableActions(): array
     {
         return [
+            CreateAction::make("add-pieces")
+            ->label("Add Puzzle Pieces")
+            ->icon(Heroicon::PlusCircle)
+                ->schema([
+                    Textarea::make('stars')
+                        ->label('Puzzle Pieces (write star count per line):')
+                        ->rows(5)
+                        ->autofocus()
+                        ->required()
+                        ->string()
+                        ->helperText('Empty lines will be ignored.')
+                ])
+                ->using(function (array $data, PuzzlesAlbumPuzzle $record) {
+                    // Zerlegen: je Zeile ein Name, trimmen, Leere/Duplikate entfernen
+                    $created = null;
+                    $starts = collect(preg_split("/\r\n|\r|\n/", (string)$data['stars']))
+                        ->map(fn($name) => trim($name))
+                        ->filter();
+
+                    $position = 1;
+                    $starts->each(function ($star) use (&$position, $record, $data, &$created) {
+                        $created = PuzzlesAlbumPuzzlePiece::query()->create([
+                            'puzzles_album_id' => $record->puzzles_album_id,
+                            'puzzles_album_puzzle_id' => $record->id,
+                            'position' => $position++,
+                            'stars' => (int)$star
+                        ]);
+                    });
+
+                    return $created;
+                }),
         ];
     }
 
