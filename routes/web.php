@@ -19,6 +19,7 @@ Route::middleware(['auth'])->group(function() {
     Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
     Route::prefix('/admin')->group(function() {
+//        Route::get('/', [DashboardController::class, 'adminShow'])->name('admin.dashboard');
         Route::prefix('users')->middleware('can:view users')->group(function() {
             Route::get('/', [UserController::class, 'list'])->name('admin.users.list');
         });

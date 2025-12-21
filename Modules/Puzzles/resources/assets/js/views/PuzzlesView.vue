@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-navy-950">
+  <div class="min-h-screen bg-navy-950 pb-5">
     <NavBar :title="album?.name || 'Puzzles'" show-back />
 
     <div class="max-w-7xl mx-auto px-4 py-6 pb-safe">
@@ -73,6 +73,9 @@ const puzzles = computed(() => puzzleStore.getPuzzlesByAlbumId(albumId.value));
 onMounted(async () => {
   await puzzleStore.fetchPuzzles(albumId.value);
 });
+
+for (const puzzle of puzzles.value)
+    console.log(puzzle.completion_percentage || 0)
 </script>
 
 <style scoped>

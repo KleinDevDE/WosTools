@@ -3,6 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <title>Whiteout Survival</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+
 
         @vite(['resources/css/app.css'])
         @livewireStyles
