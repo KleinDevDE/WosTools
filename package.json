@@ -4,6 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
+        "build:all": "vite build && npm run build:puzzles",
+        "build:puzzles": "cd Modules/Puzzles && npm run build",
         "dev": "vite"
     },
     "devDependencies": {

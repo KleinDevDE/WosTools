@@ -11,6 +11,7 @@ const corePaths = [
     'resources/js/app.js',
 ];
 const allPaths = await collectModuleAssetsPaths(corePaths, 'Modules');
+console.log(allPaths);
 
 
 export default defineConfig({

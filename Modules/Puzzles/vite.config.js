@@ -2,14 +2,15 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 import { readdirSync, statSync } from 'fs';
-import { join, relative, dirname } from 'path';
+import { join,relative,dirname } from 'path';
 import { fileURLToPath } from 'url';
 
+var __dirname = fileURLToPath(new URL('.', import.meta.url))
 export default defineConfig({
     build: {
         outDir: '../../public/build-puzzles',
         emptyOutDir: true,
-        manifest: true,
+        manifest: "manifest.json",
     },
     plugins: [
         laravel({

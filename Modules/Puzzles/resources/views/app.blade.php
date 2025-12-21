@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    @vite(['Modules/Puzzles/resources/assets/css/app.css', 'Modules/Puzzles/resources/assets/js/app.js'], 'Modules/Puzzles')
+    @vite(['resources/assets/css/app.css', 'resources/assets/js/app.js'], 'build-puzzles')
 </head>
 <body class="antialiased">
     <div id="app"></div>
