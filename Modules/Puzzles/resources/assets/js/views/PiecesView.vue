@@ -10,7 +10,7 @@
           <img :src="puzzle.image_url" :alt="puzzle.name" class="w-full h-auto" loading="lazy" />
         </div>
 
-        <div class="grid grid-cols-4 gap-3">
+        <div class="grid grid-cols-3 gap-3">
           <PieceCard
             v-for="piece in pieces"
             :key="piece.id"
