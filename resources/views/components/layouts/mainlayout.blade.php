@@ -19,7 +19,7 @@
              * Active state helper.
              * Usage: $isActive('route.name.*')
              */
-            $isActive = fn (...$routes) =>
+            $isActive = fn ($routes) =>
                 request()->routeIs($routes)
                     ? 'text-sky-400 border-b-2 border-sky-400'
                     : 'text-slate-400 hover:text-slate-200';
@@ -46,6 +46,8 @@
                             </a>
                         </li>
 
+                        @module('Puzzles')
+                        @role('developer')
                         <li x-data="{ open: false }" class="relative">
                             <button
                                 @click="open = !open"
@@ -62,15 +64,28 @@
                                 class="absolute left-0 mt-2 w-44 rounded-md
                                bg-navy-750 border border-navy-600 shadow-lg"
                             >
-                                <a href="{{ route('modules.puzzles.list') }}"
+                                <a href="{{ route('modules.puzzles.albums') }}"
                                    class="block px-4 py-2 text-sm hover:bg-navy-700
-                                  {{ $isActive('admin.users.*') }}">
-                                    Users
+                                  {{ $isActive('modules.puzzles.albums') }}">
+                                    Albums
+                                </a>
+                                <a href="{{ route('modules.puzzles.puzzles') }}"
+                                   class="block px-4 py-2 text-sm hover:bg-navy-700
+                                  {{ $isActive('modules.puzzles.puzzles') }}">
+                                    Puzzles
+                                </a>
+                                <a href="{{ route('modules.puzzles.pieces') }}"
+                                   class="block px-4 py-2 text-sm hover:bg-navy-700
+                                  {{ $isActive('modules.puzzles.pieces') }}">
+                                    Pieces
                                 </a>
                             </div>
                         </li>
+                        @endrole
+                        @endmodule
 
                         {{-- Administration Dropdown --}}
+                        @canany(\App\Helpers\Permissions::USERS_SHOW)
                         <li x-data="{ open: false }" class="relative">
                             <button
                                 @click="open = !open"
@@ -87,13 +102,16 @@
                                 class="absolute left-0 mt-2 w-44 rounded-md
                                bg-navy-750 border border-navy-600 shadow-lg"
                             >
+                                @can(App\Helpers\Permissions::USERS_SHOW)
                                 <a href="{{ route('admin.users.list') }}"
                                    class="block px-4 py-2 text-sm hover:bg-navy-700
                                   {{ $isActive('admin.users.*') }}">
                                     Users
                                 </a>
+                                @endcan
                             </div>
                         </li>
+                        @endcanany
                     </ul>
                 </div>
 

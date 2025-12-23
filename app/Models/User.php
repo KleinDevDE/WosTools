@@ -16,14 +16,12 @@ class User extends Authenticatable
     use HasFactory, Notifiable, HasRoles;
 
     public const STATUS_ACTIVE = 'active';
-    public const STATUS_INACTIVE = 'inactive';
-    public const STATUS_PENDING = 'pending';
     public const STATUS_INVITED = 'invited';
+    public const STATUS_LOCKED = 'locked';
     public const STATUS_VALUES = [
         self::STATUS_ACTIVE,
-        self::STATUS_INACTIVE,
-        self::STATUS_PENDING,
         self::STATUS_INVITED,
+        self::STATUS_LOCKED,
     ];
 
     protected $fillable = [

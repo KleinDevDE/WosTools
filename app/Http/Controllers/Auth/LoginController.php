@@ -22,12 +22,8 @@ class LoginController extends Controller
             return redirect()->back()->withErrors(['username' => 'No account found with this email.']);
         }
 
-        if ($existingUser->status === User::STATUS_INACTIVE) {
+        if ($existingUser->status === User::STATUS_LOCKED) {
             return redirect()->back()->withErrors(['username' => 'Your account is disabled. Please contact the management']);
-        }
-
-        if ($existingUser->status === User::STATUS_PENDING) {
-            return redirect()->back()->withErrors(['username' => 'Your account is pending approval. Please wait for the approval.']);
         }
 
         if (!Auth::attempt(['username' => $loginRequest->username, 'password' => $loginRequest->password])) {

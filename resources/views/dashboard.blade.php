@@ -45,7 +45,7 @@
 {{--                </a>--}}
 
                 {{-- Administration Card (Admin Only) --}}
-                @hasrole('developer')
+                @canany(\App\Helpers\Permissions::USERS_SHOW)
                 <a href="{{ route('admin.users.list') }}"
                    class="group bg-navy-900 rounded-2xl border border-navy-700 p-8
                           hover:border-glow-500 hover:shadow-lg hover:shadow-glow-500/20

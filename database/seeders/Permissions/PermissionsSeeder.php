@@ -17,28 +17,44 @@ class PermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        $userPermissions = [
-            'view' => Permission::updateOrCreate(['name' => 'view users']),
-            'create' => Permission::updateOrCreate(['name' => 'create users']),
-            'edit' => Permission::updateOrCreate(['name' => 'edit users']),
-            'delete' => Permission::updateOrCreate(['name' => 'delete users']),
-            'restore' => Permission::updateOrCreate(['name' => 'restore users']),
+        $permissions = [
+            'restricted' => [
+                'pages:dashboard:view',
+            ],
+            'user' => [
+                'pages:dashboard:view',
+                'puzzles::view', 'puzzles::own.view', 'puzzles::own.manage',
+                'puzzles::view',
+            ],
+            'management' => [
+                'pages:dashboard:view',
+                'puzzles::view', 'puzzles::own.view', 'puzzles::own.manage',
+                'puzzles::albums.view', 'puzzles::puzzles.view', 'puzzles::pieces.view',
+                'users.show', 'users.invite'
+            ],
+            'developer' => [
+                'pages:dashboard:view',
+                'puzzles::view', 'puzzles::own.view', 'puzzles::own.manage',
+                'puzzles::albums.view', 'puzzles::albums.create', 'puzzles::albums.edit', 'puzzles::albums.delete',
+                'puzzles::puzzles.view', 'puzzles::puzzles.create', 'puzzles::puzzles.edit', 'puzzles::puzzles.delete',
+                'puzzles::pieces.view', 'puzzles::pieces.create', 'puzzles::pieces.edit', 'puzzles::pieces.delete',
+                'users.show', 'users.edit', 'users.delete', 'users.invite'
+            ]
         ];
-        $userInvitationsPermissions = [
-            'viewOwn' => Permission::updateOrCreate(['name' => 'view own userInvitation']),
-            'view' => Permission::updateOrCreate(['name' => 'view userInvitations']),
-            'create' => Permission::updateOrCreate(['name' => 'create userInvitations']),
-            'edit' => Permission::updateOrCreate(['name' => 'edit userInvitations']),
-            'delete' => Permission::updateOrCreate(['name' => 'delete userInvitations']),
-        ];
 
-        $developerRole = Role::updateOrCreate(['name' => 'developer']);
-        $developerRole->syncPermissions($userPermissions + $userInvitationsPermissions);
+        $allPermissions = [];
+        foreach ($permissions as $roleName =>  $group) {
+            foreach ($group AS $index => $permission) {
+                $permissions[$roleName][$index] = $allPermissions[$permission] ?? Permission::updateOrCreate(['name' => $permission]);
+                $allPermissions[$permission] = $permissions[$roleName][$index];
+            }
+        }
 
-        $managementRole = Role::updateOrCreate(['name' => 'management']);
-        $managementRole->syncPermissions($userPermissions + $userInvitationsPermissions);
 
-        $userRole = Role::updateOrCreate(['name' => 'user']);
-        $userRole->syncPermissions([$userPermissions['view'], $userInvitationsPermissions['viewOwn']]);
+        foreach ($permissions as $roleName => $group) {
+            $role = Role::updateOrCreate(['name' => $roleName]);
+
+            $role->syncPermissions(...$group);
+        }
     }
 }

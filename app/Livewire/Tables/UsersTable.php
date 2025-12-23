@@ -2,15 +2,14 @@
 
 namespace App\Livewire\Tables;
 
+use App\Helpers\Permissions;
 use App\Models\User;
 use App\Services\UserInvitationService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\IconPosition;
-use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Collection;
@@ -43,8 +42,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
             SelectFilter::make('status')
                 ->options([
                     User::STATUS_ACTIVE => 'Active',
-                    User::STATUS_INACTIVE => 'Inactive',
-                    User::STATUS_PENDING => 'Pending',
+                    User::STATUS_LOCKED => 'Locked',
                     User::STATUS_INVITED => 'Invited',
                 ]),
         ];
@@ -66,8 +64,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ->badge()
                 ->color(fn(User $record) => match ($record->status) {
                     User::STATUS_ACTIVE => 'success',
-                    User::STATUS_INACTIVE => 'danger',
-                    User::STATUS_PENDING => 'warning',
+                    User::STATUS_LOCKED => 'danger',
                     User::STATUS_INVITED => 'primary',
                     default => 'gray',
                 })
@@ -77,27 +74,37 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
 
     public function getTableBulkActions(): array
     {
-        return [
-            BulkAction::make('Update status')
-                ->schema([
-                    Select::make('status')
-                        ->options(function() {
-                            return collect(User::STATUS_VALUES)->except(User::STATUS_ACTIVE)
-                                ->mapWithKeys(fn($status) => [$status => ucfirst($status)]);
-                        }),
-                ])
-            ->action(function (Collection $records, array $data): void {
-                foreach ($records as $record) {
-                    $record->update(['status' => $data['status']]);
-                }
-            }),
-        ];
+        $actions = [];
+        if (auth()->user()->can(Permissions::USERS_LOCK)) {
+            BulkAction::make('Lock')
+                //Confirm
+                ->requiresConfirmation()
+                ->action(function (Collection $records): void {
+                    foreach ($records as $record) {
+                        $record->update(['status' => User::STATUS_LOCKED]);
+                    }
+                });
+        }
+
+        if (auth()->user()->can(Permissions::USERS_LOCK)) {
+            BulkAction::make('Unlock')
+                ->requiresConfirmation()
+                ->action(function (Collection $records): void {
+                    foreach ($records as $record) {
+                        $record->update(['status' => User::STATUS_ACTIVE]);
+                    }
+                });
+        }
+
+        return $actions;
     }
 
     protected function getTableHeaderActions(): array
     {
-        return [
-            Action::make('inviteUser')
+        $actions = [];
+
+        if (auth()->user()->can(Permissions::USERS_INVITE)) {
+            $actions[] = Action::make('inviteUser')
                 ->label('Invite User')
                 ->icon('heroicon-o-plus')
                 ->schema([
@@ -130,8 +137,10 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                                 ->dispatch('copy-to-clipboard', ['text' => $invitation->invitationURL, 'element' => "copy-inv-url-$invitation->id"])
                         ])
                         ->send();
-                }),
-        ];
+                });
+        }
+
+        return $actions;
     }
 
     protected function getTableActions(): array
@@ -149,42 +158,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                     'text' => $user->invitations()->first()?->invitationURL,
                     'element' => "copy-inv-url-$user->id"
                 ]),
-            Action::make('approve')
-                ->label("Approve")
-                ->hidden(fn(User $user) => $user->status !== User::STATUS_PENDING)
-                ->button()->size(Size::ExtraSmall)->icon(Heroicon::Check)->color('success')
-                ->action(fn(User $user) => $this->approveUsers($user)),
-
-            Action::make('reject')
-                ->label("Reject")
-                ->hidden(fn(User $user) => $user->status !== User::STATUS_PENDING)
-                ->button()->size(Size::ExtraSmall)->icon(Heroicon::XMark)->color('danger')
-                ->action(fn(User $user) => $this->rejectUsers($user)),
         ];
-    }
-
-    public function enableUsers(?User $user = null): void
-    {
-        //TODO Use Service
-        $this->updateStatus(User::STATUS_ACTIVE, $user);
-    }
-
-    public function disableUsers(?User $user = null): void
-    {
-        //TODO Use Service
-        $this->updateStatus(User::STATUS_INACTIVE, $user);
-    }
-
-    public function approveUsers(?User $user = null): void
-    {
-        //TODO Use Service
-        $this->updateStatus(User::STATUS_ACTIVE, $user);
-    }
-
-    public function rejectUsers(?User $user = null): void
-    {
-        //TODO Use Service
-        $this->updateStatus(User::STATUS_INACTIVE, $user);
     }
 
     public function updateStatus(string $status, ?User $user = null): void

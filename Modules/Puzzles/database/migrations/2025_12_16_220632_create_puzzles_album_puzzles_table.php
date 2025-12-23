@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->foreignId('puzzles_album_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->integer('position');
+            $table->integer('position')->default(0);
 
             $table->timestamps();
         });
