@@ -20,3 +20,104 @@
 
 /* Required by widgets */
 @import '../../vendor/filament/widgets/resources/css/index.css';
+
+/* ==========================================
+ * FILAMENT DARK THEME CUSTOMIZATION
+ * Synchronized with unified color palette
+ * ========================================== */
+
+/* Dark theme background overrides */
+.fi-body,
+.fi-sidebar,
+.fi-topbar {
+    background-color: rgb(from var(--color-navy-950) r g b);
+}
+
+/* Card and panel backgrounds */
+.fi-section,
+.fi-card,
+.fi-modal,
+.fi-form-section {
+    background-color: rgb(from var(--color-navy-900) r g b);
+    border-color: rgb(from var(--color-navy-700) r g b);
+}
+
+/* Table styling */
+.fi-ta-table {
+    background-color: rgb(from var(--color-navy-900) r g b);
+}
+
+.fi-ta-row:hover {
+    background-color: rgb(from var(--color-navy-800) r g b);
+}
+
+/* Form inputs */
+.fi-input,
+.fi-select,
+.fi-textarea {
+    background-color: rgb(from var(--color-navy-800) r g b);
+    border-color: rgb(from var(--color-navy-700) r g b);
+    color: white;
+}
+
+.fi-input:focus,
+.fi-select:focus,
+.fi-textarea:focus {
+    border-color: rgb(from var(--color-glow-500) r g b);
+    ring-color: rgb(from var(--color-glow-500) / 0.2 r g b);
+}
+
+/* Buttons - Primary (using glow colors) */
+.fi-btn-primary {
+    background-color: rgb(from var(--color-primary-600) r g b);
+}
+
+.fi-btn-primary:hover {
+    background-color: rgb(from var(--color-primary-500) r g b);
+}
+
+/* Success state buttons */
+.fi-btn-success {
+    background-color: rgb(from var(--color-success-600) r g b);
+}
+
+.fi-btn-success:hover {
+    background-color: rgb(from var(--color-success-500) r g b);
+}
+
+/* Danger state buttons */
+.fi-btn-danger {
+    background-color: rgb(from var(--color-danger-600) r g b);
+}
+
+.fi-btn-danger:hover {
+    background-color: rgb(from var(--color-danger-500) r g b);
+}
+
+/* Navigation items */
+.fi-sidebar-item:hover,
+.fi-sidebar-item-active {
+    background-color: rgb(from var(--color-navy-800) r g b);
+    border-left-color: rgb(from var(--color-glow-500) r g b);
+}
+
+/* Badges */
+.fi-badge-success {
+    background-color: rgb(from var(--color-success-600) / 0.2 r g b);
+    color: rgb(from var(--color-success-400) r g b);
+}
+
+.fi-badge-danger {
+    background-color: rgb(from var(--color-danger-600) / 0.2 r g b);
+    color: rgb(from var(--color-danger-400) r g b);
+}
+
+.fi-badge-warning {
+    background-color: rgb(from var(--color-warning-600) / 0.2 r g b);
+    color: rgb(from var(--color-warning-400) r g b);
+}
+
+.fi-badge-info {
+    background-color: rgb(from var(--color-info-600) / 0.2 r g b);
+    color: rgb(from var(--color-info-400) r g b);
+}
