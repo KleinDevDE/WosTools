@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-navy-950 pb-5">
-    <NavBar :title="album?.name || 'Puzzles'" show-back />
+    <NavBar :title="album?.name || $t('puzzles.title')" show-back />
 
     <div class="max-w-7xl mx-auto px-4 py-6 pb-safe">
       <LoadingSpinner v-if="puzzleStore.loading && puzzles.length === 0" />
@@ -24,11 +24,11 @@
 
             <div class="flex-1 ml-4 min-w-0">
               <h3 class="text-lg font-bold text-white truncate">{{ puzzle.name }}</h3>
-              <p class="text-sm text-navy-400 mt-1">{{ puzzle.pieces_count || 0 }} pieces</p>
+              <p class="text-sm text-navy-400 mt-1">{{ puzzle.pieces_count || 0 }} {{ $t('puzzles.pieces') }}</p>
 
               <div v-if="puzzle.pieces_count > 0" class="mt-3">
                 <div class="flex items-center justify-between text-xs mb-1">
-                  <span class="text-navy-400">Collected</span>
+                  <span class="text-navy-400">{{ $t('puzzles.collected') }}</span>
                   <span class="text-success-400 font-bold">{{ puzzle.completed_pieces || 0 }}/{{ puzzle.pieces_count }}</span>
                 </div>
                 <div class="h-2 bg-navy-800 rounded-full overflow-hidden">
@@ -47,7 +47,7 @@
         </router-link>
 
         <div v-if="puzzles.length === 0 && !puzzleStore.loading" class="text-center py-12">
-          <p class="text-navy-500 text-lg">No puzzles found in this album</p>
+          <p class="text-navy-500 text-lg">{{ $t('puzzles.no_puzzles') }}</p>
         </div>
       </div>
     </div>
@@ -57,10 +57,13 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useAlbumStore } from '../stores/albumStore';
 import { usePuzzleStore } from '../stores/puzzleStore';
 import NavBar from '../components/NavBar.vue';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
+
+const { t: $t } = useI18n();
 
 const route = useRoute();
 const albumStore = useAlbumStore();

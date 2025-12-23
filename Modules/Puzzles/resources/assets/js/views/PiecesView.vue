@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-navy-950">
-    <NavBar :title="puzzle?.name || 'Pieces'" show-back />
+    <NavBar :title="puzzle?.name || $t('pieces.title')" show-back />
 
     <div class="max-w-7xl mx-auto px-4 py-6 pb-safe">
       <LoadingSpinner v-if="puzzleStore.loading && !puzzle" />
@@ -21,7 +21,7 @@
         </div>
 
         <div v-if="pieces.length === 0" class="text-center py-12">
-          <p class="text-navy-500 text-lg">No pieces found in this puzzle</p>
+          <p class="text-navy-500 text-lg">{{ $t('pieces.no_pieces') }}</p>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
 
         <div class="space-y-3">
           <div class="flex items-center justify-between p-3 bg-navy-800 rounded-xl">
-            <span class="text-navy-400">Stars</span>
+            <span class="text-navy-400">{{ $t('pieces.stars') }}</span>
             <div class="flex items-center gap-1">
               <span class="text-white font-bold">{{ selectedPiece.stars }}</span>
               <span class="text-star-500">★</span>
@@ -43,13 +43,13 @@
 
           <div v-if="!selectedPiece.is_tradeable" class="p-3 bg-red-600/20 border border-red-600 rounded-xl">
             <p class="text-red-400 text-sm font-bold text-center">
-              🔒 This piece cannot be traded (5★ or higher)
+              🔒 {{ $t('pieces.cannot_trade_message') }}
             </p>
           </div>
         </div>
 
         <div class="space-y-3">
-          <h3 class="text-lg font-bold text-white">Your Status</h3>
+          <h3 class="text-lg font-bold text-white">{{ $t('pieces.your_status') }}</h3>
 
           <div class="grid grid-cols-3 gap-3">
             <button
@@ -63,7 +63,7 @@
             >
               <div class="text-center">
                 <div class="text-2xl mb-1">⭕</div>
-                <div class="text-xs text-navy-400">Neutral</div>
+                <div class="text-xs text-navy-400">{{ $t('pieces.neutral') }}</div>
               </div>
             </button>
 
@@ -80,7 +80,7 @@
             >
               <div class="text-center">
                 <div class="text-2xl mb-1">📥</div>
-                <div class="text-xs text-need-400">Need</div>
+                <div class="text-xs text-need-400">{{ $t('pieces.need') }}</div>
               </div>
             </button>
 
@@ -97,7 +97,7 @@
             >
               <div class="text-center">
                 <div class="text-2xl mb-1">✅</div>
-                <div class="text-xs text-success-400">Have</div>
+                <div class="text-xs text-success-400">{{ $t('pieces.have') }}</div>
               </div>
             </button>
           </div>
@@ -107,7 +107,7 @@
           @click="showPieceDetails = false"
           class="w-full py-3 bg-navy-800 hover:bg-navy-700 text-white font-bold rounded-xl transition-colors"
         >
-          Close
+          {{ $t('pieces.close') }}
         </button>
       </div>
     </BottomSheet>
@@ -117,12 +117,15 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { usePuzzleStore } from '../stores/puzzleStore';
 import { useUserStateStore } from '../stores/userStateStore';
 import NavBar from '../components/NavBar.vue';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 import PieceCard from '../components/PieceCard.vue';
 import BottomSheet from '../components/BottomSheet.vue';
+
+const { t: $t } = useI18n();
 
 const route = useRoute();
 const puzzleStore = usePuzzleStore();

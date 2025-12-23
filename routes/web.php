@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +26,6 @@ Route::middleware(['auth'])->group(function() {
         });
     });
 });
+
+// Locale switching (available for all users)
+Route::post('/locale/switch', [LocaleController::class, 'switch'])->name('locale.switch');

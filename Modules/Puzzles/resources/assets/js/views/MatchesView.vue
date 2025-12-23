@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-navy-950">
-    <NavBar title="Trading Matches" show-back />
+    <NavBar :title="$t('matches.title')" show-back />
 
     <div class="max-w-7xl mx-auto px-4 py-6 pb-safe">
       <LoadingSpinner v-if="matchStore.loading" />
@@ -10,10 +10,10 @@
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
               <span class="text-2xl">📥</span>
-              You Can Get
+              {{ $t('matches.you_can_get') }}
             </h2>
             <span class="px-3 py-1 bg-need-600/20 border border-need-500 rounded-full text-need-400 text-sm font-bold">
-              {{ canGetFrom.length }} {{ canGetFrom.length === 1 ? 'match' : 'matches' }}
+              {{ canGetFrom.length }} {{ $t('matches.match', canGetFrom.length) }}
             </span>
           </div>
 
@@ -27,14 +27,14 @@
                 <div>
                   <h3 class="text-white font-bold">{{ match.user.name }}</h3>
                   <p class="text-navy-400 text-sm mt-1">
-                    {{ match.match_count }} {{ match.match_count === 1 ? 'piece' : 'pieces' }} you need
+                    {{ match.match_count }} {{ $t('matches.piece', match.match_count) }}
                   </p>
                 </div>
                 <button
                   @click="copyToClipboard(match.user.name)"
                   class="px-4 py-2 bg-need-600 hover:bg-need-500 text-white font-bold rounded-xl transition-colors"
                 >
-                  Copy Name
+                  {{ $t('matches.copy_name') }}
                 </button>
               </div>
             </div>
@@ -45,10 +45,10 @@
           <div class="flex items-center justify-between mb-4">
             <h2 class="text-xl font-bold text-white flex items-center gap-2">
               <span class="text-2xl">🤝</span>
-              You Can Help
+              {{ $t('matches.you_can_help') }}
             </h2>
             <span class="px-3 py-1 bg-success-600/20 border border-success-500 rounded-full text-success-400 text-sm font-bold">
-              {{ canHelpWith.length }} {{ canHelpWith.length === 1 ? 'match' : 'matches' }}
+              {{ canHelpWith.length }} {{ $t('matches.match', canHelpWith.length) }}
             </span>
           </div>
 
@@ -62,14 +62,14 @@
                 <div>
                   <h3 class="text-white font-bold">{{ match.user.name }}</h3>
                   <p class="text-navy-400 text-sm mt-1">
-                    {{ match.match_count }} {{ match.match_count === 1 ? 'piece' : 'pieces' }} they need
+                    {{ match.match_count }} {{ $t('matches.piece', match.match_count) }}
                   </p>
                 </div>
                 <button
                   @click="copyToClipboard(match.user.name)"
                   class="px-4 py-2 bg-success-600 hover:bg-success-500 text-white font-bold rounded-xl transition-colors"
                 >
-                  Copy Name
+                  {{ $t('matches.copy_name') }}
                 </button>
               </div>
             </div>
@@ -78,8 +78,7 @@
 
         <div v-if="canGetFrom.length === 0 && canHelpWith.length === 0 && !matchStore.loading" class="text-center py-12">
           <div class="text-6xl mb-4">🤷</div>
-          <p class="text-navy-500 text-lg">No trading matches found</p>
-          <p class="text-navy-600 text-sm mt-2">Mark pieces as "Need" or "Have" to find trading partners</p>
+          <p class="text-navy-500 text-lg">{{ $t('matches.no_matches') }}</p>
         </div>
 
         <button
@@ -90,7 +89,7 @@
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Refresh Matches
+          {{ $t('matches.refresh') }}
         </button>
       </div>
     </div>

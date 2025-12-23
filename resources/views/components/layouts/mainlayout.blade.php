@@ -42,7 +42,7 @@
                         <li>
                             <a href="{{ route('dashboard') }}"
                                class="{{ $isActive('dashboard') }}">
-                                Home
+                                {{ __('navigation.home') }}
                             </a>
                         </li>
 
@@ -51,7 +51,7 @@
                                 @click="open = !open"
                                 class="flex items-center gap-1 {{ $isActive('module.puzzles.*') }}"
                             >
-                                Puzzles
+                                {{ __('navigation.puzzles') }}
                                 <x-heroicon-o-chevron-down class="w-4 h-4"/>
                             </button>
 
@@ -76,7 +76,7 @@
                                 @click="open = !open"
                                 class="flex items-center gap-1 {{ $isActive('admin.*') }}"
                             >
-                                Administration
+                                {{ __('navigation.administration') }}
                                 <x-heroicon-o-chevron-down class="w-4 h-4"/>
                             </button>
 
@@ -97,8 +97,13 @@
                     </ul>
                 </div>
 
-                {{-- Right: User menu --}}
-                <div x-data="{ open: false }" class="relative">
+                {{-- Right: Language switcher + User menu --}}
+                <div class="flex items-center gap-2">
+                    {{-- Language Switcher --}}
+                    <x-language-switcher/>
+
+                    {{-- User Menu --}}
+                    <div x-data="{ open: false }" class="relative">
                     <button
                         @click="open = !open"
                         class="flex items-center gap-2 px-3 py-2 rounded-md
@@ -131,10 +136,11 @@
                             <button type="submit"
                                     class="w-full text-left px-4 py-2 text-sm
                                    text-red-400 hover:bg-navy-700">
-                                Logout
+                                {{ __('navigation.logout') }}
                             </button>
                         </form>
                     </div>
+                </div>
                 </div>
 
             </div>

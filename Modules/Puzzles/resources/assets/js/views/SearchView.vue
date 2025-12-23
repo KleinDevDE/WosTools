@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-navy-950">
-    <NavBar title="Search" show-back />
+    <NavBar :title="$t('search.title')" show-back />
 
     <div class="max-w-7xl mx-auto px-4 py-6 pb-safe">
       <div class="mb-6">
@@ -8,7 +8,7 @@
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Search albums and puzzles..."
+            :placeholder="$t('search.placeholder')"
             class="w-full px-4 py-3 pl-12 bg-navy-900 border border-navy-700 rounded-xl text-white placeholder-navy-500 focus:outline-none focus:border-glow-500 transition-colors"
             @input="handleSearch"
           />
@@ -22,7 +22,7 @@
 
       <div v-else-if="searchQuery" class="space-y-8">
         <section v-if="albums.length > 0">
-          <h2 class="text-lg font-bold text-white mb-4">Albums</h2>
+          <h2 class="text-lg font-bold text-white mb-4">{{ $t('search.albums') }}</h2>
           <div class="space-y-3">
             <router-link
               v-for="album in albums"
@@ -31,13 +31,13 @@
               class="block bg-navy-900 rounded-xl p-4 border border-navy-700 hover:border-glow-500 transition-all active:scale-98"
             >
               <h3 class="text-white font-bold">{{ album.name }}</h3>
-              <p class="text-navy-400 text-sm mt-1">{{ album.puzzles_count || 0 }} puzzles</p>
+              <p class="text-navy-400 text-sm mt-1">{{ album.puzzles_count || 0 }} {{ $t('albums.puzzles') }}</p>
             </router-link>
           </div>
         </section>
 
         <section v-if="puzzles.length > 0">
-          <h2 class="text-lg font-bold text-white mb-4">Puzzles</h2>
+          <h2 class="text-lg font-bold text-white mb-4">{{ $t('search.puzzles') }}</h2>
           <div class="space-y-3">
             <router-link
               v-for="puzzle in puzzles"
@@ -46,21 +46,21 @@
               class="block bg-navy-900 rounded-xl p-4 border border-navy-700 hover:border-glow-500 transition-all active:scale-98"
             >
               <h3 class="text-white font-bold">{{ puzzle.name }}</h3>
-              <p class="text-navy-400 text-sm mt-1">{{ puzzle.pieces_count || 0 }} pieces</p>
+              <p class="text-navy-400 text-sm mt-1">{{ puzzle.pieces_count || 0 }} {{ $t('puzzles.pieces') }}</p>
             </router-link>
           </div>
         </section>
 
         <div v-if="albums.length === 0 && puzzles.length === 0" class="text-center py-12">
           <div class="text-6xl mb-4">🔍</div>
-          <p class="text-navy-500 text-lg">No results found</p>
-          <p class="text-navy-600 text-sm mt-2">Try searching for something else</p>
+          <p class="text-navy-500 text-lg">{{ $t('search.no_results') }}</p>
+          <p class="text-navy-600 text-sm mt-2">{{ $t('search.try_again') }}</p>
         </div>
       </div>
 
       <div v-else class="text-center py-12">
         <div class="text-6xl mb-4">🔎</div>
-        <p class="text-navy-500 text-lg">Start typing to search</p>
+        <p class="text-navy-500 text-lg">{{ $t('search.start_typing') }}</p>
       </div>
     </div>
   </div>
@@ -68,9 +68,12 @@
 
 <script setup>
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import api from '../utils/api';
 import NavBar from '../components/NavBar.vue';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
+
+const { t: $t } = useI18n();
 
 const searchQuery = ref('');
 const albums = ref([]);

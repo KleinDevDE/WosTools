@@ -15,7 +15,7 @@
         {{ title }}
       </h1>
 
-      <div class="flex gap-2">
+      <div class="flex gap-2 items-center">
           <a
               href="/"
               class="py-2 px-1 rounded text-rose-500 hover:text-rose-300 hover:cursor-pointer transition-colors flex items-center gap-1"
@@ -48,6 +48,8 @@
             {{ matchCount > 9 ? '9+' : matchCount }}
           </span>
         </router-link>
+
+        <LanguageSwitcher />
       </div>
     </div>
   </nav>
@@ -57,6 +59,7 @@
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useMatchStore } from '../stores/matchStore';
+import LanguageSwitcher from './LanguageSwitcher.vue';
 
 const props = defineProps({
   title: {

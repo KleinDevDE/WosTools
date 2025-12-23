@@ -33,7 +33,8 @@ class User extends Authenticatable
         'status',
         'invited_by',
         'token',
-        'last_login_at'
+        'last_login_at',
+        'locale'
     ];
 
     /**

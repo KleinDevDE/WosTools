@@ -4,7 +4,7 @@
         <div class="max-w-7xl mx-auto px-4 py-12">
             <div class="text-center mb-12">
                 <h1 class="text-4xl font-bold text-white mb-4">
-                    Welcome, {{ auth()->user()->username }}! 👋
+                    {{__('dashboard.welcome', ['name' => auth()->user()->username])}} 👋
                 </h1>
                 <p class="text-lg text-navy-400">
                     Choose a module to get started
@@ -23,10 +23,8 @@
                         <div class="w-16 h-16 mb-4 text-glow-400 group-hover:text-glow-300 transition-colors">
                             <x-heroicon-o-puzzle-piece class="w-full h-full"/>
                         </div>
-                        <h3 class="text-xl font-bold text-white mb-2">Puzzle Trading</h3>
-                        <p class="text-navy-400 text-sm">
-                            Manage your puzzle pieces, find trading partners, and complete your collection
-                        </p>
+                        <h3 class="text-xl font-bold text-white mb-2">{{__('dashboard.puzzles.title')}}</h3>
+                        <p class="text-navy-400 text-sm">{{__('dashboard.puzzles.description')}}</p>
                     </div>
                 </a>
 
