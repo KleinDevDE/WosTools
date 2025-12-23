@@ -74,21 +74,19 @@
                         <div class="text-2xl font-bold text-glow-400">
                             {{ auth()->user()->created_at->diffForHumans() }}
                         </div>
-                        <div class="text-sm text-navy-400 mt-1">Member Since</div>
+                        <div class="text-sm text-navy-400 mt-1">Member since</div>
                     </div>
-
+                    <div class="bg-navy-900/50 rounded-xl border border-navy-700 p-4 text-center">
+                        <div class="text-2xl font-bold text-glow-400">
+                            {{ auth()->user()->last_login_at->diffForHumans() }}
+                        </div>
+                        <div class="text-sm text-navy-400 mt-1">Last login</div>
+                    </div>
                     <div class="bg-navy-900/50 rounded-xl border border-navy-700 p-4 text-center">
                         <div class="text-2xl font-bold text-success-400">
                             Active
                         </div>
                         <div class="text-sm text-navy-400 mt-1">Account Status</div>
-                    </div>
-
-                    <div class="bg-navy-900/50 rounded-xl border border-navy-700 p-4 text-center">
-                        <div class="text-2xl font-bold text-white">
-                            {{ auth()->user()->username }}
-                        </div>
-                        <div class="text-sm text-navy-400 mt-1">Username</div>
                     </div>
                 </div>
             </div>

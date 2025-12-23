@@ -30,6 +30,8 @@ class LoginController extends Controller
             return redirect()->back()->withErrors(['username' => 'Invalid credentials']);
         }
 
+        Auth::user()->update(['last_login_at' => now()]);
+
         return redirect()->intended('/');
     }
 }
