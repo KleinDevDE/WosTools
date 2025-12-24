@@ -98,21 +98,23 @@ header {
     background-color: oklch(0.25 0.02 250) !important;
 }
 
-.fi-ta-header,
-.fi-table-header {
+/*.fi-ta-header,*/
+/*.fi-table-header,*/
+.fi-ta {
     background-color: oklch(0.20 0.02 250) !important;
     border-bottom-color: oklch(0.30 0.02 250) !important;
 }
 
 /* Form inputs */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="number"],
-input[type="search"],
-textarea,
-select,
-.fi-input,
+/*input[type="text"],*/
+/*input[type="email"],*/
+/*input[type="password"],*/
+/*input[type="number"],*/
+/*input[type="search"],*/
+/*textarea,*/
+/*select,*/
+/*.fi-input,*/
+.fi-input-wrp,
 .fi-select,
 .fi-textarea {
     background-color: oklch(0.25 0.02 250) !important;
@@ -159,8 +161,10 @@ select:focus,
 }
 
 /* Filter panel */
-.fi-ta-filters,
-.fi-filters {
+.fi-dropdown-panel, .fi-no-notification
+/*.fi-ta-filters,*/
+/*.fi-filters*/
+{
     background-color: oklch(0.20 0.02 250) !important;
     border-color: oklch(0.30 0.02 250) !important;
 }
