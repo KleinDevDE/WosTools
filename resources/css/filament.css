@@ -1,123 +1,203 @@
+@import 'tailwindcss';
+
+@source '../../vendor/filament/*/resources/views/**/*.blade.php';
+
+/* Import Filament CSS packages */
 @import '../../vendor/filament/support/resources/css/index.css';
-
-/* Required by actions and tables */
 @import '../../vendor/filament/actions/resources/css/index.css';
-
-/* Required by actions, forms and tables */
 @import '../../vendor/filament/forms/resources/css/index.css';
-
-/* Required by actions and infolists */
 @import '../../vendor/filament/infolists/resources/css/index.css';
-
-/* Required by notifications */
 @import '../../vendor/filament/notifications/resources/css/index.css';
-
-/* Required by actions, infolists, forms, schemas and tables */
 @import '../../vendor/filament/schemas/resources/css/index.css';
-
-/* Required by tables */
 @import '../../vendor/filament/tables/resources/css/index.css';
-
-/* Required by widgets */
 @import '../../vendor/filament/widgets/resources/css/index.css';
 
 /* ==========================================
  * FILAMENT DARK THEME CUSTOMIZATION
  * Synchronized with unified color palette
+ * Using CSS variables for Filament v3
  * ========================================== */
 
-/* Dark theme background overrides */
-.fi-body,
-.fi-sidebar,
-.fi-topbar {
-    background-color: rgb(from var(--color-navy-950) r g b);
+@theme {
+    /* Override Filament's color variables with our unified palette */
+
+    /* Primary color (Glow/Cyan) */
+    --color-primary-50: oklch(0.95 0.05 200);
+    --color-primary-100: oklch(0.90 0.10 200);
+    --color-primary-200: oklch(0.85 0.15 200);
+    --color-primary-300: oklch(0.75 0.20 200);
+    --color-primary-400: oklch(0.65 0.20 200);
+    --color-primary-500: oklch(0.55 0.20 200);
+    --color-primary-600: oklch(0.45 0.20 200);
+    --color-primary-700: oklch(0.40 0.18 200);
+    --color-primary-800: oklch(0.35 0.15 200);
+    --color-primary-900: oklch(0.25 0.10 200);
+    --color-primary-950: oklch(0.20 0.08 200);
+
+    /* Gray colors (Navy) for backgrounds and text */
+    --color-gray-50: oklch(0.95 0.02 250);
+    --color-gray-100: oklch(0.90 0.02 250);
+    --color-gray-200: oklch(0.80 0.02 250);
+    --color-gray-300: oklch(0.70 0.02 250);
+    --color-gray-400: oklch(0.60 0.02 250);
+    --color-gray-500: oklch(0.50 0.02 250);
+    --color-gray-600: oklch(0.40 0.02 250);
+    --color-gray-700: oklch(0.30 0.02 250);
+    --color-gray-800: oklch(0.25 0.02 250);
+    --color-gray-900: oklch(0.20 0.02 250);
+    --color-gray-950: oklch(0.15 0.02 250);
 }
 
-/* Card and panel backgrounds */
-.fi-section,
-.fi-card,
-.fi-modal,
-.fi-form-section {
-    background-color: rgb(from var(--color-navy-900) r g b);
-    border-color: rgb(from var(--color-navy-700) r g b);
+/* Force dark mode styles */
+:root {
+    color-scheme: dark;
 }
 
-/* Table styling */
-.fi-ta-table {
-    background-color: rgb(from var(--color-navy-900) r g b);
-}
-
-.fi-ta-row:hover {
-    background-color: rgb(from var(--color-navy-800) r g b);
-}
-
-/* Form inputs */
-.fi-input,
-.fi-select,
-.fi-textarea {
-    background-color: rgb(from var(--color-navy-800) r g b);
-    border-color: rgb(from var(--color-navy-700) r g b);
+/* Global background */
+body,
+.fi-body {
+    background-color: oklch(0.15 0.02 250) !important;
     color: white;
 }
 
+/* Topbar / Header */
+.fi-topbar,
+header {
+    background-color: oklch(0.20 0.02 250) !important;
+    border-bottom-color: oklch(0.30 0.02 250) !important;
+}
+
+/* Sidebar */
+.fi-sidebar {
+    background-color: oklch(0.20 0.02 250) !important;
+    border-right-color: oklch(0.30 0.02 250) !important;
+}
+
+/* Main content area */
+.fi-main {
+    background-color: oklch(0.15 0.02 250) !important;
+}
+
+/* Cards, Sections, Modals */
+.fi-section,
+.fi-card,
+.fi-modal-window,
+.fi-form-section {
+    background-color: oklch(0.20 0.02 250) !important;
+    border-color: oklch(0.30 0.02 250) !important;
+}
+
+/* Tables */
+.fi-ta-table,
+.fi-table {
+    background-color: oklch(0.20 0.02 250) !important;
+}
+
+.fi-ta-row:hover,
+.fi-table-row:hover {
+    background-color: oklch(0.25 0.02 250) !important;
+}
+
+.fi-ta-header,
+.fi-table-header {
+    background-color: oklch(0.20 0.02 250) !important;
+    border-bottom-color: oklch(0.30 0.02 250) !important;
+}
+
+/* Form inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea,
+select,
+.fi-input,
+.fi-select,
+.fi-textarea {
+    background-color: oklch(0.25 0.02 250) !important;
+    border-color: oklch(0.30 0.02 250) !important;
+    color: white !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
 .fi-input:focus,
 .fi-select:focus,
 .fi-textarea:focus {
-    border-color: rgb(from var(--color-glow-500) r g b);
-    ring-color: rgb(from var(--color-glow-500) / 0.2 r g b);
+    border-color: oklch(0.55 0.20 200) !important;
+    --tw-ring-color: oklch(0.55 0.20 200 / 0.2) !important;
 }
 
-/* Buttons - Primary (using glow colors) */
+/* Navigation */
+.fi-sidebar-item,
+.fi-sidebar-item-button {
+    color: oklch(0.80 0.02 250);
+}
+
+.fi-sidebar-item:hover,
+.fi-sidebar-item-button:hover {
+    background-color: oklch(0.25 0.02 250) !important;
+}
+
+.fi-sidebar-item-active,
+.fi-active > .fi-sidebar-item-button {
+    background-color: oklch(0.25 0.02 250) !important;
+    border-left-color: oklch(0.55 0.20 200) !important;
+    color: white !important;
+}
+
+/* Buttons */
 .fi-btn-primary {
-    background-color: rgb(from var(--color-primary-600) r g b);
+    background-color: oklch(0.45 0.20 200) !important;
+    color: white !important;
 }
 
 .fi-btn-primary:hover {
-    background-color: rgb(from var(--color-primary-500) r g b);
+    background-color: oklch(0.55 0.20 200) !important;
 }
 
-/* Success state buttons */
-.fi-btn-success {
-    background-color: rgb(from var(--color-success-600) r g b);
-}
-
-.fi-btn-success:hover {
-    background-color: rgb(from var(--color-success-500) r g b);
-}
-
-/* Danger state buttons */
-.fi-btn-danger {
-    background-color: rgb(from var(--color-danger-600) r g b);
-}
-
-.fi-btn-danger:hover {
-    background-color: rgb(from var(--color-danger-500) r g b);
-}
-
-/* Navigation items */
-.fi-sidebar-item:hover,
-.fi-sidebar-item-active {
-    background-color: rgb(from var(--color-navy-800) r g b);
-    border-left-color: rgb(from var(--color-glow-500) r g b);
+/* Filter panel */
+.fi-ta-filters,
+.fi-filters {
+    background-color: oklch(0.20 0.02 250) !important;
+    border-color: oklch(0.30 0.02 250) !important;
 }
 
 /* Badges */
+.fi-badge {
+    border-color: transparent !important;
+}
+
 .fi-badge-success {
-    background-color: rgb(from var(--color-success-600) / 0.2 r g b);
-    color: rgb(from var(--color-success-400) r g b);
+    background-color: oklch(0.45 0.20 150 / 0.2) !important;
+    color: oklch(0.65 0.20 150) !important;
 }
 
 .fi-badge-danger {
-    background-color: rgb(from var(--color-danger-600) / 0.2 r g b);
-    color: rgb(from var(--color-danger-400) r g b);
+    background-color: oklch(0.45 0.20 25 / 0.2) !important;
+    color: oklch(0.65 0.20 25) !important;
 }
 
 .fi-badge-warning {
-    background-color: rgb(from var(--color-warning-600) / 0.2 r g b);
-    color: rgb(from var(--color-warning-400) r g b);
+    background-color: oklch(0.55 0.20 65 / 0.2) !important;
+    color: oklch(0.70 0.20 65) !important;
 }
 
 .fi-badge-info {
-    background-color: rgb(from var(--color-info-600) / 0.2 r g b);
-    color: rgb(from var(--color-info-400) r g b);
+    background-color: oklch(0.45 0.20 240 / 0.2) !important;
+    color: oklch(0.65 0.20 240) !important;
+}
+
+/* Dropdowns */
+.fi-dropdown-panel {
+    background-color: oklch(0.20 0.02 250) !important;
+    border-color: oklch(0.30 0.02 250) !important;
+}
+
+/* Notifications */
+.fi-no-notification {
+    background-color: oklch(0.20 0.02 250) !important;
+    border-color: oklch(0.30 0.02 250) !important;
 }
