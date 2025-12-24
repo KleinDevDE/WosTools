@@ -1,7 +1,7 @@
 <div x-data="{ open: false }" class="relative">
     <button
         @click="open = !open"
-        class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-navy-700"
+        class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-navy-600"
         title="{{ __('navigation.language') }}"
     >
         <x-heroicon-o-language class="w-5 h-5"/>
@@ -15,7 +15,7 @@
         x-show="open"
         @click.outside="open = false"
         x-transition
-        class="absolute right-0 mt-2 w-44 rounded-md bg-navy-750 border border-navy-600 shadow-lg"
+        class="absolute right-0 mt-2 w-44 rounded-md bg-navy-700 border border-navy-600 shadow-lg"
     >
         @php
             $languages = [
@@ -32,7 +32,7 @@
                 <input type="hidden" name="locale" value="{{ $code }}">
                 <button
                     type="submit"
-                    class="w-full text-left px-4 py-2 text-sm hover:bg-navy-700 flex items-center gap-2
+                    class="w-full text-left px-4 py-2 text-sm hover:bg-navy-600 flex items-center gap-2
                         {{ $currentLocale === $code ? 'bg-navy-700 text-sky-400' : 'text-slate-300' }}"
                     @click="open = false"
                 >

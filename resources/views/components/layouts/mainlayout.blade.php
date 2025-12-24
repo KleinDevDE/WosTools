@@ -26,7 +26,7 @@
         @endphp
 
         {{-- Header --}}
-        <nav class="fixed top-0 z-50 w-full border-b border-navy-700 h-15.25 bg-white dark:bg-navy-750">
+        <nav class="fixed top-0 z-50 w-full border-b border-navy-700 h-15.25 bg-white dark:bg-navy-700">
             <div class="px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center gap-10">
                     {{-- Branding --}}
@@ -62,20 +62,20 @@
                                 @click.outside="open = false"
                                 x-transition
                                 class="absolute left-0 mt-2 w-44 rounded-md
-                               bg-navy-750 border border-navy-600 shadow-lg"
+                               bg-navy-700 border border-navy-600 shadow-lg"
                             >
                                 <a href="{{ route('modules.puzzles.albums') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-700
+                                   class="block px-4 py-2 text-sm hover:bg-navy-600 rounded-t-md
                                   {{ $isActive('modules.puzzles.albums') }}">
                                     Albums
                                 </a>
                                 <a href="{{ route('modules.puzzles.puzzles') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-700
+                                   class="block px-4 py-2 text-sm hover:bg-navy-600
                                   {{ $isActive('modules.puzzles.puzzles') }}">
                                     Puzzles
                                 </a>
                                 <a href="{{ route('modules.puzzles.pieces') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-700
+                                   class="block px-4 py-2 text-sm hover:bg-navy-600  rounded-b-md
                                   {{ $isActive('modules.puzzles.pieces') }}">
                                     Pieces
                                 </a>
@@ -100,11 +100,11 @@
                                 @click.outside="open = false"
                                 x-transition
                                 class="absolute left-0 mt-2 w-44 rounded-md
-                               bg-navy-750 border border-navy-600 shadow-lg"
+                               bg-navy-700 border border-navy-600 shadow-lg"
                             >
                                 @can(App\Helpers\Permissions::USERS_SHOW)
                                 <a href="{{ route('admin.users.list') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-700
+                                   class="block px-4 py-2 text-sm hover:bg-navy-600
                                   {{ $isActive('admin.users.*') }}">
                                     Users
                                 </a>
@@ -125,7 +125,7 @@
                     <button
                         @click="open = !open"
                         class="flex items-center gap-2 px-3 py-2 rounded-md
-                       hover:bg-navy-700"
+                       hover:bg-navy-600"
                     >
                         <x-heroicon-o-user-circle class="w-6 h-6"/>
                         <span class="text-sm font-medium">
@@ -139,7 +139,7 @@
                         @click.outside="open = false"
                         x-transition
                         class="absolute right-0 mt-2 w-44 rounded-md
-                       bg-navy-750 border border-navy-600 shadow-lg"
+                       bg-navy-700 border border-navy-600 shadow-lg"
                     >
                         <div class="px-4 py-2 text-xs text-slate-400
                             border-b border-navy-600">
@@ -153,7 +153,7 @@
                             @csrf
                             <button type="submit"
                                     class="w-full text-left px-4 py-2 text-sm
-                                   text-red-400 hover:bg-navy-700">
+                                   text-red-400 hover:bg-navy-600">
                                 {{ __('navigation.logout') }}
                             </button>
                         </form>
@@ -175,9 +175,6 @@
         @livewireScriptConfig
         @filamentScripts
         @livewire('notifications')
-        @auth
-            @livewire('database-notifications')
-        @endauth
         @vite(['resources/js/app.js'])
 
         {{-- Clipboard helper --}}

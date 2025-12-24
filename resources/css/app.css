@@ -11,7 +11,6 @@
 @source '../**/*.js';
 @source '../**/*.{php,html,js,jsx,ts,tsx,vue}';
 @source '../node_modules/flowbite';
-/*@source '../node_modules/';*/
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',

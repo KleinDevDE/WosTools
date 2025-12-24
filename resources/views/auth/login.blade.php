@@ -17,7 +17,7 @@
             </label>
 
             <div class="flex rounded-xl overflow-hidden border border-white/10 bg-navy-800 focus-within:ring-2 focus-within:ring-glow-400/60 transition">
-            <span class="inline-flex items-center px-3 text-navy-300 bg-navy-750">
+            <span class="inline-flex items-center px-3 text-navy-300 bg-navy-700">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke-width="1.5" stroke="currentColor" class="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -56,7 +56,7 @@
             </label>
 
             <div class="flex rounded-xl overflow-hidden border border-white/10 bg-navy-800 focus-within:ring-2 focus-within:ring-glow-400/60 transition">
-            <span class="inline-flex items-center px-3 text-navy-300 bg-navy-750">
+            <span class="inline-flex items-center px-3 text-navy-300 bg-navy-700">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke-width="1.5" stroke="currentColor" class="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round"
