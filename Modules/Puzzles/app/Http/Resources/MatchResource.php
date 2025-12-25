@@ -12,8 +12,7 @@ class MatchResource extends JsonResource
         return [
             'user' => [
                 'id' => $this->id,
-                'name' => $this->name,
-                'email' => $this->email,
+                'username' => $this->username,
             ],
             'matching_pieces' => $this->when(isset($this->matching_pieces), $this->matching_pieces ?? []),
             'match_count' => $this->when(isset($this->match_count), $this->match_count ?? 0),

@@ -25,13 +25,13 @@
             >
               <div class="flex items-center justify-between">
                 <div>
-                  <h3 class="text-white font-bold">{{ match.user.name }}</h3>
+                  <h3 class="text-white font-bold">{{ match.user.username }}</h3>
                   <p class="text-navy-400 text-sm mt-1">
                     {{ match.match_count }} {{ $t('matches.piece', match.match_count) }}
                   </p>
                 </div>
                 <button
-                  @click="copyToClipboard(match.user.name)"
+                  @click="copyToClipboard(match.user.username)"
                   class="px-4 py-2 bg-need-600 hover:bg-need-500 text-white font-bold rounded-xl transition-colors"
                 >
                   {{ $t('matches.copy_name') }}

@@ -18,7 +18,12 @@ class RegisterController extends Controller
             return view('auth.register')->withErrors(['token' => 'Could not determine registration token, please insert it manually.']);
         }
 
-        return view('auth.register', ['token' => $request->token]);
+        $userInvitation = UserInvitation::where('token', $request->token)->first();
+        if (!$userInvitation) {
+            return view('auth.register')->withErrors(['token' => 'Invalid registration token!']);
+        }
+
+        return view('auth.register', ['userInvitation' => $userInvitation]);
     }
 
     public function process(RegisterRequest $registerRequest)
@@ -28,7 +33,7 @@ class RegisterController extends Controller
             return redirect()->back()->withInput($registerRequest->only(['username', 'token']))->withErrors(['token' => 'Invalid registration token!']);
         }
 
-        $userInvitation->user->update(['status' => User::STATUS_ACTIVE]);
+        $userInvitation->user->update(['status' => User::STATUS_ACTIVE, 'last_login_at' => now()]);
         $userInvitation->status = UserInvitation::STATUS_ACCEPTED;
         $userInvitation->accepted_at = now();
         $userInvitation->save();

@@ -87,9 +87,9 @@ class MediaGalleryTable extends Component implements HasActions, HasSchemas, Has
     {
         return [
             ImageColumn::make('preview')
-                ->getStateUsing(fn (Media $record) => $record->getUrl())
-                ->size(80)
-                ->square()
+                ->getStateUsing(fn (Media $record) => $record->getTemporaryUrl())
+//                ->size(80)
+//                ->square()
                 ->label('Preview'),
             TextColumn::make('name')
                 ->searchable()

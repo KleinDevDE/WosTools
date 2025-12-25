@@ -1,0 +1,15 @@
+- [X] Implement "Last active at" for users
+  - Means: Last time they logged in, or last time they were active in this web app
+- [ ] Multilingual Filament tables
+- [ ] Password-Reset functionality without email
+  - User sends a reset request, admins getting notified and then can send them a link to the panel to reset their password
+  - Like the invitation url, but for password resets
+- [X] Media-Library
+    - [X] Use a Media-Library composer package for this (Like spatie/laravel-medialibrary)
+    - [X] Frontend for managing Media
+- [X] Puzzles: Frontend possibility to upload images for Albums and Puzzles
+  - [X] The image must be shown in the Filament table, it must also be updatedable. Only 1 image per Album/Puzzle
+  - [X] The image must be stored in the public folder
+  - [X] The image must removeable
+  - [X] The image then must be shown to the Albums Frontend
+- [ ] Puzzles: Take screenshots of albums and puzzles and upload them

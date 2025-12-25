@@ -38,16 +38,15 @@ class MatchController extends Controller
                 ->whereIn('up.puzzles_album_puzzle_piece_id', $myNeeds)
                 ->where('up.state', 'have')
                 ->where('up.user_id', '!=', $userId)
-                ->select('u.id', 'u.name', 'u.email', DB::raw('GROUP_CONCAT(up.puzzles_album_puzzle_piece_id) as piece_ids'))
-                ->groupBy('u.id', 'u.name', 'u.email')
+                ->select('u.id', 'u.username', DB::raw('GROUP_CONCAT(up.puzzles_album_puzzle_piece_id) as piece_ids'))
+                ->groupBy('u.id', 'u.username')
                 ->get()
                 ->map(function ($user) {
                     $pieceIds = explode(',', $user->piece_ids);
                     return [
                         'user' => [
                             'id' => $user->id,
-                            'name' => $user->name,
-                            'email' => $user->email,
+                            'username' => $user->username
                         ],
                         'matching_pieces' => array_map('intval', $pieceIds),
                         'match_count' => count($pieceIds),
@@ -66,16 +65,15 @@ class MatchController extends Controller
                 ->whereIn('up.puzzles_album_puzzle_piece_id', $myHaves)
                 ->where('up.state', 'need')
                 ->where('up.user_id', '!=', $userId)
-                ->select('u.id', 'u.name', 'u.email', DB::raw('GROUP_CONCAT(up.puzzles_album_puzzle_piece_id) as piece_ids'))
-                ->groupBy('u.id', 'u.name', 'u.email')
+                ->select('u.id', 'u.username', DB::raw('GROUP_CONCAT(up.puzzles_album_puzzle_piece_id) as piece_ids'))
+                ->groupBy('u.id', 'u.username')
                 ->get()
                 ->map(function ($user) {
                     $pieceIds = explode(',', $user->piece_ids);
                     return [
                         'user' => [
                             'id' => $user->id,
-                            'name' => $user->name,
-                            'email' => $user->email,
+                            'name' => $user->username,
                         ],
                         'matching_pieces' => array_map('intval', $pieceIds),
                         'match_count' => count($pieceIds),
