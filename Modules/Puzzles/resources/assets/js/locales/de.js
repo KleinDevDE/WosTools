@@ -49,6 +49,8 @@ export default {
     match: 'Übereinstimmung | Übereinstimmungen',
     piece: 'Teil | Teile',
     copy_name: 'Name kopieren',
+    from: 'Von',
+    needs_from: 'Benötigt von',
     no_matches: 'Keine Tausch-Übereinstimmungen gefunden',
     loading: 'Lade Übereinstimmungen...',
     refresh: 'Übereinstimmungen aktualisieren',

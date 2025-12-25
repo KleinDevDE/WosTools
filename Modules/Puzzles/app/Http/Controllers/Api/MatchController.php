@@ -30,57 +30,91 @@ class MatchController extends Controller
             ->where('p.stars', '<', 5)
             ->pluck('up.puzzles_album_puzzle_piece_id');
 
-        // Find users who have what I need
+        // Find pieces that other users have that I need
         $canGetFrom = [];
         if ($myNeeds->isNotEmpty()) {
             $canGetFrom = DB::table('puzzles_user_puzzle_pieces as up')
                 ->join('users as u', 'up.user_id', '=', 'u.id')
+                ->join('puzzles_album_puzzle_pieces as p', 'up.puzzles_album_puzzle_piece_id', '=', 'p.id')
+                ->join('puzzles_album_puzzles as puzzle', 'p.puzzles_album_puzzle_id', '=', 'puzzle.id')
+                ->join('puzzles_albums as album', 'p.puzzles_album_id', '=', 'album.id')
                 ->whereIn('up.puzzles_album_puzzle_piece_id', $myNeeds)
                 ->where('up.state', 'have')
                 ->where('up.user_id', '!=', $userId)
-                ->select('u.id', 'u.username', DB::raw('GROUP_CONCAT(up.puzzles_album_puzzle_piece_id) as piece_ids'))
-                ->groupBy('u.id', 'u.username')
+                ->select(
+                    'p.id as piece_id',
+                    'p.position',
+                    'p.stars',
+                    'puzzle.id as puzzle_id',
+                    'puzzle.name as puzzle_name',
+                    'album.id as album_id',
+                    'album.name as album_name',
+                    'u.id as user_id',
+                    'u.username'
+                )
+                ->orderBy('album.position')
+                ->orderBy('puzzle.position')
+                ->orderBy('p.position')
                 ->get()
-                ->map(function ($user) {
-                    $pieceIds = explode(',', $user->piece_ids);
+                ->map(function ($piece) {
                     return [
+                        'piece_id' => $piece->piece_id,
+                        'position' => $piece->position,
+                        'stars' => $piece->stars,
+                        'album_id' => $piece->album_id,
+                        'album_name' => $piece->album_name,
+                        'puzzle_id' => $piece->puzzle_id,
+                        'puzzle_name' => $piece->puzzle_name,
                         'user' => [
-                            'id' => $user->id,
-                            'username' => $user->username
+                            'id' => $piece->user_id,
+                            'username' => $piece->username,
                         ],
-                        'matching_pieces' => array_map('intval', $pieceIds),
-                        'match_count' => count($pieceIds),
                     ];
                 })
-                ->sortByDesc('match_count')
-                ->values()
                 ->toArray();
         }
 
-        // Find users who need what I have
+        // Find pieces that other users need that I have
         $canHelpWith = [];
         if ($myHaves->isNotEmpty()) {
             $canHelpWith = DB::table('puzzles_user_puzzle_pieces as up')
                 ->join('users as u', 'up.user_id', '=', 'u.id')
+                ->join('puzzles_album_puzzle_pieces as p', 'up.puzzles_album_puzzle_piece_id', '=', 'p.id')
+                ->join('puzzles_album_puzzles as puzzle', 'p.puzzles_album_puzzle_id', '=', 'puzzle.id')
+                ->join('puzzles_albums as album', 'p.puzzles_album_id', '=', 'album.id')
                 ->whereIn('up.puzzles_album_puzzle_piece_id', $myHaves)
                 ->where('up.state', 'need')
                 ->where('up.user_id', '!=', $userId)
-                ->select('u.id', 'u.username', DB::raw('GROUP_CONCAT(up.puzzles_album_puzzle_piece_id) as piece_ids'))
-                ->groupBy('u.id', 'u.username')
+                ->select(
+                    'p.id as piece_id',
+                    'p.position',
+                    'p.stars',
+                    'puzzle.id as puzzle_id',
+                    'puzzle.name as puzzle_name',
+                    'album.id as album_id',
+                    'album.name as album_name',
+                    'u.id as user_id',
+                    'u.username'
+                )
+                ->orderBy('album.position')
+                ->orderBy('puzzle.position')
+                ->orderBy('p.position')
                 ->get()
-                ->map(function ($user) {
-                    $pieceIds = explode(',', $user->piece_ids);
+                ->map(function ($piece) {
                     return [
+                        'piece_id' => $piece->piece_id,
+                        'position' => $piece->position,
+                        'stars' => $piece->stars,
+                        'album_id' => $piece->album_id,
+                        'album_name' => $piece->album_name,
+                        'puzzle_id' => $piece->puzzle_id,
+                        'puzzle_name' => $piece->puzzle_name,
                         'user' => [
-                            'id' => $user->id,
-                            'name' => $user->username,
+                            'id' => $piece->user_id,
+                            'username' => $piece->username,
                         ],
-                        'matching_pieces' => array_map('intval', $pieceIds),
-                        'match_count' => count($pieceIds),
                     ];
                 })
-                ->sortByDesc('match_count')
-                ->values()
                 ->toArray();
         }
 
@@ -92,6 +126,8 @@ class MatchController extends Controller
             'meta' => [
                 'my_needs_count' => $myNeeds->count(),
                 'my_haves_count' => $myHaves->count(),
+                'can_get_pieces_count' => count($canGetFrom),
+                'can_help_pieces_count' => count($canHelpWith),
                 'cached_at' => now()->toIso8601String(),
             ],
         ]);

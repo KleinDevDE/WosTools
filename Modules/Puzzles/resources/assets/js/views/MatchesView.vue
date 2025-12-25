@@ -20,22 +20,43 @@
           <div class="space-y-3">
             <div
               v-for="match in canGetFrom"
-              :key="match.user.id"
+              :key="`get-${match.piece_id}-${match.user.id}`"
               class="bg-navy-900 rounded-2xl p-4 border border-navy-700 hover:border-need-500 transition-colors"
             >
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-white font-bold">{{ match.user.username }}</h3>
-                  <p class="text-navy-400 text-sm mt-1">
-                    {{ match.match_count }} {{ $t('matches.piece', match.match_count) }}
-                  </p>
+              <div class="flex items-start gap-4">
+                <!-- Left: Piece information -->
+                <div class="flex-1">
+                  <div class="text-sm text-navy-400 mb-1">
+                    {{ match.album_name }} › {{ match.puzzle_name }}
+                  </div>
+                  <h3 class="text-white font-bold text-lg">
+                    Piece #{{ match.position }}
+                  </h3>
+                  <div class="flex items-center gap-2 mt-2">
+                    <span class="flex items-center gap-1 text-sm">
+                      <span class="text-navy-400">{{ match.stars }}</span>
+                      <span class="text-star-500">★</span>
+                    </span>
+                  </div>
                 </div>
-                <button
-                  @click="copyToClipboard(match.user.username)"
-                  class="px-4 py-2 bg-need-600 hover:bg-need-500 text-white font-bold rounded-xl transition-colors"
-                >
-                  {{ $t('matches.copy_name') }}
-                </button>
+
+                <!-- Right: User info and action -->
+                <div class="flex flex-col items-end gap-2">
+                  <div class="text-right">
+                    <div class="text-xs text-navy-400 mb-1">
+                      {{ $t('matches.from') }}
+                    </div>
+                    <div class="text-white font-bold">
+                      {{ match.user.username }}
+                    </div>
+                  </div>
+                  <button
+                    @click="copyToClipboard(match.user.username)"
+                    class="px-3 py-1.5 bg-need-600 hover:bg-need-500 text-white text-sm font-bold rounded-lg transition-colors"
+                  >
+                    {{ $t('matches.copy_name') }}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -55,28 +76,53 @@
           <div class="space-y-3">
             <div
               v-for="match in canHelpWith"
-              :key="match.user.id"
+              :key="`help-${match.piece_id}-${match.user.id}`"
               class="bg-navy-900 rounded-2xl p-4 border border-navy-700 hover:border-success-500 transition-colors"
             >
-              <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="text-white font-bold">{{ match.user.name }}</h3>
-                  <p class="text-navy-400 text-sm mt-1">
-                    {{ match.match_count }} {{ $t('matches.piece', match.match_count) }}
-                  </p>
+              <div class="flex items-start gap-4">
+                <!-- Left: Piece information -->
+                <div class="flex-1">
+                  <div class="text-sm text-navy-400 mb-1">
+                    {{ match.album_name }} › {{ match.puzzle_name }}
+                  </div>
+                  <h3 class="text-white font-bold text-lg">
+                    Piece #{{ match.position }}
+                  </h3>
+                  <div class="flex items-center gap-2 mt-2">
+                    <span class="flex items-center gap-1 text-sm">
+                      <span class="text-navy-400">{{ match.stars }}</span>
+                      <span class="text-star-500">★</span>
+                    </span>
+                  </div>
                 </div>
-                <button
-                  @click="copyToClipboard(match.user.name)"
-                  class="px-4 py-2 bg-success-600 hover:bg-success-500 text-white font-bold rounded-xl transition-colors"
-                >
-                  {{ $t('matches.copy_name') }}
-                </button>
+
+                <!-- Right: User info and action -->
+                <div class="flex flex-col items-end gap-2">
+                  <div class="text-right">
+                    <div class="text-xs text-navy-400 mb-1">
+                      {{ $t('matches.needs_from') }}
+                    </div>
+                    <div class="text-white font-bold">
+                      {{ match.user.username }}
+                    </div>
+                  </div>
+                  <button
+                    @click="copyToClipboard(match.user.username)"
+                    class="px-3 py-1.5 bg-success-600 hover:bg-success-500 text-white text-sm font-bold rounded-lg transition-colors"
+                  >
+                    {{ $t('matches.copy_name') }}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        <div v-if="canGetFrom.length === 0 && canHelpWith.length === 0 && !matchStore.loading" class="text-center py-12">
+          <div v-if="!lastFetch" class="text-center py-12">
+              <p class="text-navy-500 text-lg">{{ $t('matches.refresh') }}</p>
+          </div>
+
+        <div v-if="canGetFrom.length === 0 && canHelpWith.length === 0 && !matchStore.loading && lastFetch" class="text-center py-12">
           <div class="text-6xl mb-4">🤷</div>
           <p class="text-navy-500 text-lg">{{ $t('matches.no_matches') }}</p>
         </div>
@@ -106,6 +152,7 @@ const matchStore = useMatchStore();
 
 const canGetFrom = computed(() => matchStore.canGetFrom);
 const canHelpWith = computed(() => matchStore.canHelpWith);
+const lastFetch = computed(() => matchStore.lastFetch);
 
 async function refreshMatches() {
   await matchStore.fetchMatches(true);
@@ -120,7 +167,7 @@ async function copyToClipboard(text) {
 }
 
 onMounted(async () => {
-  await matchStore.fetchMatches();
+  await refreshMatches();
 });
 </script>
 

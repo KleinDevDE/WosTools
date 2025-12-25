@@ -49,6 +49,8 @@ export default {
     match: 'eşleşme | eşleşme',
     piece: 'parça | parça',
     copy_name: 'İsmi Kopyala',
+    from: 'Kimden',
+    needs_from: 'İhtiyaç Duyan',
     no_matches: 'Takas eşleşmesi bulunamadı',
     loading: 'Eşleşmeler yükleniyor...',
     refresh: 'Eşleşmeleri Yenile',
