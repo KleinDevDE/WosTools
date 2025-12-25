@@ -5,6 +5,7 @@ namespace Modules\Puzzles\Livewire\Tables;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
@@ -13,6 +14,7 @@ use Filament\Actions\ImportAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Grouping\Group;
@@ -120,9 +122,34 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
     protected function getTableHeaderActions(): array
     {
         return [
-            CreateAction::make()
+            CreateAction::make('create')
+                ->label('Add Puzzle')
+                ->modelLabel('Puzzle')
+            ->schema([
+                SpatieMediaLibraryFileUpload::make('image')
+                    ->collection('cover')
+                    ->responsiveImages()
+                    ->image()
+                    ->imageEditor()
+                    ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
+                    ->maxSize(5120)
+                    ->helperText('Upload an image for this puzzle'),
+                Select::make('puzzles_album_id')
+                    ->label('Album:')
+                    ->options(PuzzlesAlbum::query()->pluck('name', 'id')),
+                TextInput::make('name'),
+            ]),
+            CreateAction::make('create-multiple')
                 ->label('Add Multiple Puzzles')
                 ->schema([
+                    SpatieMediaLibraryFileUpload::make('image')
+                        ->collection('cover')
+                        ->responsiveImages()
+                        ->image()
+                        ->imageEditor()
+                        ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
+                        ->maxSize(5120)
+                        ->helperText('Upload an image for this puzzle'),
                     Select::make('puzzles_album_id')
                         ->options(PuzzlesAlbum::query()->pluck('name', 'id'))
                         ->label('Album:')
@@ -178,11 +205,8 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
     {
         return [
             EditAction::make('edit-puzzle-image')
-                ->label('Edit Image')
-                ->icon(Heroicon::Photo)
-                ->modalHeading(fn (PuzzlesAlbumPuzzle $record) => 'Edit Image: ' . $record->name)
                 ->modalWidth('md')
-                ->form([
+                ->schema([
                     SpatieMediaLibraryFileUpload::make('image')
                         ->collection('cover')
                         ->responsiveImages()
@@ -191,6 +215,15 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
                         ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
                         ->maxSize(5120)
                         ->helperText('Upload an image for this puzzle'),
+                    Select::make('puzzles_album_id')
+                        ->label('Album:')
+                        ->options(PuzzlesAlbum::query()->pluck('name', 'id'))
+                    ->required()->string()->default(function (PuzzlesAlbumPuzzle $record) {
+                        return $record->puzzles_album_id;
+                    })
+                    ,
+                    TextInput::make('name'),
+                    TextInput::make('position')->numeric(),
                 ]),
             CreateAction::make("add-pieces")
             ->label("Add Puzzle Pieces")
@@ -223,6 +256,7 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
 
                     return $created;
                 }),
+            DeleteAction::make()
         ];
     }
 
