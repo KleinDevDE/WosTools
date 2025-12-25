@@ -116,7 +116,15 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
             $actions[] = CreateAction::make()
                 ->label('Add New Album')
                 ->schema([
-                    TextInput::make('name')
+                    SpatieMediaLibraryFileUpload::make('cover')
+                        ->collection('cover')
+                        ->responsiveImages()
+                        ->image()
+                        ->imageEditor()
+                        ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
+                        ->maxSize(5120)
+                        ->helperText('Upload a cover image for this album'),
+                    TextInput::make('name'),
                 ]);
         }
 
@@ -185,11 +193,22 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
     {
         $actions = [];
         if (auth()->user()->can(Permissions::PUZZLES_ALBUMS_EDIT)) {
-            $actions[] = EditAction::make('edit-album-cover')
-                ->label('Album Cover')
-                ->icon(Heroicon::Photo)
-                ->modalHeading(fn (PuzzlesAlbum $record) => 'Edit Cover: ' . $record->name)
-                ->modalWidth('md')
+//            $actions[] = EditAction::make('edit-album-cover')
+//                ->label('Album Cover')
+//                ->icon(Heroicon::Photo)
+//                ->modalHeading(fn (PuzzlesAlbum $record) => 'Edit Cover: ' . $record->name)
+//                ->modalWidth('md')
+//                ->schema([
+//                    SpatieMediaLibraryFileUpload::make('cover')
+//                        ->collection('cover')
+//                        ->responsiveImages()
+//                        ->image()
+//                        ->imageEditor()
+//                        ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
+//                        ->maxSize(5120)
+//                        ->helperText('Upload a cover image for this album'),
+//                ]);
+            $actions[] = EditAction::make()
                 ->schema([
                     SpatieMediaLibraryFileUpload::make('cover')
                         ->collection('cover')
@@ -199,8 +218,9 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
                         ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
                         ->maxSize(5120)
                         ->helperText('Upload a cover image for this album'),
+                    TextInput::make('name'),
+                    TextInput::make('position')->numeric()
                 ]);
-            $actions[] = EditAction::make();
         }
         if (auth()->user()->can(Permissions::PUZZLES_ALBUMS_DELETE)) {
             $actions[] = DeleteAction::make();
