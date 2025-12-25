@@ -12,20 +12,25 @@
 import { onMounted } from 'vue';
 import { useAlbumStore } from './stores/albumStore';
 import { useUserStateStore } from './stores/userStateStore';
+import { useMatchStore } from './stores/matchStore';
 import { initializeSanctumAuth } from './utils/api';
 
 const albumStore = useAlbumStore();
 const userStateStore = useUserStateStore();
+const matchStore = useMatchStore();
 
 onMounted(async () => {
   // Initialize Sanctum authentication first
   await initializeSanctumAuth();
 
-  // Then fetch data
+  // Then fetch data - albums and user states first, then matches
   await Promise.all([
     albumStore.fetchAlbums(),
     userStateStore.fetchUserStates(),
   ]);
+
+  // Fetch matches after user states are loaded (for the navbar badge)
+  await matchStore.fetchMatches();
 });
 </script>
 

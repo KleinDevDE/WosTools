@@ -15,6 +15,11 @@ export const useMatchStore = defineStore('matches', () => {
   async function fetchMatches(forceRefresh = false) {
     const userStateStore = useUserStateStore();
 
+    // Ensure user states are loaded first
+    if (userStateStore.states.size === 0) {
+      await userStateStore.fetchUserStates();
+    }
+
     if (!forceRefresh && canGetFrom.value.length > 0 && lastFetch.value) {
       const timeSinceLastFetch = Date.now() - lastFetch.value;
       if (timeSinceLastFetch < 30000) {
@@ -25,6 +30,7 @@ export const useMatchStore = defineStore('matches', () => {
     if (userStateStore.needPieces.length === 0 && userStateStore.havePieces.length === 0) {
       canGetFrom.value = [];
       canHelpWith.value = [];
+      lastFetch.value = Date.now();
       return;
     }
 

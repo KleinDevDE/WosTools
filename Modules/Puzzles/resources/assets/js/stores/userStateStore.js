@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import api from '../utils/api';
+import { useMatchStore } from './matchStore';
 
 export const useUserStateStore = defineStore('userStates', () => {
   const states = ref(new Map());
@@ -55,6 +56,12 @@ export const useUserStateStore = defineStore('userStates', () => {
 
     try {
       await api.post(`/pieces/${pieceId}/state`, { state: newState });
+
+      // Refresh matches after state change if it affects tradeable pieces
+      if (isTradeable) {
+        const matchStore = useMatchStore();
+        await matchStore.fetchMatches(true);
+      }
     } catch (err) {
       states.value.set(pieceId, previousState);
       error.value = err.response?.data?.message || 'Failed to update piece state';
