@@ -10,6 +10,10 @@ class PuzzlesUserPuzzlePiece extends Model
 {
     protected $table = 'puzzles_user_puzzle_pieces';
 
+    public $incrementing = false;
+
+    protected $primaryKey = ['user_id', 'puzzles_album_puzzle_piece_id'];
+
     protected $fillable = [
         'user_id',
         'puzzles_album_puzzle_piece_id',
@@ -19,6 +23,33 @@ class PuzzlesUserPuzzlePiece extends Model
     protected $casts = [
         'state' => 'string',
     ];
+
+    protected function setKeysForSaveQuery($query)
+    {
+        $keys = $this->getKeyName();
+        if (!is_array($keys)) {
+            return parent::setKeysForSaveQuery($query);
+        }
+
+        foreach ($keys as $keyName) {
+            $query->where($keyName, '=', $this->getKeyForSaveQuery($keyName));
+        }
+
+        return $query;
+    }
+
+    protected function getKeyForSaveQuery($keyName = null)
+    {
+        if (is_null($keyName)) {
+            $keyName = $this->getKeyName();
+        }
+
+        if (isset($this->original[$keyName])) {
+            return $this->original[$keyName];
+        }
+
+        return $this->getAttribute($keyName);
+    }
 
     public function user(): BelongsTo
     {
