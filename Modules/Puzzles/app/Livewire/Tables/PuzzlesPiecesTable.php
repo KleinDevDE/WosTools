@@ -6,12 +6,15 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ImportAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -62,12 +65,18 @@ class PuzzlesPiecesTable extends Component implements HasActions, HasSchemas, Ha
     public function getTableColumns(): array
     {
         return [
+            SpatieMediaLibraryImageColumn::make('image')
+                ->collection('image')
+                ->conversion('thumb')
+                ->size(60)
+                ->square()
+                ->label('Piece Image'),
             TextColumn::make('position')
                 ->sortable()
                 ->label(""),
-            TextColumn::make('name')
-                ->searchable()
-                ->sortable(),
+            TextColumn::make('stars')
+                ->sortable()
+                ->label("Stars"),
         ];
     }
 
@@ -157,6 +166,19 @@ class PuzzlesPiecesTable extends Component implements HasActions, HasSchemas, Ha
     protected function getTableActions(): array
     {
         return [
+            EditAction::make('edit-piece-image')
+                ->label('Edit Image')
+                ->icon(Heroicon::Photo)
+                ->modalHeading(fn (PuzzlesAlbumPuzzlePiece $record) => 'Edit Piece Image #' . $record->position)
+                ->modalWidth('md')
+                ->form([
+                    SpatieMediaLibraryFileUpload::make('image')
+                        ->collection('image')
+                        ->image()
+                        ->imageEditor()
+                        ->maxSize(5120)
+                        ->helperText('Upload an image for this puzzle piece'),
+                ]),
             CreateAction::make("add-pieces")
             ->label("Add Puzzle Pieces")
             ->icon(Heroicon::PlusCircle)

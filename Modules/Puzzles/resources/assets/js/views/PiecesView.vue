@@ -6,8 +6,8 @@
       <LoadingSpinner v-if="puzzleStore.loading && !puzzle" />
 
       <div v-else-if="puzzle" class="space-y-6">
-        <div v-if="puzzle.image_url" class="rounded-2xl overflow-hidden">
-          <img :src="puzzle.image_url" :alt="puzzle.name" class="w-full h-auto" loading="lazy" />
+        <div v-if="puzzle.image_url" class="rounded-2xl overflow-hidden flex align-middle justify-center">
+          <img :src="puzzle.image_url" :alt="puzzle.name" class="w-auto max-h-64" loading="lazy" />
         </div>
 
         <div class="grid grid-cols-3 gap-3">

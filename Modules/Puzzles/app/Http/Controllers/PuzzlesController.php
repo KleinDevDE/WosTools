@@ -14,11 +14,11 @@ class PuzzlesController extends Controller
 
     public function puzzles()
     {
-        return view('puzzles::albums');
+        return view('puzzles::puzzles');
     }
 
     public function pieces()
     {
-        return view('puzzles::albums');
+        return view('puzzles::puzzles');
     }
 }

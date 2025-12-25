@@ -6,12 +6,15 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ImportAction;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -65,6 +68,15 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
     public function getTableColumns(): array
     {
         return [
+            SpatieMediaLibraryImageColumn::make('cover')
+                ->collection('cover')
+                ->label('Album Cover'),
+            SpatieMediaLibraryImageColumn::make('image')
+                ->collection('image')
+                ->conversion('thumb')
+                ->size(60)
+                ->square()
+                ->label('Puzzle Image'),
             TextColumn::make('position')
                 ->sortable()
                 ->label(""),
@@ -165,6 +177,21 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
     protected function getTableActions(): array
     {
         return [
+            EditAction::make('edit-puzzle-image')
+                ->label('Edit Image')
+                ->icon(Heroicon::Photo)
+                ->modalHeading(fn (PuzzlesAlbumPuzzle $record) => 'Edit Image: ' . $record->name)
+                ->modalWidth('md')
+                ->form([
+                    SpatieMediaLibraryFileUpload::make('image')
+                        ->collection('cover')
+                        ->responsiveImages()
+                        ->image()
+                        ->imageEditor()
+                        ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
+                        ->maxSize(5120)
+                        ->helperText('Upload an image for this puzzle'),
+                ]),
             CreateAction::make("add-pieces")
             ->label("Add Puzzle Pieces")
             ->icon(Heroicon::PlusCircle)

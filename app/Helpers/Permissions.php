@@ -33,4 +33,7 @@ class Permissions
     public const USERS_DELETE = 'users.delete';
     public const USERS_LOCK = 'users.lock';
     public const USERS_INVITE = 'users.invite';
+    public const MEDIA_GALLERY_VIEW = 'media.gallery.view';
+    public const MEDIA_GALLERY_EDIT = 'media.gallery.edit';
+    public const MEDIA_GALLERY_DELETE = 'media.gallery.delete';
 }

@@ -85,7 +85,7 @@
                         @endmodule
 
                         {{-- Administration Dropdown --}}
-                        @canany(\App\Helpers\Permissions::USERS_SHOW)
+                        @canany([\App\Helpers\Permissions::USERS_SHOW, \App\Helpers\Permissions::MEDIA_GALLERY_VIEW])
                         <li x-data="{ open: false }" class="relative">
                             <button
                                 @click="open = !open"
@@ -104,9 +104,17 @@
                             >
                                 @can(App\Helpers\Permissions::USERS_SHOW)
                                 <a href="{{ route('admin.users.list') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-600
+                                   class="block px-4 py-2 text-sm hover:bg-navy-600 rounded-t-md
                                   {{ $isActive('admin.users.*') }}">
                                     Users
+                                </a>
+                                @endcan
+
+                                @can(App\Helpers\Permissions::MEDIA_GALLERY_VIEW)
+                                <a href="{{ route('admin.media.gallery') }}"
+                                   class="block px-4 py-2 text-sm hover:bg-navy-600 rounded-b-md
+                                  {{ $isActive('admin.media.*') }}">
+                                    Media Gallery
                                 </a>
                                 @endcan
                             </div>

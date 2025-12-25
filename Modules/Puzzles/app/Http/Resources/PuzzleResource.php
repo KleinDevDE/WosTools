@@ -14,7 +14,7 @@ class PuzzleResource extends JsonResource
             'album_id' => $this->puzzles_album_id,
             'name' => $this->name,
             'position' => $this->position,
-            'image_url' => $this->getFirstMediaUrl('image'),
+            'image_url' => $this->getFirstMedia('cover')->getTemporaryUrl(now()->addMinutes(5)),
             'pieces_count' => $this->whenCounted('pieces'),
             'completed_pieces' => $this->when(isset($this->completed_pieces), $this->completed_pieces ?? 0),
             'completion_percentage' => $this->completed_pieces === 0 ? 0 : $this->when(isset($this->pieces_count) && $this->pieces_count > 0,

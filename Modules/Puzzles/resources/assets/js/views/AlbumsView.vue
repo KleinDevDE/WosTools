@@ -13,10 +13,10 @@
           class="block bg-navy-900 rounded-2xl overflow-hidden border border-navy-700 hover:border-glow-500 transition-all active:scale-98"
         >
           <div class="flex items-center p-4">
-            <div v-if="album.cover_url" class="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden">
+            <div v-if="album.cover_url" class="shrink-0 w-20 h-20 rounded-xl overflow-hidden">
               <img :src="album.cover_url" :alt="album.name" class="w-full h-full object-cover" loading="lazy" />
             </div>
-            <div v-else class="flex-shrink-0 w-20 h-20 rounded-xl bg-navy-800 flex items-center justify-center">
+            <div v-else class="shrink-0 w-20 h-20 rounded-xl bg-navy-800 flex items-center justify-center">
               <svg class="w-10 h-10 text-navy-600" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm2 0v8h12V6H4z" />
               </svg>
@@ -33,14 +33,14 @@
                 </div>
                 <div class="h-2 bg-navy-800 rounded-full overflow-hidden">
                   <div
-                    class="h-full bg-gradient-to-r from-glow-600 to-glow-400 rounded-full transition-all duration-500"
+                    class="h-full bg-linear-to-r from-glow-600 to-glow-400 rounded-full transition-all duration-500"
                     :style="{ width: `${album.completion_percentage}%` }"
                   />
                 </div>
               </div>
             </div>
 
-            <svg class="flex-shrink-0 w-6 h-6 text-navy-600 ml-2" fill="currentColor" viewBox="0 0 20 20">
+            <svg class="shrink-0 w-6 h-6 text-navy-600 ml-2" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
             </svg>
           </div>

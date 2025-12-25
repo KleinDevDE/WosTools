@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Observers\MediaObserver;
 use Filament\Notifications\Livewire\DatabaseNotifications;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
 use Illuminate\Support\ServiceProvider;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
     {
         DatabaseNotifications::trigger('notifications-trigger');
 //        $this->app->register(CustomLivewireServiceProvider::class);
+
+        // Register Media Observer for tracking uploads
+        Media::observe(MediaObserver::class);
 
         // Configure Filament colors to match unified palette
         FilamentColor::register([

@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\Users\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,10 @@ Route::middleware(['auth'])->group(function() {
         Route::prefix('users')->middleware('can:'.App\Helpers\Permissions::USERS_SHOW)->group(function() {
             Route::get('/', [UserController::class, 'list'])->name('admin.users.list');
         });
+
+        Route::get('/media', [MediaController::class, 'gallery'])
+            ->middleware('can:'.App\Helpers\Permissions::MEDIA_GALLERY_VIEW)
+            ->name('admin.media.gallery');
     });
 });
 

@@ -24,13 +24,12 @@ class PermissionsSeeder extends Seeder
             'user' => [
                 'pages:dashboard:view',
                 'puzzles::view', 'puzzles::own.view', 'puzzles::own.manage',
-                'puzzles::view',
             ],
             'management' => [
                 'pages:dashboard:view',
                 'puzzles::view', 'puzzles::own.view', 'puzzles::own.manage',
                 'puzzles::albums.view', 'puzzles::puzzles.view', 'puzzles::pieces.view',
-                'users.show', 'users.invite'
+                'users.show', 'users.invite', 'users.lock'
             ],
             'developer' => [
                 'pages:dashboard:view',
@@ -38,7 +37,8 @@ class PermissionsSeeder extends Seeder
                 'puzzles::albums.view', 'puzzles::albums.create', 'puzzles::albums.edit', 'puzzles::albums.delete',
                 'puzzles::puzzles.view', 'puzzles::puzzles.create', 'puzzles::puzzles.edit', 'puzzles::puzzles.delete',
                 'puzzles::pieces.view', 'puzzles::pieces.create', 'puzzles::pieces.edit', 'puzzles::pieces.delete',
-                'users.show', 'users.edit', 'users.delete', 'users.invite'
+                'users.show', 'users.edit', 'users.delete', 'users.lock', 'users.invite',
+                'media.gallery.view', 'media.gallery.edit', 'media.gallery.delete'
             ]
         ];
 
