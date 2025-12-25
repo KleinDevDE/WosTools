@@ -51,55 +51,109 @@
         <div class="space-y-3">
           <h3 class="text-lg font-bold text-white">{{ $t('pieces.your_status') }}</h3>
 
-          <div class="grid grid-cols-3 gap-3">
-            <button
-              :class="[
-                'p-4 rounded-xl border-2 transition-all',
-                getPieceState(selectedPiece.id) === 'neutral'
-                  ? 'border-navy-600 bg-navy-800 scale-105'
-                  : 'border-navy-700 bg-navy-900 opacity-60'
-              ]"
-              @click="updateState('neutral')"
-            >
-              <div class="text-center">
-                <div class="text-2xl mb-1">⭕</div>
-                <div class="text-xs text-navy-400">{{ $t('pieces.neutral') }}</div>
-              </div>
-            </button>
-
+          <div class="space-y-3">
+            <!-- Need checkbox -->
             <button
               :disabled="!selectedPiece.is_tradeable"
               :class="[
-                'p-4 rounded-xl border-2 transition-all',
-                getPieceState(selectedPiece.id) === 'need'
-                  ? 'border-need-500 bg-need-600/20 scale-105 shadow-lg shadow-need-500/30'
+                'w-full p-4 rounded-xl border-2 transition-all text-left',
+                currentState.needs
+                  ? 'border-need-500 bg-need-600/20 shadow-lg shadow-need-500/30'
                   : 'border-navy-700 bg-navy-900',
                 !selectedPiece.is_tradeable ? 'opacity-30 cursor-not-allowed' : ''
               ]"
-              @click="updateState('need')"
+              @click="toggleNeeds"
             >
-              <div class="text-center">
-                <div class="text-2xl mb-1">📥</div>
-                <div class="text-xs text-need-400">{{ $t('pieces.need') }}</div>
+              <div class="flex items-center gap-3">
+                <div class="text-2xl">📥</div>
+                <div class="flex-1">
+                  <div class="text-sm font-bold text-white">Brauche ich</div>
+                </div>
+                <div :class="[
+                  'w-6 h-6 rounded border-2 flex items-center justify-center',
+                  currentState.needs ? 'border-need-500 bg-need-500' : 'border-navy-600'
+                ]">
+                  <span v-if="currentState.needs" class="text-white text-sm">✓</span>
+                </div>
               </div>
             </button>
 
+            <!-- Owns checkbox -->
             <button
-              :disabled="!selectedPiece.is_tradeable"
               :class="[
-                'p-4 rounded-xl border-2 transition-all',
-                getPieceState(selectedPiece.id) === 'have'
-                  ? 'border-success-500 bg-success-600/20 scale-105 shadow-lg shadow-success-500/30'
-                  : 'border-navy-700 bg-navy-900',
-                !selectedPiece.is_tradeable ? 'opacity-30 cursor-not-allowed' : ''
+                'w-full p-4 rounded-xl border-2 transition-all text-left',
+                currentState.owns
+                  ? 'border-blue-500 bg-blue-600/20 shadow-lg shadow-blue-500/30'
+                  : 'border-navy-700 bg-navy-900'
               ]"
-              @click="updateState('have')"
+              @click="toggleOwns"
             >
-              <div class="text-center">
-                <div class="text-2xl mb-1">✅</div>
-                <div class="text-xs text-success-400">{{ $t('pieces.have') }}</div>
+              <div class="flex items-center gap-3">
+                <div class="text-2xl">📦</div>
+                <div class="flex-1">
+                  <div class="text-sm font-bold text-white">Habe ich (Sammlung)</div>
+                </div>
+                <div :class="[
+                  'w-6 h-6 rounded border-2 flex items-center justify-center',
+                  currentState.owns ? 'border-blue-500 bg-blue-500' : 'border-navy-600'
+                ]">
+                  <span v-if="currentState.owns" class="text-white text-sm">✓</span>
+                </div>
               </div>
             </button>
+
+            <!-- Offers section -->
+            <div
+              :class="[
+                'w-full p-4 rounded-xl border-2 transition-all',
+                currentState.offers > 0
+                  ? 'border-success-500 bg-success-600/20 shadow-lg shadow-success-500/30'
+                  : 'border-navy-700 bg-navy-900'
+              ]"
+            >
+              <button
+                :disabled="!selectedPiece.is_tradeable"
+                :class="[
+                  'w-full text-left',
+                  !selectedPiece.is_tradeable ? 'opacity-30 cursor-not-allowed' : ''
+                ]"
+                @click="toggleOffers"
+              >
+                <div class="flex items-center gap-3">
+                  <div class="text-2xl">✅</div>
+                  <div class="flex-1">
+                    <div class="text-sm font-bold text-white">Biete zum Handeln an</div>
+                  </div>
+                  <div :class="[
+                    'w-6 h-6 rounded border-2 flex items-center justify-center',
+                    currentState.offers > 0 ? 'border-success-500 bg-success-500' : 'border-navy-600'
+                  ]">
+                    <span v-if="currentState.offers > 0" class="text-white text-sm">✓</span>
+                  </div>
+                </div>
+              </button>
+
+              <!-- Quantity controls -->
+              <div v-if="currentState.offers > 0" class="mt-3 pt-3 border-t border-navy-700">
+                <div class="flex items-center justify-center gap-4">
+                  <button
+                    @click="decrementOffers"
+                    class="w-10 h-10 rounded-lg bg-navy-800 hover:bg-navy-700 text-white font-bold transition-colors"
+                  >
+                    −
+                  </button>
+                  <div class="text-2xl font-bold text-white min-w-[3rem] text-center">
+                    {{ currentState.offers }}
+                  </div>
+                  <button
+                    @click="incrementOffers"
+                    class="w-10 h-10 rounded-lg bg-navy-800 hover:bg-navy-700 text-white font-bold transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -138,6 +192,11 @@ const pieces = computed(() => puzzle.value?.pieces || []);
 const showPieceDetails = ref(false);
 const selectedPiece = ref(null);
 
+const currentState = computed(() => {
+  if (!selectedPiece.value) return { needs: false, owns: false, offers: 0 };
+  return userStateStore.getStateForPiece(selectedPiece.value.id);
+});
+
 function getPieceState(pieceId) {
   return userStateStore.getStateForPiece(pieceId);
 }
@@ -147,18 +206,62 @@ function handlePieceClick(piece) {
   showPieceDetails.value = true;
 }
 
-async function updateState(newState) {
+async function updatePieceData(updates) {
   if (!selectedPiece.value) return;
 
   try {
-    await userStateStore.updatePieceState(
+    await userStateStore.updatePieceData(
       selectedPiece.value.id,
-      newState,
+      updates,
       selectedPiece.value.is_tradeable
     );
   } catch (error) {
-    console.error('Failed to update piece state:', error);
+    console.error('Failed to update piece data:', error);
   }
+}
+
+function toggleNeeds() {
+  if (!selectedPiece.value?.is_tradeable) return;
+  updatePieceData({
+    needs: !currentState.value.needs,
+    owns: currentState.value.owns,
+    offers: currentState.value.offers,
+  });
+}
+
+function toggleOwns() {
+  updatePieceData({
+    needs: currentState.value.needs,
+    owns: !currentState.value.owns,
+    offers: currentState.value.offers,
+  });
+}
+
+function toggleOffers() {
+  if (!selectedPiece.value?.is_tradeable) return;
+  const newOffers = currentState.value.offers > 0 ? 0 : 1;
+  updatePieceData({
+    needs: currentState.value.needs,
+    owns: currentState.value.owns,
+    offers: newOffers,
+  });
+}
+
+function incrementOffers() {
+  updatePieceData({
+    needs: currentState.value.needs,
+    owns: currentState.value.owns,
+    offers: currentState.value.offers + 1,
+  });
+}
+
+function decrementOffers() {
+  const newOffers = Math.max(0, currentState.value.offers - 1);
+  updatePieceData({
+    needs: currentState.value.needs,
+    owns: currentState.value.owns,
+    offers: newOffers,
+  });
 }
 
 onMounted(async () => {

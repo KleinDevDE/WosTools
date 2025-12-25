@@ -9,18 +9,24 @@ export const useUserStateStore = defineStore('userStates', () => {
   const error = ref(null);
 
   const getStateForPiece = computed(() => {
-    return (pieceId) => states.value.get(pieceId) || 'neutral';
+    return (pieceId) => states.value.get(pieceId) || { needs: false, owns: false, offers: 0 };
   });
 
   const needPieces = computed(() => {
     return Array.from(states.value.entries())
-      .filter(([_, state]) => state === 'need')
+      .filter(([_, state]) => state.needs === true)
       .map(([pieceId]) => pieceId);
   });
 
-  const havePieces = computed(() => {
+  const ownedPieces = computed(() => {
     return Array.from(states.value.entries())
-      .filter(([_, state]) => state === 'have')
+      .filter(([_, state]) => state.owns === true)
+      .map(([pieceId]) => pieceId);
+  });
+
+  const offeringPieces = computed(() => {
+    return Array.from(states.value.entries())
+      .filter(([_, state]) => state.offers > 0)
       .map(([pieceId]) => pieceId);
   });
 
@@ -34,7 +40,11 @@ export const useUserStateStore = defineStore('userStates', () => {
       const { data } = await api.get('/user/states');
       const stateMap = new Map();
       data.data.forEach(item => {
-        stateMap.set(item.piece_id, item.state);
+        stateMap.set(item.piece_id, {
+          needs: item.needs,
+          owns: item.owns,
+          offers: item.offers,
+        });
       });
       states.value = stateMap;
     } catch (err) {
@@ -45,17 +55,18 @@ export const useUserStateStore = defineStore('userStates', () => {
     }
   }
 
-  async function updatePieceState(pieceId, newState, isTradeable = true) {
-    if (!isTradeable && newState !== 'neutral') {
+  async function updatePieceData(pieceId, { needs, owns, offers }, isTradeable = true) {
+    if (!isTradeable && (needs || offers > 0)) {
       throw new Error('Cannot trade 5★ pieces');
     }
 
-    const previousState = states.value.get(pieceId) || 'neutral';
+    const previousState = states.value.get(pieceId) || { needs: false, owns: false, offers: 0 };
+    const newState = { needs, owns, offers };
 
     states.value.set(pieceId, newState);
 
     try {
-      await api.post(`/pieces/${pieceId}/state`, { state: newState });
+      await api.post(`/pieces/${pieceId}/state`, { needs, owns, offers });
 
       // Refresh matches after state change if it affects tradeable pieces
       if (isTradeable) {
@@ -70,25 +81,15 @@ export const useUserStateStore = defineStore('userStates', () => {
     }
   }
 
-  function cycleState(pieceId, isTradeable = true) {
-    if (!isTradeable) return 'neutral';
-
-    const current = getStateForPiece.value(pieceId);
-    const stateOrder = ['neutral', 'need', 'have'];
-    const currentIndex = stateOrder.indexOf(current);
-    const nextIndex = (currentIndex + 1) % stateOrder.length;
-    return stateOrder[nextIndex];
-  }
-
   return {
     states,
     loading,
     error,
     getStateForPiece,
     needPieces,
-    havePieces,
+    ownedPieces,
+    offeringPieces,
     fetchUserStates,
-    updatePieceState,
-    cycleState,
+    updatePieceData,
   };
 });

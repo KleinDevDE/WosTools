@@ -30,7 +30,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Modules\Puzzles\Filament\Exports\PuzzlesAlbumExporter;
 use Modules\Puzzles\Filament\Exports\PuzzlesAlbumPuzzleExporter;
+use Modules\Puzzles\Filament\Imports\PuzzleAlbumsImporter;
 use Modules\Puzzles\Filament\Imports\PuzzleAlbumsPuzzleImporter;
 use Modules\Puzzles\Models\PuzzlesAlbum;
 use Modules\Puzzles\Models\PuzzlesAlbumPuzzle;
@@ -78,9 +80,9 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
     {
         $actions = [];
 
-//        $actions[] = ExportBulkAction::make("Export to Excel")
-//            ->icon(Heroicon::DocumentChartBar)
-//            ->exporter(PuzzlesAlbumPuzzleExporter::class);
+        $actions[] = ExportBulkAction::make("Export to Excel")
+            ->icon(Heroicon::DocumentChartBar)
+            ->exporter(PuzzlesAlbumExporter::class);
 
         if (auth()->user()->can(Permissions::PUZZLES_ALBUMS_EDIT)) {
             $actions[] = BulkAction::make('Update to album')
@@ -161,20 +163,20 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
 //                });
 //        }
 
-//        $groupActions = [];
-//        $groupActions[] = ExportAction::make("Export")
-//            ->label("Export")
-//            ->exporter(PuzzlesAlbumPuzzleExporter::class)
-//            ->icon(Heroicon::DocumentChartBar);
+        $groupActions = [];
+        $groupActions[] = ExportAction::make("Export")
+            ->label("Export")
+            ->exporter(PuzzlesAlbumExporter::class)
+            ->icon(Heroicon::DocumentChartBar);
 
-//        if (auth()->user()->can(Permissions::PUZZLES_PUZZLES_CREATE)) {
-//            $groupActions[] = ImportAction::make("Import")
-//                ->label("Import")
-//                ->importer(PuzzleAlbumsPuzzleImporter::class)
-//                ->icon(Heroicon::DocumentArrowUp);
-//            }
-//
-//        $actions[] = ActionGroup::make($groupActions);
+        if (auth()->user()->can(Permissions::PUZZLES_PUZZLES_CREATE)) {
+            $groupActions[] = ImportAction::make("Import")
+                ->label("Import")
+                ->importer(PuzzleAlbumsImporter::class)
+                ->icon(Heroicon::DocumentArrowUp);
+            }
+
+        $actions[] = ActionGroup::make($groupActions);
 
         return $actions;
     }

@@ -28,7 +28,9 @@ use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
 use Modules\Puzzles\Filament\Exports\PuzzlesAlbumPuzzleExporter;
+use Modules\Puzzles\Filament\Exports\PuzzlesAlbumPuzzlePieceExporter;
 use Modules\Puzzles\Filament\Imports\PuzzleAlbumsPuzzleImporter;
+use Modules\Puzzles\Filament\Imports\PuzzleAlbumsPuzzlePieceImporter;
 use Modules\Puzzles\Models\PuzzlesAlbum;
 use Modules\Puzzles\Models\PuzzlesAlbumPuzzle;
 use Modules\Puzzles\Models\PuzzlesAlbumPuzzlePiece;
@@ -102,7 +104,7 @@ class PuzzlesPiecesTable extends Component implements HasActions, HasSchemas, Ha
                 }),
             ExportBulkAction::make("Export to Excel")
                 ->icon(Heroicon::DocumentChartBar)
-                ->exporter(PuzzlesAlbumPuzzleExporter::class)
+                ->exporter(PuzzlesAlbumPuzzlePieceExporter::class)
         ];
     }
 
@@ -153,11 +155,11 @@ class PuzzlesPiecesTable extends Component implements HasActions, HasSchemas, Ha
             ActionGroup::make([
                 ExportAction::make("Export")
                     ->label("Export")
-                    ->exporter(PuzzlesAlbumPuzzleExporter::class)
+                    ->exporter(PuzzlesAlbumPuzzlePieceExporter::class)
                     ->icon(Heroicon::DocumentChartBar),
                 ImportAction::make("Import")
                     ->label("Import")
-                    ->importer(PuzzleAlbumsPuzzleImporter::class)
+                    ->importer(PuzzleAlbumsPuzzlePieceImporter::class)
                     ->icon(Heroicon::DocumentArrowUp),
             ]),
         ];

@@ -13,3 +13,9 @@
   - [X] The image must removeable
   - [X] The image then must be shown to the Albums Frontend
 - [ ] Puzzles: Take screenshots of albums and puzzles and upload them
+
+
+Modules: Puzzles
+- Add batch selecting pieces to set multiple pieces to "need" or "own" at once
+- Hover-Menu after Click on piece cannot be closed by clicking outside the Modal
+- 

@@ -17,11 +17,15 @@ class PuzzlesUserPuzzlePiece extends Model
     protected $fillable = [
         'user_id',
         'puzzles_album_puzzle_piece_id',
-        'state',
+        'needs',
+        'owns',
+        'offers',
     ];
 
     protected $casts = [
-        'state' => 'string',
+        'needs' => 'boolean',
+        'owns' => 'boolean',
+        'offers' => 'integer',
     ];
 
     protected function setKeysForSaveQuery($query)
@@ -61,14 +65,19 @@ class PuzzlesUserPuzzlePiece extends Model
         return $this->belongsTo(PuzzlesAlbumPuzzlePiece::class, 'puzzles_album_puzzle_piece_id');
     }
 
-    public function isNeed(): bool
+    public function needsPiece(): bool
     {
-        return $this->state === 'need';
+        return $this->needs;
     }
 
-    public function isHave(): bool
+    public function ownsForCollection(): bool
     {
-        return $this->state === 'have';
+        return $this->owns;
+    }
+
+    public function isOffering(): bool
+    {
+        return $this->offers > 0;
     }
 
     public function isTradeable(): bool

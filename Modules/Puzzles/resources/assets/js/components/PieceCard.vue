@@ -28,14 +28,18 @@
       </div>
     </div>
 
-    <div v-if="userState !== 'neutral'" class="absolute inset-0 flex items-center justify-center bg-black/40">
-      <div :class="iconClasses">
-        <svg v-if="userState === 'need'" class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" />
-        </svg>
-        <svg v-else-if="userState === 'have'" class="w-12 h-12" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-        </svg>
+    <div v-if="hasAnyState" class="absolute top-2 left-2 flex flex-col gap-1">
+      <div v-if="userState.needs" class="px-2 py-1 bg-need-500/90 rounded-lg text-white text-xs font-bold flex items-center gap-1">
+        <span>📥</span>
+        <span>Need</span>
+      </div>
+      <div v-if="userState.owns" class="px-2 py-1 bg-blue-500/90 rounded-lg text-white text-xs font-bold flex items-center gap-1">
+        <span>📦</span>
+        <span>Own</span>
+      </div>
+      <div v-if="userState.offers > 0" class="px-2 py-1 bg-success-500/90 rounded-lg text-white text-xs font-bold flex items-center gap-1">
+        <span>✅</span>
+        <span>× {{ userState.offers }}</span>
       </div>
     </div>
 
@@ -54,38 +58,32 @@ const props = defineProps({
     required: true,
   },
   userState: {
-    type: String,
-    default: 'neutral',
+    type: Object,
+    default: () => ({ needs: false, owns: false, offers: 0 }),
   },
 });
 
 const emit = defineEmits(['click']);
 
+const hasAnyState = computed(() => {
+  return props.userState.needs || props.userState.owns || props.userState.offers > 0;
+});
+
 const cardClasses = computed(() => {
   const classes = ['border-2'];
 
-  switch (props.userState) {
-    case 'need':
-      classes.push('border-need-500', 'shadow-lg', 'shadow-need-500/50');
-      break;
-    case 'have':
-      classes.push('border-success-500', 'shadow-lg', 'shadow-success-500/50');
-      break;
-    default:
-      classes.push('border-navy-700', 'hover:border-navy-600');
-  }
-
-  if (!props.piece.is_tradeable && props.userState !== 'neutral') {
-    classes.push('opacity-75');
+  // Priority: needs > offers > owns > neutral
+  if (props.userState.needs) {
+    classes.push('border-need-500', 'shadow-lg', 'shadow-need-500/50');
+  } else if (props.userState.offers > 0) {
+    classes.push('border-success-500', 'shadow-lg', 'shadow-success-500/50');
+  } else if (props.userState.owns) {
+    classes.push('border-blue-500', 'shadow-lg', 'shadow-blue-500/50');
+  } else {
+    classes.push('border-navy-700', 'hover:border-navy-600');
   }
 
   return classes;
-});
-
-const iconClasses = computed(() => {
-  return props.userState === 'need'
-    ? 'text-need-400'
-    : 'text-success-400';
 });
 
 function handleClick() {

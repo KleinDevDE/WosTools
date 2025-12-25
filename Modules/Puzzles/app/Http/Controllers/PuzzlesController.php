@@ -19,6 +19,6 @@ class PuzzlesController extends Controller
 
     public function pieces()
     {
-        return view('puzzles::puzzles');
+        return view('puzzles::pieces');
     }
 }

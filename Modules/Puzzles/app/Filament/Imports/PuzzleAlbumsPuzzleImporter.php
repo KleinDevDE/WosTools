@@ -30,14 +30,14 @@ class PuzzleAlbumsPuzzleImporter extends Importer
             $this->data['album'] = json_decode($this->data['album'], true)['name'] ?? null;
         }
 
-        $albumPosition = PuzzlesAlbum::query()->max('position') ?? 1;
+        $albumPosition = PuzzlesAlbum::query()->max('position') ?? 0;
         $album = PuzzlesAlbum::query()->firstOrCreate(
             ['name' => $this->data['album']],
             ['position' => $albumPosition + 1]
         );
         Log::info("Album:", $album->toArray());
 
-        $puzzlePosition = PuzzlesAlbumPuzzle::query()->where('puzzles_album_id', $album->id)->max('position') ?? 1;
+        $puzzlePosition = PuzzlesAlbumPuzzle::query()->where('puzzles_album_id', $album->id)->max('position') ?? 0;
         $this->data = [
             'puzzles_album_id' => $album->id,
             'name' => str_replace(["\"", "."], "", $this->data['name']),

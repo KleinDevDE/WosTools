@@ -14,7 +14,11 @@ class UserStateController extends Controller
         $userId = auth()->id();
 
         $states = PuzzlesUserPuzzlePiece::where('user_id', $userId)
-            ->where('state', '!=', 'neutral')
+            ->where(function ($query) {
+                $query->where('needs', true)
+                    ->orWhere('owns', true)
+                    ->orWhere('offers', '>', 0);
+            })
             ->get();
 
         return response()->json([

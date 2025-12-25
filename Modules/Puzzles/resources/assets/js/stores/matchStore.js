@@ -27,7 +27,7 @@ export const useMatchStore = defineStore('matches', () => {
       }
     }
 
-    if (userStateStore.needPieces.length === 0 && userStateStore.havePieces.length === 0) {
+    if (userStateStore.needPieces.length === 0 && userStateStore.offeringPieces.length === 0) {
       canGetFrom.value = [];
       canHelpWith.value = [];
       lastFetch.value = Date.now();

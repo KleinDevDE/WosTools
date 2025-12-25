@@ -11,7 +11,9 @@ return new class extends Migration
         Schema::create('puzzles_user_puzzle_pieces', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('puzzles_album_puzzle_piece_id')->constrained()->cascadeOnDelete();
-            $table->enum('state', ['neutral', 'need', 'have'])->default('neutral');
+            $table->boolean('needs')->default(false)->after('puzzles_album_puzzle_piece_id');
+            $table->boolean('owns')->default(false)->after('needs');
+            $table->unsignedInteger('offers')->default(0)->after('owns');
 
             $table->primary(['user_id', 'puzzles_album_puzzle_piece_id'], 'user_piece_primary');
             $table->index(['user_id', 'state']);

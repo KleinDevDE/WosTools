@@ -13,7 +13,7 @@ class AlbumResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'position' => $this->position,
-            'cover_url' => $this->getFirstMedia('cover')->getTemporaryUrl(now()->addMinutes(5)),
+            'cover_url' => $this->getFirstMedia('cover')?->getTemporaryUrl(now()->addMinutes(5)),
             'puzzles_count' => $this->whenCounted('puzzles'),
             'total_pieces' => $this->when(isset($this->total_pieces), $this->total_pieces ?? 0),
             'completed_pieces' => $this->when(isset($this->completed_pieces), $this->completed_pieces ?? 0),

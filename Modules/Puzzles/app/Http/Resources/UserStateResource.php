@@ -11,7 +11,9 @@ class UserStateResource extends JsonResource
     {
         return [
             'piece_id' => $this->puzzles_album_puzzle_piece_id,
-            'state' => $this->state,
+            'needs' => $this->needs,
+            'owns' => $this->owns,
+            'offers' => $this->offers,
         ];
     }
 }
