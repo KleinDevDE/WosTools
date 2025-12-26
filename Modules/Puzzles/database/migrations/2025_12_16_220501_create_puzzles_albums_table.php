@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('puzzles_albums', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name');
+            $table->json('name');
             $table->integer('position')->default(0);
 
             $table->timestamps();

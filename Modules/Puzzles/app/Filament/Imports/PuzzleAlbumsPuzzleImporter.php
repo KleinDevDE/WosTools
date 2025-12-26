@@ -17,8 +17,12 @@ class PuzzleAlbumsPuzzleImporter extends Importer
     public static function getColumns(): array
     {
         return [
-            ImportColumn::make('album')->label('Album'),
-            ImportColumn::make('name')->label('Puzzle'),
+            ImportColumn::make('album.de')->label('Album (Deutsch)'),
+            ImportColumn::make('album.en')->label('Album (English)'),
+            ImportColumn::make('album.tr')->label('Album (Türkçe)'),
+            ImportColumn::make('name.de')->label('Puzzle (Deutsch)'),
+            ImportColumn::make('name.en')->label('Puzzle (English)'),
+            ImportColumn::make('name.tr')->label('Puzzle (Türkçe)'),
         ];
     }
 
@@ -26,23 +30,85 @@ class PuzzleAlbumsPuzzleImporter extends Importer
     {
         parent::remapData();
         Log::info("Data:", $this->data);
-        if (str_starts_with($this->data['album'], '{')) {
-            $this->data['album'] = json_decode($this->data['album'], true)['name'] ?? null;
+
+        // Find album by checking all language columns
+        $albumName = null;
+        $albumLang = null;
+
+        // Check which album column has data
+        if (!empty($this->data['album.de'])) {
+            $albumName = $this->data['album.de'];
+            $albumLang = 'de';
+        } elseif (!empty($this->data['album.en'])) {
+            $albumName = $this->data['album.en'];
+            $albumLang = 'en';
+        } elseif (!empty($this->data['album.tr'])) {
+            $albumName = $this->data['album.tr'];
+            $albumLang = 'tr';
         }
 
-        $albumPosition = PuzzlesAlbum::query()->max('position') ?? 0;
-        $album = PuzzlesAlbum::query()->firstOrCreate(
-            ['name' => $this->data['album']],
-            ['position' => $albumPosition + 1]
-        );
-        Log::info("Album:", $album->toArray());
+        // Handle JSON format (for exported data)
+        if ($albumName && str_starts_with($albumName, '{')) {
+            $decoded = json_decode($albumName, true);
+            $albumName = $decoded[$albumLang] ?? $decoded['de'] ?? null;
+        }
 
-        $puzzlePosition = PuzzlesAlbumPuzzle::query()->where('puzzles_album_id', $album->id)->max('position') ?? 0;
+        // Find or create album
+        $album = null;
+        if ($albumName) {
+            // Try to find album by checking translations
+            $album = PuzzlesAlbum::all()->first(function ($a) use ($albumName, $albumLang) {
+                return $a->getTranslation('name', $albumLang) === $albumName;
+            });
+
+            // If not found, create new
+            if (!$album) {
+                $albumPosition = PuzzlesAlbum::query()->max('position') ?? 0;
+                $album = PuzzlesAlbum::query()->create([
+                    'name' => [
+                        'de' => $albumName,
+                        'en' => $albumName,
+                        'tr' => $albumName,
+                    ],
+                    'position' => $albumPosition + 1
+                ]);
+            }
+        }
+
+        Log::info("Album:", $album?->toArray() ?? []);
+
+        // Build puzzle translations
+        $puzzleTranslations = [];
+        if (!empty($this->data['name.de'])) {
+            $puzzleTranslations['de'] = str_replace(["\"", "."], "", $this->data['name.de']);
+        }
+        if (!empty($this->data['name.en'])) {
+            $puzzleTranslations['en'] = str_replace(["\"", "."], "", $this->data['name.en']);
+        }
+        if (!empty($this->data['name.tr'])) {
+            $puzzleTranslations['tr'] = str_replace(["\"", "."], "", $this->data['name.tr']);
+        }
+
+        // Fallback if only one language provided
+        if (count($puzzleTranslations) === 1) {
+            $fallbackValue = reset($puzzleTranslations);
+            $puzzleTranslations = [
+                'de' => $puzzleTranslations['de'] ?? $fallbackValue,
+                'en' => $puzzleTranslations['en'] ?? $fallbackValue,
+                'tr' => $puzzleTranslations['tr'] ?? $fallbackValue,
+            ];
+        }
+
+        $puzzlePosition = PuzzlesAlbumPuzzle::query()
+            ->where('puzzles_album_id', $album?->id)
+            ->max('position') ?? 0;
+
         $this->data = [
-            'puzzles_album_id' => $album->id,
-            'name' => str_replace(["\"", "."], "", $this->data['name']),
+            'puzzles_album_id' => $album?->id,
+            'name' => $puzzleTranslations,
             'position' => $puzzlePosition + 1
         ];
+
         Log::info("Data:", $this->data);
     }
 

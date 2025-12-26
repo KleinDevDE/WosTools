@@ -57,6 +57,9 @@ import { ref, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import {useAlbumStore} from "@/stores/albumStore.js";
+import {usePuzzleStore} from "@/stores/puzzleStore.js";
+import {useMatchStore} from "@/stores/matchStore.js";
 
 const { locale } = useI18n({ useScope: 'global' });
 const router = useRouter();
@@ -75,6 +78,10 @@ const dropdownPosition = computed(() => {
   return 'top-full';
 });
 
+const albumStore = useAlbumStore();
+const puzzleStore = usePuzzleStore();
+const matchStore = useMatchStore();
+
 async function switchLanguage(newLocale) {
   try {
     // Update Vue i18n locale
@@ -85,6 +92,11 @@ async function switchLanguage(newLocale) {
 
     // Update Laravel session via API
     await axios.post('/locale/switch', { locale: newLocale });
+
+    // Refresh data stores to get translations in new language
+    await albumStore.refreshAlbums();
+    puzzleStore.refreshPuzzles();
+    matchStore.refreshMatches();
 
     isOpen.value = false;
   } catch (error) {

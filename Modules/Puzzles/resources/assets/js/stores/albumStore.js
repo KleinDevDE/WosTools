@@ -52,6 +52,11 @@ export const useAlbumStore = defineStore('albums', () => {
     }
   }
 
+  async function refreshAlbums() {
+    albums.value = [];
+    await fetchAlbums();
+  }
+
   return {
     albums,
     loading,
@@ -61,5 +66,6 @@ export const useAlbumStore = defineStore('albums', () => {
     fetchAlbums,
     fetchAlbumDetails,
     updateAlbumStats,
+    refreshAlbums,
   };
 });

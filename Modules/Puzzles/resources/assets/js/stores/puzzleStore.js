@@ -54,6 +54,23 @@ export const usePuzzleStore = defineStore('puzzles', () => {
     currentPuzzle.value = null;
   }
 
+  async function refreshPuzzles(albumId = null) {
+    if (albumId) {
+      // Refresh specific album's puzzles
+      delete puzzlesByAlbum.value[albumId];
+      await fetchPuzzles(albumId);
+    } else {
+      // Refresh all currently loaded puzzles
+      const loadedAlbumIds = Object.keys(puzzlesByAlbum.value);
+      puzzlesByAlbum.value = {};
+
+      // Reload all previously loaded albums
+      for (const id of loadedAlbumIds) {
+        await fetchPuzzles(parseInt(id));
+      }
+    }
+  }
+
   return {
     puzzlesByAlbum,
     currentPuzzle,
@@ -63,5 +80,6 @@ export const usePuzzleStore = defineStore('puzzles', () => {
     fetchPuzzles,
     fetchPuzzleDetails,
     clearCurrentPuzzle,
+    refreshPuzzles,
   };
 });

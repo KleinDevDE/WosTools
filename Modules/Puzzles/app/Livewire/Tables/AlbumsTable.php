@@ -16,6 +16,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Grouping\Group;
@@ -72,7 +74,10 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
                 ->label(""),
             TextColumn::make('name')
                 ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->getStateUsing(fn (PuzzlesAlbum $record) =>
+                    $record->getTranslation('name', app()->getLocale())
+                ),
         ];
     }
 
@@ -89,7 +94,9 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
                 ->icon(Heroicon::ArrowRightEndOnRectangle)
                 ->schema([
                     Select::make('puzzles_album_id')
-                        ->options(PuzzlesAlbum::query()->pluck('name', 'id'))
+                        ->options(PuzzlesAlbum::query()->get()->pluck(function($album) {
+                            return $album->getTranslation('name', app()->getLocale());
+                        }, 'id'))
                         ->label('Album:')
                         ->string()
                         ->required(),
@@ -124,7 +131,33 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
                         ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
                         ->maxSize(5120)
                         ->helperText('Upload a cover image for this album'),
-                    TextInput::make('name'),
+
+                    Tabs::make('translations')
+                        ->tabs([
+                            Tab::make('Deutsch')
+                                ->icon('heroicon-m-language')
+                                ->schema([
+                                    TextInput::make('name.de')
+                                        ->label('Name (Deutsch)')
+                                        ->required()
+                                        ->maxLength(255),
+                                ]),
+                            Tab::make('English')
+                                ->icon('heroicon-m-language')
+                                ->schema([
+                                    TextInput::make('name.en')
+                                        ->label('Name (English)')
+                                        ->maxLength(255),
+                                ]),
+                            Tab::make('Türkçe')
+                                ->icon('heroicon-m-language')
+                                ->schema([
+                                    TextInput::make('name.tr')
+                                        ->label('Ad (Türkçe)')
+                                        ->maxLength(255),
+                                ]),
+                        ])
+                        ->columnSpanFull(),
                 ]);
         }
 
@@ -218,8 +251,37 @@ class AlbumsTable extends Component implements HasActions, HasSchemas, HasTable
                         ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
                         ->maxSize(5120)
                         ->helperText('Upload a cover image for this album'),
-                    TextInput::make('name'),
-                    TextInput::make('position')->numeric()
+
+                    TextInput::make('position')
+                        ->numeric()
+                        ->label('Position'),
+
+                    Tabs::make('translations')
+                        ->tabs([
+                            Tab::make('Deutsch')
+                                ->icon('heroicon-m-language')
+                                ->schema([
+                                    TextInput::make('name.de')
+                                        ->label('Name (Deutsch)')
+                                        ->required()
+                                        ->maxLength(255),
+                                ]),
+                            Tab::make('English')
+                                ->icon('heroicon-m-language')
+                                ->schema([
+                                    TextInput::make('name.en')
+                                        ->label('Name (English)')
+                                        ->maxLength(255),
+                                ]),
+                            Tab::make('Türkçe')
+                                ->icon('heroicon-m-language')
+                                ->schema([
+                                    TextInput::make('name.tr')
+                                        ->label('Ad (Türkçe)')
+                                        ->maxLength(255),
+                                ]),
+                        ])
+                        ->columnSpanFull(),
                 ]);
         }
         if (auth()->user()->can(Permissions::PUZZLES_ALBUMS_DELETE)) {

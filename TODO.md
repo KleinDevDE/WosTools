@@ -13,7 +13,27 @@
   - [X] The image must removeable
   - [X] The image then must be shown to the Albums Frontend
 - [ ] Puzzles: Take screenshots of albums and puzzles and upload them
-
+- [ ] Write tests
+  - Core
+  - Module: Puzzles
+    - Albums CSV Import/Export
+    - Albums Table
+      - Create Album
+      - Edit Album
+      - Delete Album
+    - Puzzles CSV Import/Export
+    - Puzzles Table
+      - Create Puzzle
+      - Edit Puzzle
+      - Delete Puzzle
+    - Pieces CSV Import/Export
+    - Pieces Table
+      - Create Piece
+      - Edit Piece
+      - Delete Piece
+- Automated Backups
+  - spatie backups?
+  - Use S3 as storage
 
 Modules: Puzzles
 - Add batch selecting pieces to set multiple pieces to "need" or "own" at once

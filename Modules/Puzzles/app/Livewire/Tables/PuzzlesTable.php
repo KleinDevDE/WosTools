@@ -13,8 +13,10 @@ use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ImportAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Schemas\Components\Tabs;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Grouping\Group;
@@ -52,6 +54,10 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
             ->groups([
                 Group::make('album.name')
                     ->label('Album: ')
+                    ->getTitleFromRecordUsing(
+                        fn(PuzzlesAlbumPuzzle $record): string =>
+                            $record->album->getTranslation('name', app()->getLocale())
+                    )
                     ->getDescriptionFromRecordUsing(
                         fn(PuzzlesAlbumPuzzle $record): string => 'Count Puzzles: ' . $record->album->puzzles->count()
                     )
@@ -84,7 +90,10 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
                 ->label(""),
             TextColumn::make('name')
                 ->searchable()
-                ->sortable(),
+                ->sortable()
+                ->getStateUsing(fn (PuzzlesAlbumPuzzle $record) =>
+                    $record->getTranslation('name', app()->getLocale())
+                ),
             //Count pieces
             TextColumn::make('pieces_count')
             ->getStateUsing(fn (PuzzlesAlbumPuzzle $record) => $record->pieces->count())
@@ -102,7 +111,9 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
                 ->icon(Heroicon::ArrowRightEndOnRectangle)
                 ->schema([
                     Select::make('puzzles_album_id')
-                        ->options(PuzzlesAlbum::query()->pluck('name', 'id'))
+                        ->options(PuzzlesAlbum::query()->get()->pluck(function($album) {
+                            return $album->getTranslation('name', app()->getLocale());
+                        }, 'id'))
                         ->label('Album:')
                         ->string()
                         ->required(),
@@ -134,13 +145,43 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
                     ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
                     ->maxSize(5120)
                     ->helperText('Upload an image for this puzzle'),
+
                 Select::make('puzzles_album_id')
                     ->label('Album:')
-                    ->options(PuzzlesAlbum::query()->pluck('name', 'id')),
-                TextInput::make('name'),
+                    ->options(PuzzlesAlbum::query()->get()->pluck(function($album) {
+                        return $album->getTranslation('name', app()->getLocale());
+                    }, 'id'))
+                    ->required(),
+
+                Tabs::make('translations')
+                    ->tabs([
+                        Tab::make('Deutsch')
+                            ->icon('heroicon-m-language')
+                            ->schema([
+                                TextInput::make('name.de')
+                                    ->label('Name (Deutsch)')
+                                    ->required()
+                                    ->maxLength(255),
+                            ]),
+                        Tab::make('English')
+                            ->icon('heroicon-m-language')
+                            ->schema([
+                                TextInput::make('name.en')
+                                    ->label('Name (English)')
+                                    ->maxLength(255),
+                            ]),
+                        Tab::make('Türkçe')
+                            ->icon('heroicon-m-language')
+                            ->schema([
+                                TextInput::make('name.tr')
+                                    ->label('Ad (Türkçe)')
+                                    ->maxLength(255),
+                            ]),
+                    ])
+                    ->columnSpanFull(),
             ]),
             CreateAction::make('create-multiple')
-                ->label('Add Multiple Puzzles')
+                ->label('Add Multiple Puzzles (German only)')
                 ->schema([
                     SpatieMediaLibraryFileUpload::make('image')
                         ->collection('cover')
@@ -151,17 +192,19 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
                         ->maxSize(5120)
                         ->helperText('Upload an image for this puzzle'),
                     Select::make('puzzles_album_id')
-                        ->options(PuzzlesAlbum::query()->pluck('name', 'id'))
+                        ->options(PuzzlesAlbum::query()->get()->pluck(function($album) {
+                            return $album->getTranslation('name', app()->getLocale());
+                        }, 'id'))
                         ->label('Album:')
                         ->string()
                         ->required(),
                     Textarea::make('names')
-                        ->label('Puzzle-Names (one name per line)')
+                        ->label('Puzzle-Names (one name per line - German only)')
                         ->rows(5)
                         ->autofocus()
                         ->required()
                         ->string()
-                        ->helperText('Empty lines will be ignored.')
+                        ->helperText('Empty lines will be ignored. Names will be set in German only.')
                 ])
                 ->using(function (array $data) {
                     // Zerlegen: je Zeile ein Name, trimmen, Leere/Duplikate entfernen
@@ -172,14 +215,29 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
 
                     $existingPuzzles = PuzzlesAlbumPuzzle::query()
                         ->where('puzzles_album_id', $data['puzzles_album_id'])
-                        ->whereIn('name', $puzzles)
-                        ->pluck('name')->toArray();
+                        ->get()
+                        ->filter(function($puzzle) use ($puzzles) {
+                            // Check if German translation exists in the list
+                            return $puzzles->contains($puzzle->getTranslation('name', 'de'));
+                        })
+                        ->pluck('name')
+                        ->map(fn($translations) => is_array($translations) ? $translations['de'] : $translations)
+                        ->toArray();
+
                     $puzzles = $puzzles->diff($existingPuzzles);
+
                     $puzzles->each(function ($name) use ($data, &$created) {
-                        $puzzlePosition = PuzzlesAlbumPuzzle::query()->where('puzzles_album_id', $data['puzzles_album_id'])->max('position') ?? 1;
+                        $puzzlePosition = PuzzlesAlbumPuzzle::query()
+                            ->where('puzzles_album_id', $data['puzzles_album_id'])
+                            ->max('position') ?? 1;
+
                         $created = PuzzlesAlbumPuzzle::query()->create([
                             'puzzles_album_id' => $data['puzzles_album_id'],
-                            'name' => $name,
+                            'name' => [
+                                'de' => $name,
+                                'en' => $name, // Initially same as German
+                                'tr' => $name, // Initially same as German
+                            ],
                             'position' => $puzzlePosition + 1
                         ]);
                     });
@@ -204,8 +262,9 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
     protected function getTableActions(): array
     {
         return [
-            EditAction::make('edit-puzzle-image')
-                ->modalWidth('md')
+            EditAction::make('edit-puzzle')
+                ->label('Edit Puzzle')
+                ->modalWidth('lg')
                 ->schema([
                     SpatieMediaLibraryFileUpload::make('image')
                         ->collection('cover')
@@ -215,15 +274,48 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
                         ->imageEditorAspectRatios(['16:9', '4:3', '1:1'])
                         ->maxSize(5120)
                         ->helperText('Upload an image for this puzzle'),
+
                     Select::make('puzzles_album_id')
                         ->label('Album:')
-                        ->options(PuzzlesAlbum::query()->pluck('name', 'id'))
-                    ->required()->string()->default(function (PuzzlesAlbumPuzzle $record) {
-                        return $record->puzzles_album_id;
-                    })
-                    ,
-                    TextInput::make('name'),
-                    TextInput::make('position')->numeric(),
+                        ->options(PuzzlesAlbum::query()->get()->pluck(function($album) {
+                            return $album->getTranslation('name', app()->getLocale());
+                        }, 'id'))
+                        ->required()
+                        ->string()
+                        ->default(function (PuzzlesAlbumPuzzle $record) {
+                            return $record->puzzles_album_id;
+                        }),
+
+                    TextInput::make('position')
+                        ->numeric()
+                        ->label('Position'),
+
+                    Tabs::make('translations')
+                        ->tabs([
+                            Tab::make('Deutsch')
+                                ->icon('heroicon-m-language')
+                                ->schema([
+                                    TextInput::make('name.de')
+                                        ->label('Name (Deutsch)')
+                                        ->required()
+                                        ->maxLength(255),
+                                ]),
+                            Tab::make('English')
+                                ->icon('heroicon-m-language')
+                                ->schema([
+                                    TextInput::make('name.en')
+                                        ->label('Name (English)')
+                                        ->maxLength(255),
+                                ]),
+                            Tab::make('Türkçe')
+                                ->icon('heroicon-m-language')
+                                ->schema([
+                                    TextInput::make('name.tr')
+                                        ->label('Ad (Türkçe)')
+                                        ->maxLength(255),
+                                ]),
+                        ])
+                        ->columnSpanFull(),
                 ]),
             CreateAction::make("add-pieces")
             ->label("Add Puzzle Pieces")

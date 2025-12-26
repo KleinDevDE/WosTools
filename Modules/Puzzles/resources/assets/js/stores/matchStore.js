@@ -56,6 +56,11 @@ export const useMatchStore = defineStore('matches', () => {
     lastFetch.value = null;
   }
 
+  async function refreshMatches() {
+    clearMatches();
+    await fetchMatches(true);
+  }
+
   return {
     canGetFrom,
     canHelpWith,
@@ -65,5 +70,6 @@ export const useMatchStore = defineStore('matches', () => {
     lastFetch,
     fetchMatches,
     clearMatches,
+    refreshMatches,
   };
 });

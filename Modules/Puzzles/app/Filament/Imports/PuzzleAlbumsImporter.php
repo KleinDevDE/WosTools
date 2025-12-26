@@ -16,17 +16,32 @@ class PuzzleAlbumsImporter extends Importer
     public static function getColumns(): array
     {
         return [
-            ImportColumn::make('name')
+            ImportColumn::make('name.de')
                 ->requiredMapping()
-                ->label('Album')
+                ->label('Album (Deutsch)'),
+            ImportColumn::make('name.en')
+                ->label('Album (English)'),
+            ImportColumn::make('name.tr')
+                ->label('Album (Türkçe)'),
         ];
     }
 
     public function resolveRecord(): ?Model
     {
+        $translations = [];
+        if (!empty($this->data['name.de'])) $translations['de'] = $this->data['name.de'];
+        if (!empty($this->data['name.en'])) $translations['en'] = $this->data['name.en'];
+        if (!empty($this->data['name.tr'])) $translations['tr'] = $this->data['name.tr'];
+
+        // Fallback: If only one language provided, use it for all
+        if (count($translations) === 1) {
+            $fallback = reset($translations);
+            $translations = ['de' => $fallback, 'en' => $fallback, 'tr' => $fallback];
+        }
+
         $albumPosition = PuzzlesAlbum::query()->max('position') ?? 0;
         return PuzzlesAlbum::firstOrNew([
-            'name' => $this->data['name'],
+            'name' => $translations,
             'position' => $albumPosition + 1
         ]);
     }

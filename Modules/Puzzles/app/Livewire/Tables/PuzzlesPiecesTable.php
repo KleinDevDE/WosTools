@@ -131,6 +131,14 @@ class PuzzlesPiecesTable extends Component implements HasActions, HasSchemas, Ha
             CreateAction::make()
                 ->label('Add Piece')
                 ->modalWidth('md')
+                ->mutateDataUsing(function (array $data) {
+                    $position = PuzzlesAlbumPuzzlePiece::query()
+                            ->where('puzzles_album_id', $data['puzzles_album_id'])
+                            ->where('puzzles_album_puzzle_id', $data['puzzles_album_puzzle_id'])
+                            ->max('position') + 1;
+
+                    return $data + ['position' => $position];
+                })
                 ->schema([
                     Select::make('puzzles_album_id')
                         ->label('Album')
@@ -140,9 +148,8 @@ class PuzzlesPiecesTable extends Component implements HasActions, HasSchemas, Ha
                         ->label('Puzzle')
                         ->options(PuzzlesAlbumPuzzle::query()->pluck('name', 'id'))
                         ->required()->string(),
-                    TextInput::make('stars')->numeric()->required()
+                    TextInput::make('stars')->numeric()->required(),
                 ]),
-
             ActionGroup::make([
                 ExportAction::make("Export")
                     ->label("Export")

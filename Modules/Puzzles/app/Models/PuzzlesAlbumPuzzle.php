@@ -8,10 +8,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Translatable\HasTranslations;
 
 class PuzzlesAlbumPuzzle extends Model implements HasMedia
 {
     use InteractsWithMedia;
+    use HasTranslations;
+
+    public $translatable = ['name'];
 
     protected $fillable = [
         'puzzles_album_id',
