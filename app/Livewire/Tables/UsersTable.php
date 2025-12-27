@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\UserInvitationService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -176,7 +177,9 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                         ->default(function (User $record) {
                             return $record->status;
                         })
-                ])
+                ]),
+            DeleteAction::make()
+                ->requiresConfirmation()
         ];
     }
 
