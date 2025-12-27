@@ -60,6 +60,15 @@ return [
             'report' => false,
         ],
 
+        'backup_nextcloud' => [
+            'driver'     => 'nextcloud',
+            'baseUri'    => env('NEXTCLOUD_BASE_URI'),
+            'userName'   => env('NEXTCLOUD_USERNAME'),
+            'password'   => env('NEXTCLOUD_PASSWORD'),
+            'directory' => '/WosTools/backups',
+            'authType' => 1, //Basic authentication
+        ],
+
     ],
 
     /*
