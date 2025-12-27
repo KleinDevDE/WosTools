@@ -7,12 +7,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Puzzles\Http\Resources\MatchResource;
+use Modules\Puzzles\Models\PuzzlesAlbumPuzzlePiece;
 
 class MatchController extends Controller
 {
     public function index(): JsonResponse
     {
         $userId = auth()->id();
+        $locale = app()->getLocale();
 
         // Get pieces I need (tradeable only)
         $myNeeds = DB::table('puzzles_user_puzzle_pieces as up')
@@ -46,9 +48,9 @@ class MatchController extends Controller
                     'p.position',
                     'p.stars',
                     'puzzle.id as puzzle_id',
-                    'puzzle.name as puzzle_name',
+                    "puzzle.name->$locale as puzzle_name",
                     'album.id as album_id',
-                    'album.name as album_name',
+                    "album.name->$locale as album_name",
                     'u.id as user_id',
                     'u.username',
                     'up.offers'
@@ -92,9 +94,9 @@ class MatchController extends Controller
                     'p.position',
                     'p.stars',
                     'puzzle.id as puzzle_id',
-                    'puzzle.name as puzzle_name',
+                    "puzzle.name->$locale as puzzle_name",
                     'album.id as album_id',
-                    'album.name as album_name',
+                    "album.name->$locale as album_name",
                     'u.id as user_id',
                     'u.username'
                 )
