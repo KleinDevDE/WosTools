@@ -7,6 +7,8 @@ use App\Models\User;
 use App\Services\UserInvitationService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\IconPosition;
@@ -134,7 +136,10 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                                 ->label('Copy')
                                 ->button()
                                 ->extraAttributes(['id' => "copy-inv-url-$invitation->id"])
-                                ->dispatch('copy-to-clipboard', ['text' => $invitation->invitationURL, 'element' => "copy-inv-url-$invitation->id"])
+                                ->dispatch(
+                                    'copy-to-clipboard',
+                                    ['text' => $invitation->invitationURL, 'element' => "copy-inv-url-$invitation->id"]
+                                )
                         ])
                         ->send();
                 });
@@ -153,11 +158,25 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ->button()
                 ->icon(Heroicon::Clipboard)
                 ->iconPosition(IconPosition::After)
-                ->extraAttributes(fn (User $user) => ['id' => "copy-inv-url-$user->id"])
-                ->dispatch('copy-to-clipboard', fn (User $user) => [
+                ->extraAttributes(fn(User $user) => ['id' => "copy-inv-url-$user->id"])
+                ->dispatch('copy-to-clipboard', fn(User $user) => [
                     'text' => $user->invitations()->first()?->invitationURL,
                     'element' => "copy-inv-url-$user->id"
                 ]),
+            EditAction::make('edit')
+                ->schema([
+                    TextInput::make('username')
+                        ->required()->unique(User::class, 'username'),
+                    Select::make('status')
+                        ->options([
+                            User::STATUS_ACTIVE => 'Active',
+                            User::STATUS_LOCKED => 'Locked',
+                            User::STATUS_INVITED => 'Invited',
+                        ])
+                        ->default(function (User $record) {
+                            return $record->status;
+                        })
+                ])
         ];
     }
 

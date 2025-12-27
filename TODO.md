@@ -34,6 +34,8 @@
 - Automated Backups
   - spatie backups?
   - Use S3 as storage
+- Puzzles Frontend
+  - Match-View: Piece-Number as Big badge, Album and puzzle name bigger in size, player-name at the right side
 
 Modules: Puzzles
 - Add batch selecting pieces to set multiple pieces to "need" or "own" at once
