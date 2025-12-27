@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedInteger('offers')->default(0)->after('owns');
 
             $table->primary(['user_id', 'puzzles_album_puzzle_piece_id'], 'user_piece_primary');
-            $table->index(['user_id', 'state']);
             $table->timestamps();
         });
     }
