@@ -40,7 +40,6 @@ export default {
     offers: 'Offering for Trading',
     close: 'Close',
     loading: 'Loading pieces...',
-    last_updated: 'Last Updated',
   },
 
   // Matches View
@@ -57,6 +56,7 @@ export default {
     loading: 'Loading matches...',
     refresh: 'Refresh Matches',
     refreshing: 'Refreshing...',
+    last_updated: 'Last Updated',
   },
 
   // Search View

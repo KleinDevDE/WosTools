@@ -40,7 +40,6 @@ export default {
     offers: 'Takas için Teklif',
     close: 'Kapat',
     loading: 'Parçalar yükleniyor...',
-    last_updated: 'Son Güncelleme',
   },
 
   // Matches View
@@ -57,6 +56,7 @@ export default {
     loading: 'Eşleşmeler yükleniyor...',
     refresh: 'Eşleşmeleri Yenile',
     refreshing: 'Yenileniyor...',
+    last_updated: 'Son Güncelleme',
   },
 
   // Search View
