@@ -19,7 +19,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
-use Filament\Tables\Grouping\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Component;
@@ -51,19 +50,6 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
         return $table
             ->query(PuzzlesAlbumPuzzle::query())
             ->paginationPageOptions([50, 100, 200])
-            ->groups([
-                Group::make('album.name')
-                    ->label('Album: ')
-                    ->getTitleFromRecordUsing(
-                        fn(PuzzlesAlbumPuzzle $record): string =>
-                            $record->album->getTranslation('name', app()->getLocale())
-                    )
-                    ->getDescriptionFromRecordUsing(
-                        fn(PuzzlesAlbumPuzzle $record): string => 'Count Puzzles: ' . $record->album->puzzles->count()
-                    )
-                    ->collapsible()
-            ])
-            ->defaultGroup('album.name')
             ->selectable();
     }
 
@@ -76,21 +62,16 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
     public function getTableColumns(): array
     {
         return [
-            SpatieMediaLibraryImageColumn::make('cover')
-                ->collection('cover')
-                ->label('Album Cover'),
             SpatieMediaLibraryImageColumn::make('image')
-                ->collection('image')
+                ->collection('cover')
                 ->conversion('thumb')
-                ->size(60)
                 ->square()
                 ->label('Puzzle Image'),
-            TextColumn::make('position')
-                ->sortable()
-                ->label(""),
+            TextColumn::make('album.name')
+                ->searchable()
+                ->sortable(),
             TextColumn::make('name')
                 ->searchable()
-                ->sortable()
                 ->getStateUsing(fn (PuzzlesAlbumPuzzle $record) =>
                     $record->getTranslation('name', app()->getLocale())
                 ),

@@ -14,7 +14,6 @@ use Filament\Actions\ImportAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Grouping\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Livewire\Component;
@@ -46,12 +45,6 @@ class PuzzlesPiecesTable extends Component implements HasActions, HasSchemas, Ha
         return $table
             ->query(PuzzlesAlbumPuzzlePiece::query())
             ->paginationPageOptions([50, 100, 200])
-            ->groups([
-                Group::make('puzzle.name')
-                    ->label('Puzzle: ')
-                    ->collapsible()
-            ])
-            ->defaultGroup('puzzle.name')
             ->selectable();
     }
 
