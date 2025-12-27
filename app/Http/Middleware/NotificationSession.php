@@ -25,7 +25,7 @@ class NotificationSession
 
         $notifications = DatabaseNotification::query()
             ->whereMorphedTo('notifiable', Auth::user())
-            ->whereNull(DB::raw('JSON_EXTRACT(data, "$.notified_at")'))
+            ->whereRaw("data->>'notified_at' IS NULL")
             ->orderBy('created_at', 'desc');
         $countNotifications = $notifications->count();
         $notifications = $notifications->limit(5)->get();

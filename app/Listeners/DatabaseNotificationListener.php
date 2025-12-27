@@ -40,8 +40,8 @@ class DatabaseNotificationListener
         //Get last notification
         $databaseNotification = DatabaseNotification::query()
             ->whereMorphedTo('notifiable', $currentUser)
-            ->where('data', 'NOT LIKE', '%notified_at%')
-            ->whereDate('created_at', '>=', now()->subMinutes(5)) // Limit to last 5 minutes to avoid updating old notifications
+            ->whereRaw("NOT (data ? 'notified_at')")
+            ->where('created_at', '>=', now()->subMinutes(5))
             ->orderBy('created_at', 'desc')
             ->first();
         if (!$databaseNotification) {
