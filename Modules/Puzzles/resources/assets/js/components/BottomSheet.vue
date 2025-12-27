@@ -50,19 +50,10 @@ const touchCurrentY = ref(0);
 
 watch(() => props.modelValue, (newVal) => {
   isOpen.value = newVal;
-  if (newVal) {
-    document.body.style.overflow = 'hidden';
-  } else {
-    document.body.style.overflow = '';
-  }
 });
 
 function close() {
-  isOpen.value = false;
-  setTimeout(() => {
     emit('update:modelValue', false);
-    emit('close');
-  }, 300);
 }
 
 function handleBackdropClick(e) {
@@ -99,15 +90,3 @@ function handleTouchEnd() {
   touchCurrentY.value = 0;
 }
 </script>
-
-<style scoped>
-.overlay-enter-active,
-.overlay-leave-active {
-  transition: opacity 0.3s ease;
-}
-
-.overlay-enter-from,
-.overlay-leave-to {
-  opacity: 0;
-}
-</style>
