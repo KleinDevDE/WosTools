@@ -1,7 +1,7 @@
 export default {
   // Navigation
   nav: {
-    admin: 'Admin',
+    home: 'Startseite',
     language: 'Sprache',
   },
   navigation: {

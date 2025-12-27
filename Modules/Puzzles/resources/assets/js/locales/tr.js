@@ -1,7 +1,7 @@
 export default {
   // Navigation
   nav: {
-    admin: 'Yönetici',
+    home: 'Ana Sayfa',
     language: 'Dil',
   },
   navigation: {
