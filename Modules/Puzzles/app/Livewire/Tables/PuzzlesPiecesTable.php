@@ -12,11 +12,8 @@ use Filament\Actions\ExportAction;
 use Filament\Actions\ExportBulkAction;
 use Filament\Actions\ImportAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Tables\Grouping\Group;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
@@ -29,9 +26,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
-use Modules\Puzzles\Filament\Exports\PuzzlesAlbumPuzzleExporter;
 use Modules\Puzzles\Filament\Exports\PuzzlesAlbumPuzzlePieceExporter;
-use Modules\Puzzles\Filament\Imports\PuzzleAlbumsPuzzleImporter;
 use Modules\Puzzles\Filament\Imports\PuzzleAlbumsPuzzlePieceImporter;
 use Modules\Puzzles\Models\PuzzlesAlbum;
 use Modules\Puzzles\Models\PuzzlesAlbumPuzzle;
@@ -69,12 +64,6 @@ class PuzzlesPiecesTable extends Component implements HasActions, HasSchemas, Ha
     public function getTableColumns(): array
     {
         return [
-            SpatieMediaLibraryImageColumn::make('image')
-                ->collection('image')
-                ->conversion('thumb')
-                ->size(60)
-                ->square()
-                ->label('Piece Image'),
             TextColumn::make('position')
                 ->sortable()
                 ->label(""),

@@ -39,7 +39,7 @@ class PuzzlesAlbumPuzzle extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('image')->singleFile();
+        $this->addMediaCollection('cover')->singleFile();
     }
 
     public function registerMediaConversions(?Media $media = null): void
