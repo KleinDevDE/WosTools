@@ -50,7 +50,7 @@ export default {
     match: 'match | matches',
     piece: 'piece | pieces',
     copy_name: 'Copy Name',
-    from: 'From',
+    player: 'Player',
     needs_from: 'Needs From',
     no_matches: 'No trading matches found',
     loading: 'Loading matches...',
