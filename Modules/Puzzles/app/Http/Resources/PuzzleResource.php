@@ -9,6 +9,11 @@ class PuzzleResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $completion_percentage = 0;
+        if ($this->completed_pieces > 0 && $this->pieces_count > 0) {
+            $completion_percentage =  round(($this->completed_pieces ?? 0) / $this->pieces_count * 100);
+        }
+
         return [
             'id' => $this->id,
             'album_id' => $this->puzzles_album_id,
@@ -17,8 +22,7 @@ class PuzzleResource extends JsonResource
             'image_url' => $this->getFirstMedia('cover')?->getTemporaryUrl(now()->addMinutes(5)),
             'pieces_count' => $this->whenCounted('pieces'),
             'completed_pieces' => $this->when(isset($this->completed_pieces), $this->completed_pieces ?? 0),
-            'completion_percentage' => $this->completed_pieces === 0 ? 0 : $this->when(isset($this->pieces_count) && $this->pieces_count > 0,
-                round(($this->completed_pieces ?? 0) / $this->pieces_count * 100)),
+            'completion_percentage' => $completion_percentage,
             'pieces' => PieceResource::collection($this->whenLoaded('pieces')),
         ];
     }
