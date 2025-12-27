@@ -26,13 +26,13 @@ class SearchController extends Controller
         }
 
         // Search albums
-        $albums = PuzzlesAlbum::where('name', 'like', "%{$query}%")
+        $albums = PuzzlesAlbum::where('name', 'ilike', "%{$query}%")
             ->orderBy('position')
             ->limit(10)
             ->get();
 
         // Search puzzles
-        $puzzles = PuzzlesAlbumPuzzle::where('name', 'like', "%{$query}%")
+        $puzzles = PuzzlesAlbumPuzzle::where('name', 'ilike', "%{$query}%")
             ->with('album')
             ->orderBy('position')
             ->limit(10)
