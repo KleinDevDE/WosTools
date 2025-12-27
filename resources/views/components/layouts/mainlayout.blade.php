@@ -11,8 +11,7 @@
         @filamentStyles
     </head>
 
-    <body class="min-h-screen bg-slate-50 text-slate-600
-             dark:bg-navy-900 dark:text-navy-200">
+    <body class="min-h-screen bg-navy-900 text-navy-200">
 
         @php
             /**
@@ -26,7 +25,7 @@
         @endphp
 
         {{-- Header --}}
-        <nav class="fixed top-0 z-50 w-full border-b md:h-15.25 h-24 border-navy-700 bg-white dark:bg-navy-700">
+        <nav class="fixed top-0 z-50 w-full border-b md:h-15.25 h-24 border-navy-700 bg-navy-700">
             <div class="px-4 flex items-center justify-between flex-wrap h-full">
                 {{-- Branding --}}
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-2 order-1">
