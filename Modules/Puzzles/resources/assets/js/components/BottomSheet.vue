@@ -4,7 +4,7 @@
       <div
         v-if="modelValue"
         class="fixed inset-0 z-50 flex items-end"
-        @click="handleBackdropClick"
+        @click="close"
       >
         <div class="absolute inset-0 bg-black/60" />
 
@@ -15,6 +15,7 @@
           @touchstart="handleTouchStart"
           @touchmove="handleTouchMove"
           @touchend="handleTouchEnd"
+          @click.stop=""
         >
           <div class="flex-shrink-0 py-3 px-4 border-b border-navy-700">
             <div class="w-12 h-1.5 bg-navy-600 rounded-full mx-auto mb-3" />

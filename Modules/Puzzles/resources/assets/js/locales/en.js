@@ -36,9 +36,11 @@ export default {
     your_status: 'Your Status',
     neutral: 'Neutral',
     need: 'Need',
-    have: 'Have',
+    have: 'Have (Collection)',
+    offers: 'Offering for Trading',
     close: 'Close',
     loading: 'Loading pieces...',
+    last_updated: 'Last Updated',
   },
 
   // Matches View

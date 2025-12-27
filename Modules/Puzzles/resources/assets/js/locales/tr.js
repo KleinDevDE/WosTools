@@ -37,8 +37,10 @@ export default {
     neutral: 'Nötr',
     need: 'İhtiyaç',
     have: 'Var',
+    offers: 'Takas için Teklif',
     close: 'Kapat',
     loading: 'Parçalar yükleniyor...',
+    last_updated: 'Son Güncelleme',
   },
 
   // Matches View

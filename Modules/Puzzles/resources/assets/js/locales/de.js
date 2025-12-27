@@ -35,8 +35,9 @@ export default {
     no_pieces: 'Keine Teile in diesem Puzzle gefunden',
     your_status: 'Dein Status',
     neutral: 'Neutral',
-    need: 'Benötigt',
-    have: 'Vorhanden',
+    need: 'Brauche ich',
+    have: 'Habe ich (Sammlung)',
+    offers: 'Biete zum Handeln an',
     close: 'Schließen',
     loading: 'Lade Teile...',
   },
@@ -55,6 +56,7 @@ export default {
     loading: 'Lade Übereinstimmungen...',
     refresh: 'Übereinstimmungen aktualisieren',
     refreshing: 'Aktualisiere...',
+    last_updated: 'Zuletzt aktualisiert',
   },
 
   // Search View

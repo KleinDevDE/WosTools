@@ -67,7 +67,7 @@
               <div class="flex items-center gap-3">
                 <div class="text-2xl">📥</div>
                 <div class="flex-1">
-                  <div class="text-sm font-bold text-white">Brauche ich</div>
+                  <div class="text-sm font-bold text-white">{{ $t('pieces.need') }}</div>
                 </div>
                 <div :class="[
                   'w-6 h-6 rounded border-2 flex items-center justify-center',
@@ -91,7 +91,7 @@
               <div class="flex items-center gap-3">
                 <div class="text-2xl">📦</div>
                 <div class="flex-1">
-                  <div class="text-sm font-bold text-white">Habe ich (Sammlung)</div>
+                  <div class="text-sm font-bold text-white">{{ $t('pieces.have') }}</div>
                 </div>
                 <div :class="[
                   'w-6 h-6 rounded border-2 flex items-center justify-center',
@@ -122,7 +122,7 @@
                 <div class="flex items-center gap-3">
                   <div class="text-2xl">✅</div>
                   <div class="flex-1">
-                    <div class="text-sm font-bold text-white">Biete zum Handeln an</div>
+                    <div class="text-sm font-bold text-white">{{ $t('pieces.offers') }}</div>
                   </div>
                   <div :class="[
                     'w-6 h-6 rounded border-2 flex items-center justify-center',
@@ -222,44 +222,49 @@ async function updatePieceData(updates) {
 
 function toggleNeeds() {
   if (!selectedPiece.value?.is_tradeable) return;
+  // Only one state can be active: need, own, or offers
   updatePieceData({
     needs: !currentState.value.needs,
-    owns: currentState.value.owns,
-    offers: currentState.value.offers,
+    owns: false,
+    offers: 0,
   });
 }
 
 function toggleOwns() {
+  // Only one state can be active: need, own, or offers
   updatePieceData({
-    needs: currentState.value.needs,
+    needs: false,
     owns: !currentState.value.owns,
-    offers: currentState.value.offers,
+    offers: 0,
   });
 }
 
 function toggleOffers() {
   if (!selectedPiece.value?.is_tradeable) return;
+  // Only one state can be active: need, own, or offers
   const newOffers = currentState.value.offers > 0 ? 0 : 1;
   updatePieceData({
-    needs: currentState.value.needs,
-    owns: currentState.value.owns,
+    needs: false,
+    owns: false,
     offers: newOffers,
   });
 }
 
 function incrementOffers() {
+  // Only one state can be active: need, own, or offers
   updatePieceData({
-    needs: currentState.value.needs,
-    owns: currentState.value.owns,
+    needs: false,
+    owns: false,
     offers: currentState.value.offers + 1,
   });
 }
 
 function decrementOffers() {
+  // Only one state can be active: need, own, or offers
   const newOffers = Math.max(0, currentState.value.offers - 1);
   updatePieceData({
-    needs: currentState.value.needs,
-    owns: currentState.value.owns,
+    needs: false,
+    owns: false,
     offers: newOffers,
   });
 }

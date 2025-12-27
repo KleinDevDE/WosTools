@@ -53,7 +53,8 @@ class MatchController extends Controller
                     "album.name->$locale as album_name",
                     'u.id as user_id',
                     'u.username',
-                    'up.offers'
+                    'up.offers',
+                    'up.updated_at as last_updated'
                 )
                 ->orderBy('album.position')
                 ->orderBy('puzzle.position')
@@ -69,6 +70,7 @@ class MatchController extends Controller
                         'puzzle_id' => $piece->puzzle_id,
                         'puzzle_name' => $piece->puzzle_name,
                         'offers' => $piece->offers,
+                        'last_updated' => $piece->last_updated,
                         'user' => [
                             'id' => $piece->user_id,
                             'username' => $piece->username,
@@ -98,7 +100,8 @@ class MatchController extends Controller
                     'album.id as album_id',
                     "album.name->$locale as album_name",
                     'u.id as user_id',
-                    'u.username'
+                    'u.username',
+                    'up.updated_at as last_updated'
                 )
                 ->orderBy('album.position')
                 ->orderBy('puzzle.position')
@@ -117,6 +120,7 @@ class MatchController extends Controller
                             'id' => $piece->user_id,
                             'username' => $piece->username,
                         ],
+                        'last_updated' => $piece->last_updated,
                     ];
                 })
                 ->toArray();
