@@ -26,17 +26,17 @@
         @endphp
 
         {{-- Header --}}
-        <nav class="fixed top-0 z-50 w-full border-b border-navy-700 h-15.25 bg-white dark:bg-navy-700">
-            <div class="px-4 py-3 flex items-center justify-between">
-                <div class="flex items-center gap-10">
-                    {{-- Branding --}}
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                        <x-heroicon-o-sparkles class="w-6 h-6 text-sky-400"/>
-                        <span class="text-lg font-semibold whitespace-nowrap">
-                            Whiteout Survival
-                        </span>
-                    </a>
+        <nav class="fixed top-0 z-50 w-full border-b md:h-15.25 h-24 border-navy-700 bg-white dark:bg-navy-700">
+            <div class="px-4 flex items-center justify-between flex-wrap h-full">
+                {{-- Branding --}}
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-2 order-1">
+                    <x-heroicon-o-sparkles class="w-6 h-6 text-sky-400"/>
+                    <span class="text-lg font-semibold whitespace-nowrap">
+                        WoSTools
+                    </span>
+                </a>
 
+                <div class="flex items-center mx-auto md:py-0 order-3 md:order-2">
                     {{-- Navigation --}}
                     <ul class="flex items-center gap-6 text-sm font-medium">
                         <li>
@@ -61,7 +61,7 @@
                                 x-show="open"
                                 @click.outside="open = false"
                                 x-transition
-                                class="absolute left-0 mt-2 w-44 rounded-md
+                                class="absolute right-0 md:left-0 mt-2 w-44 rounded-md
                                bg-navy-700 border border-navy-600 shadow-lg"
                             >
                                 <a href="{{ route('modules.puzzles.albums') }}"
@@ -99,7 +99,7 @@
                                 x-show="open"
                                 @click.outside="open = false"
                                 x-transition
-                                class="absolute left-0 mt-2 w-44 rounded-md
+                                class="absolute right-0 md:left-0 mt-2 w-44 rounded-md
                                bg-navy-700 border border-navy-600 shadow-lg"
                             >
                                 @can(App\Helpers\Permissions::USERS_SHOW)
@@ -124,7 +124,7 @@
                 </div>
 
                 {{-- Right: Language switcher + User menu --}}
-                <div class="flex items-center gap-2">
+                <div class="flex items-center order-2 md:order-3 row-end-1">
                     {{-- Language Switcher --}}
                     <x-language-switcher/>
 
@@ -132,14 +132,13 @@
                     <div x-data="{ open: false }" class="relative">
                     <button
                         @click="open = !open"
-                        class="flex items-center gap-2 px-3 py-2 rounded-md
-                       hover:bg-navy-600"
+                        class="flex items-center rounded-md
+                       hover:bg-navy-600 gap-1 ml-4 p-1"
                     >
                         <x-heroicon-o-user-circle class="w-6 h-6"/>
                         <span class="text-sm font-medium">
-                    {{ auth()->user()->username }}
-                </span>
-                        <x-heroicon-o-chevron-down class="w-4 h-4"/>
+                            {{ auth()->user()->username }}
+                        </span>
                     </button>
 
                     <div
@@ -173,9 +172,15 @@
         </nav>
 
         {{-- Content --}}
-        <main class="mt-15.25 p-4">
+        <main class="pt-28 md:pt-20 px-6 min-h-[calc(100vh-(var(--spacing)*10))]">
             {{ $slot }}
         </main>
+
+        <div class="py-2">
+            <p class="text-center text-xs text-slate-400">
+                &copy; {{ date('Y') }} KleinDev. All rights reserved.
+            </p>
+        </div>
 
         {{-- Notifications / Scripts --}}
 {{--        @livewireScripts--}}

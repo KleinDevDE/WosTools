@@ -1,7 +1,7 @@
 <div x-data="{ open: false }" class="relative">
     <button
         @click="open = !open"
-        class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-navy-600"
+        class="flex items-center gap-1 rounded-md hover:bg-navy-600 p-1"
         title="{{ __('navigation.language') }}"
     >
         <x-heroicon-o-language class="w-5 h-5"/>
