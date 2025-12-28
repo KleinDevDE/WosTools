@@ -25,148 +25,114 @@
         @endphp
 
         {{-- Header --}}
-        <nav class="fixed top-0 z-50 w-full border-b md:h-15.25 h-24 border-navy-700 bg-navy-700">
-            <div class="px-4 flex items-center justify-between flex-wrap h-full">
+        <nav class="fixed top-0 z-50 w-full border-b border-navy-700 bg-navy-700">
+            <div class="flex flex-wrap items-center justify-between px-4 py-2 md:py-0 md:h-15.25">
                 {{-- Branding --}}
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-2 order-1">
-                    <x-heroicon-o-sparkles class="w-6 h-6 text-sky-400"/>
-                    <span class="text-lg font-semibold whitespace-nowrap">
-                        WoSTools
-                    </span>
+                    <x-heroicon-o-sparkles class="h-6 w-6 text-sky-400"/>
+                    <span class="whitespace-nowrap text-lg font-semibold">WoSTools</span>
                 </a>
 
-                <div class="flex items-center mx-auto md:py-0 order-3 md:order-2">
-                    {{-- Navigation --}}
-                    <ul class="flex items-center gap-6 text-sm font-medium">
-                        <li>
-                            <a href="{{ route('dashboard') }}"
-                               class="{{ $isActive('dashboard') }}">
-                                {{ __('navigation.home') }}
+                {{-- Navigation--}}
+                <ul class="order-last flex w-full items-center justify-center gap-6 py-2 text-sm font-medium md:order-0 md:w-auto md:border-0 md:py-0 order-3 md:order-2">
+                    <li>
+                        <a href="{{ route('dashboard') }}" class="{{ $isActive('dashboard') }}">
+                            {{ __('navigation.home') }}
+                        </a>
+                    </li>
+
+                    @module('Puzzles')
+                    @role('developer')
+                    <li x-data="{ open: false }" class="relative">
+                        <button @click="open = !open" class="flex items-center gap-1 {{ $isActive('module.puzzles.*') }}">
+                            {{ __('navigation.puzzles') }}
+                            <x-heroicon-o-chevron-down class="h-4 w-4"/>
+                        </button>
+
+                        <div
+                            x-show="open"
+                            @click.outside="open = false"
+                            x-transition
+                            class="absolute left-1/2 mt-2 w-44 -translate-x-1/2 rounded-md border border-navy-600 bg-navy-700 shadow-lg md:left-0 md:translate-x-0"
+                        >
+                            <a href="{{ route('modules.puzzles.albums') }}"
+                               class="block rounded-t-md px-4 py-2 text-sm hover:bg-navy-600 {{ $isActive('modules.puzzles.albums') }}">
+                                Albums
                             </a>
-                        </li>
+                            <a href="{{ route('modules.puzzles.puzzles') }}"
+                               class="block px-4 py-2 text-sm hover:bg-navy-600 {{ $isActive('modules.puzzles.puzzles') }}">
+                                Puzzles
+                            </a>
+                            <a href="{{ route('modules.puzzles.pieces') }}"
+                               class="block rounded-b-md px-4 py-2 text-sm hover:bg-navy-600 {{ $isActive('modules.puzzles.pieces') }}">
+                                Pieces
+                            </a>
+                        </div>
+                    </li>
+                    @endrole
+                    @endmodule
 
-                        @module('Puzzles')
-                        @role('developer')
+                    @canany([\App\Helpers\Permissions::USERS_SHOW, \App\Helpers\Permissions::MEDIA_GALLERY_VIEW])
                         <li x-data="{ open: false }" class="relative">
-                            <button
-                                @click="open = !open"
-                                class="flex items-center gap-1 {{ $isActive('module.puzzles.*') }}"
-                            >
-                                {{ __('navigation.puzzles') }}
-                                <x-heroicon-o-chevron-down class="w-4 h-4"/>
-                            </button>
-
-                            <div
-                                x-show="open"
-                                @click.outside="open = false"
-                                x-transition
-                                class="absolute right-0 md:left-0 mt-2 w-44 rounded-md
-                               bg-navy-700 border border-navy-600 shadow-lg"
-                            >
-                                <a href="{{ route('modules.puzzles.albums') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-600 rounded-t-md
-                                  {{ $isActive('modules.puzzles.albums') }}">
-                                    Albums
-                                </a>
-                                <a href="{{ route('modules.puzzles.puzzles') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-600
-                                  {{ $isActive('modules.puzzles.puzzles') }}">
-                                    Puzzles
-                                </a>
-                                <a href="{{ route('modules.puzzles.pieces') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-600  rounded-b-md
-                                  {{ $isActive('modules.puzzles.pieces') }}">
-                                    Pieces
-                                </a>
-                            </div>
-                        </li>
-                        @endrole
-                        @endmodule
-
-                        {{-- Administration Dropdown --}}
-                        @canany([\App\Helpers\Permissions::USERS_SHOW, \App\Helpers\Permissions::MEDIA_GALLERY_VIEW])
-                        <li x-data="{ open: false }" class="relative">
-                            <button
-                                @click="open = !open"
-                                class="flex items-center gap-1 {{ $isActive('admin.*') }}"
-                            >
+                            <button @click="open = !open" class="flex items-center gap-1 {{ $isActive('admin.*') }}">
                                 {{ __('navigation.administration') }}
-                                <x-heroicon-o-chevron-down class="w-4 h-4"/>
+                                <x-heroicon-o-chevron-down class="h-4 w-4"/>
                             </button>
 
                             <div
                                 x-show="open"
                                 @click.outside="open = false"
                                 x-transition
-                                class="absolute right-0 md:left-0 mt-2 w-44 rounded-md
-                               bg-navy-700 border border-navy-600 shadow-lg"
+                                class="absolute left-1/2 mt-2 w-44 -translate-x-1/2 rounded-md border border-navy-600 bg-navy-700 shadow-lg md:left-0 md:translate-x-0"
                             >
                                 @can(App\Helpers\Permissions::USERS_SHOW)
-                                <a href="{{ route('admin.users.list') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-600 rounded-t-md
-                                  {{ $isActive('admin.users.*') }}">
-                                    Users
-                                </a>
+                                    <a href="{{ route('admin.users.list') }}"
+                                       class="block rounded-t-md px-4 py-2 text-sm hover:bg-navy-600 {{ $isActive('admin.users.*') }}">
+                                        Users
+                                    </a>
                                 @endcan
 
                                 @can(App\Helpers\Permissions::MEDIA_GALLERY_VIEW)
-                                <a href="{{ route('admin.media.gallery') }}"
-                                   class="block px-4 py-2 text-sm hover:bg-navy-600 rounded-b-md
-                                  {{ $isActive('admin.media.*') }}">
-                                    Media Gallery
-                                </a>
+                                    <a href="{{ route('admin.media.gallery') }}"
+                                       class="block rounded-b-md px-4 py-2 text-sm hover:bg-navy-600 {{ $isActive('admin.media.*') }}">
+                                        Media Gallery
+                                    </a>
                                 @endcan
                             </div>
                         </li>
-                        @endcanany
-                    </ul>
-                </div>
+                    @endcanany
+                </ul>
 
-                {{-- Right: Language switcher + User menu --}}
-                <div class="flex items-center order-2 md:order-3 row-end-1">
-                    {{-- Language Switcher --}}
+                {{-- Right: Language + User --}}
+                <div class="flex items-center gap-2 order-2 md:order-3">
                     <x-language-switcher/>
 
-                    {{-- User Menu --}}
                     <div x-data="{ open: false }" class="relative">
-                    <button
-                        @click="open = !open"
-                        class="flex items-center rounded-md
-                       hover:bg-navy-600 gap-1 ml-4 p-1"
-                    >
-                        <x-heroicon-o-user-circle class="w-6 h-6"/>
-                        <span class="text-sm font-medium">
-                            {{ auth()->user()->username }}
-                        </span>
-                    </button>
+                        <button @click="open = !open" class="flex items-center gap-1 rounded-md p-1 hover:bg-navy-600">
+                            <x-heroicon-o-user-circle class="h-6 w-6"/>
+                            <span class="text-sm font-medium">{{ auth()->user()->username }}</span>
+                        </button>
 
-                    <div
-                        x-show="open"
-                        @click.outside="open = false"
-                        x-transition
-                        class="absolute right-0 mt-2 w-44 rounded-md
-                       bg-navy-700 border border-navy-600 shadow-lg"
-                    >
-                        <div class="px-4 py-2 text-xs text-slate-400
-                            border-b border-navy-600">
-                            Signed in as<br>
-                            <span class="font-medium text-slate-200">
-                        {{ auth()->user()->username }}
-                    </span>
+                        <div
+                            x-show="open"
+                            @click.outside="open = false"
+                            x-transition
+                            class="absolute right-0 mt-2 w-44 rounded-md border border-navy-600 bg-navy-700 shadow-lg"
+                        >
+                            <div class="border-b border-navy-600 px-4 py-2 text-xs text-slate-400">
+                                Signed in as<br>
+                                <span class="font-medium text-slate-200">{{ auth()->user()->username }}</span>
+                            </div>
+
+                            <form method="GET" action="{{ route('auth.logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-navy-600">
+                                    {{ __('navigation.logout') }}
+                                </button>
+                            </form>
                         </div>
-
-                        <form method="GET" action="{{ route('auth.logout') }}">
-                            @csrf
-                            <button type="submit"
-                                    class="w-full text-left px-4 py-2 text-sm
-                                   text-red-400 hover:bg-navy-600">
-                                {{ __('navigation.logout') }}
-                            </button>
-                        </form>
                     </div>
                 </div>
-                </div>
-
             </div>
         </nav>
 
