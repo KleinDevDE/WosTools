@@ -1,6 +1,19 @@
 <template>
   <div class="min-h-screen bg-navy-950">
     <NavBar :title="$t('albums.title')" />
+      <div class="p-6">
+          <router-link
+              v-if="matchCount > 0"
+              to="/puzzles/matches"
+              class="flex items-center justify-self-center p-2 text-glow-400 transition-colors relative"
+          >
+              <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              You have {{ matchCount > 9 ? '9+' : matchCount }} matches, check them here!
+          </router-link>
+      </div>
 
     <div class="max-w-7xl mx-auto px-4 py-6 pb-safe">
       <LoadingSpinner v-if="albumStore.loading && albums.length === 0" />
@@ -58,14 +71,17 @@
 import { computed, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAlbumStore } from '../stores/albumStore';
+import { useMatchStore } from '../stores/matchStore';
 import NavBar from '../components/NavBar.vue';
 import LoadingSpinner from '../components/LoadingSpinner.vue';
 
 const { t: $t } = useI18n();
 
 const albumStore = useAlbumStore();
+const matchStore = useMatchStore();
 
 const albums = computed(() => albumStore.albums);
+const matchCount = computed(() => matchStore.totalMatches);
 
 onMounted(async () => {
   await albumStore.fetchAlbums();

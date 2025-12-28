@@ -4,6 +4,7 @@
       <button
         v-if="showBack"
         @click="goBack"
+        :class="{ 'hidden': !showBack }"
         class="p-2 -ml-2 text-glow-400 hover:text-glow-200 hover:scale-125 hover:cursor-pointer transition-colors"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

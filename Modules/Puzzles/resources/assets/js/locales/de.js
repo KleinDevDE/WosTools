@@ -44,7 +44,7 @@ export default {
 
   // Matches View
   matches: {
-    title: 'Tausch-Übereinstimmungen',
+    title: 'Matches',
     you_can_get: 'Du kannst erhalten',
     you_can_help: 'Du kannst helfen',
     match: 'Treffer',
@@ -52,9 +52,9 @@ export default {
     copy_name: 'Name kopieren',
     player: 'Spieler',
     needs_from: 'Benötigt von',
-    no_matches: 'Keine Tausch-Übereinstimmungen gefunden',
+    no_matches: 'Keine Matches gefunden',
     loading: 'Lade Übereinstimmungen...',
-    refresh: 'Übereinstimmungen aktualisieren',
+    refresh: 'Matches aktualisieren',
     refreshing: 'Aktualisiere...',
     last_updated: 'Zuletzt aktualisiert',
   },
