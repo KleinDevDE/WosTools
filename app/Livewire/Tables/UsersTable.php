@@ -64,6 +64,8 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ->iconPosition(IconPosition::After)->icon(Heroicon::Clipboard)
                 ->copyable()->copyMessageDuration(500)
                 ->sortable(),
+            TextColumn::make('locale')
+                ->formatStateUsing(fn(string $state) => ['en' => 'English', 'de' => 'German', 'tr' => 'Turkish'][$state] ?? "N/A"),
             TextColumn::make('last_login_at', 'last_login_at')
                 ->sortable(),
             TextColumn::make('roles')
@@ -239,6 +241,12 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ->schema([
                     TextInput::make('username')
                         ->required()->unique(User::class, 'username'),
+                    Select::make('locale')
+                        ->options(['en' => 'English', 'de' => 'German', 'tr' => 'Turkish'])
+                        ->afterStateUpdated(function (Select $component, User $user) {
+                            $select = $component->getContainer()->getComponent('roles');
+                            $select->state($user->locale);
+                        }),
                     Select::make('roles')
                         ->multiple()
                         ->options($selectableRoles)
