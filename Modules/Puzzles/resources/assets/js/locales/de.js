@@ -10,7 +10,7 @@ export default {
 
   // Albums View
   albums: {
-    title: 'Alben',
+    title: 'Album | Alben',
     puzzles: 'Puzzles',
     progress: 'Fortschritt',
     no_albums: 'Keine Alben gefunden',
@@ -19,7 +19,7 @@ export default {
 
   // Puzzles View
   puzzles: {
-    title: 'Puzzles',
+    title: 'Puzzle | Puzzles',
     pieces: 'Teile',
     collected: 'Gesammelt',
     no_puzzles: 'Keine Puzzles in diesem Album gefunden',
@@ -28,7 +28,7 @@ export default {
 
   // Pieces View
   pieces: {
-    title: 'Teile',
+    title: 'Teil | Teile',
     stars: 'Sterne | Stern | Sterne',
     cannot_trade: 'Nicht tauschbar',
     cannot_trade_message: 'Dieses Teil kann nicht getauscht werden (5★ oder höher)',
@@ -36,8 +36,11 @@ export default {
     your_status: 'Dein Status',
     neutral: 'Neutral',
     need: 'Brauche ich',
+    need_description: 'Du hast dieses Teil noch nicht',
     have: 'Habe ich (Sammlung)',
+    have_description: 'Du hast dieses Teil, aber nicht doppelt zum Tauschen',
     offers: 'Biete zum Handeln an',
+    offers_description: 'Du kannst dieses Teil anderen anbieten, ein oder mehrere',
     close: 'Schließen',
     loading: 'Lade Teile...',
   },

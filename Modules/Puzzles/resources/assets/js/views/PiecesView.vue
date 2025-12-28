@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-navy-950">
-    <NavBar :title="puzzle?.name || $t('pieces.title')" show-back />
+    <NavBar :title="puzzle?.name || $t('pieces.title', 2)" show-back />
 
     <div class="max-w-7xl mx-auto px-4 py-6 pb-safe">
       <LoadingSpinner v-if="puzzleStore.loading && !puzzle" />
@@ -68,6 +68,7 @@
                 <div class="text-2xl">📥</div>
                 <div class="flex-1">
                   <div class="text-sm font-bold text-white">{{ $t('pieces.need') }}</div>
+                  <div class="text-xs text-navy-400 mt-1">{{ $t('pieces.need_description') }}</div>
                 </div>
                 <div :class="[
                   'w-6 h-6 rounded border-2 flex items-center justify-center',
@@ -92,6 +93,7 @@
                 <div class="text-2xl">📦</div>
                 <div class="flex-1">
                   <div class="text-sm font-bold text-white">{{ $t('pieces.have') }}</div>
+                  <div class="text-xs text-navy-400 mt-1">{{ $t('pieces.have_description') }}</div>
                 </div>
                 <div :class="[
                   'w-6 h-6 rounded border-2 flex items-center justify-center',
@@ -123,6 +125,7 @@
                   <div class="text-2xl">✅</div>
                   <div class="flex-1">
                     <div class="text-sm font-bold text-white">{{ $t('pieces.offers') }}</div>
+                    <div class="text-xs text-navy-400 mt-1">{{ $t('pieces.offers_description') }}</div>
                   </div>
                   <div :class="[
                     'w-6 h-6 rounded border-2 flex items-center justify-center',

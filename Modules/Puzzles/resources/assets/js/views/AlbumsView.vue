@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen bg-navy-950">
-    <NavBar :title="$t('albums.title')" />
+    <NavBar :title="$t('albums.title', 2)" />
       <div class="p-6">
           <router-link
               v-if="matchCount > 0"

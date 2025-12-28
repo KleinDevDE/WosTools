@@ -10,7 +10,7 @@ export default {
 
   // Albums View
   albums: {
-    title: 'Albums',
+    title: 'Album | Albums',
     puzzles: 'puzzles',
     progress: 'Progress',
     no_albums: 'No albums found',
@@ -19,7 +19,7 @@ export default {
 
   // Puzzles View
   puzzles: {
-    title: 'Puzzles',
+    title: 'Puzzle | Puzzles',
     pieces: 'pieces',
     collected: 'Collected',
     no_puzzles: 'No puzzles found in this album',
@@ -28,7 +28,7 @@ export default {
 
   // Pieces View
   pieces: {
-    title: 'Pieces',
+    title: 'Piece | Pieces',
     stars: 'Stars | Star | Stars',
     cannot_trade: 'Cannot Trade',
     cannot_trade_message: 'This piece cannot be traded (5★ or higher)',
@@ -36,8 +36,11 @@ export default {
     your_status: 'Your Status',
     neutral: 'Neutral',
     need: 'Need',
+    need_description: "You don't have this piece yet",
     have: 'Have (Collection)',
+    have_description: 'You have this piece, but not duplicated to trade',
     offers: 'Offering for Trading',
+    offers_description: 'You can offer this piece to others, one or multiple',
     close: 'Close',
     loading: 'Loading pieces...',
   },
