@@ -34,7 +34,7 @@
 
             {{-- Footer text --}}
             <p class="text-center text-navy-500 text-sm mt-6">
-                &copy; {{ date('Y') }} WoSTools. Community Project.
+                &copy; {{ date('Y') }} KleinDev. All rights reserved.
             </p>
         </div>
 
