@@ -12,7 +12,7 @@
         </svg>
       </button>
 
-      <h1 class="text-xl font-bold text-white flex-1" :class="{ 'text-center': !showBack }">
+      <h1 class="text-xl font-bold text-white flex-1">
         {{ title }}
       </h1>
 
