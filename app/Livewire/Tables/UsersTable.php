@@ -3,6 +3,7 @@
 namespace App\Livewire\Tables;
 
 use App\Helpers\Permissions;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\UserInvitationService;
 use Filament\Actions\Action;
@@ -17,6 +18,7 @@ use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
@@ -64,6 +66,9 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ->sortable(),
             TextColumn::make('last_login_at', 'last_login_at')
                 ->sortable(),
+            TextColumn::make('roles')
+                ->getStateUsing(fn(User $record) => $record->roles->sortBy('weight')->pluck('name')->join(', '))
+                ->sortable(),
             TextColumn::make('status')
                 ->badge()
                 ->color(fn(User $record) => match ($record->status) {
@@ -80,7 +85,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
     {
         $actions = [];
         if (auth()->user()->can(Permissions::USERS_LOCK)) {
-            BulkAction::make('Lock')
+            $actions[] = BulkAction::make('Lock')
                 //Confirm
                 ->requiresConfirmation()
                 ->action(function (Collection $records): void {
@@ -91,7 +96,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
         }
 
         if (auth()->user()->can(Permissions::USERS_LOCK)) {
-            BulkAction::make('Unlock')
+            $actions[] = BulkAction::make('Unlock')
                 ->requiresConfirmation()
                 ->action(function (Collection $records): void {
                     foreach ($records as $record) {
@@ -100,6 +105,17 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 });
         }
 
+        $actions[] = BulkAction::make('edit')
+            ->requiresConfirmation()
+            ->schema([
+                Select::make('status')
+                ->options([
+                    User::STATUS_ACTIVE => 'Active',
+                    User::STATUS_LOCKED => 'Locked',
+                    User::STATUS_INVITED => 'Invited',
+                ])
+            ])
+        ->action(fn (Collection $records, array $data) => $this->updateStatus($data['status']));
         return $actions;
     }
 
@@ -125,6 +141,8 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                             ->send();
                         $action->halt();
                     }
+
+                    Log::channel("audit")->info("Actor: ".auth()->user()->username." (".auth()->id().") | Invited user $data[username]");
 
                     //Show modal/schema with token
                     Notification::make()
@@ -152,6 +170,17 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
 
     protected function getTableActions(): array
     {
+        $selectableRoles = Role::query()->get()
+            ->mapWithKeys(function(Role $role) {
+                $displayName = $role->name;
+                if (!auth()->user()->canManageRole($role)) {
+                    $displayName .= " - (No rights to change role, read-only)";
+                    return [$role->name => $displayName];
+                }
+
+                return [$role->name => $displayName];
+            })->toArray();
+
         return [
             Action::make('copy_inv_url')
                 //Only if status === invited
@@ -167,13 +196,18 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ]),
             Action::make('lock')
                 ->requiresConfirmation()
-                ->visible(fn(User $user) => $user->status === User::STATUS_ACTIVE && $user->id !== auth()->id())
+                ->visible(fn(User $user) =>
+                    auth()->user()->can(Permissions::USERS_LOCK)
+                    && $user->status === User::STATUS_ACTIVE
+                    && $user->id !== auth()->id()
+                    && auth()->user()->canManageUser($user)
+                )
                 ->icon(Heroicon::LockClosed)
                 ->button()->color('danger')
                 ->size(Size::ExtraSmall)
                 ->action(function(User $user) {
                     $this->updateStatus(User::STATUS_LOCKED, $user);
-                    \Log::channel("audit")->info("User $user->username locked by ".auth()->user()->username);
+                    \Log::channel("audit")->info("Actor: ".auth()->user()->username." (".auth()->id().") | Locked user $user->username");
                     Notification::make()
                         ->title('User locked')
                         ->success()
@@ -184,11 +218,16 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ->requiresConfirmation()
                 ->button()->color('success')
                 ->size(Size::ExtraSmall)
-                ->visible(fn(User $user) => $user->status === User::STATUS_LOCKED && $user->id !== auth()->id())
+                ->visible(fn(User $user) =>
+                    auth()->user()->can(Permissions::USERS_LOCK)
+                    && $user->status === User::STATUS_LOCKED
+                    && $user->id !== auth()->id()
+                    && auth()->user()->canManageUser($user)
+                )
                 ->icon(Heroicon::LockOpen)
                 ->action(function(User $user) {
                     $this->updateStatus(User::STATUS_ACTIVE, $user);
-                    \Log::channel("audit")->info("User $user->username unlocked by ".auth()->user()->username);
+                    \Log::channel("audit")->info("Actor: ".auth()->user()->username." (".auth()->id().") | Unlocked user $user->username");
                     Notification::make()
                         ->title('User unlocked')
                         ->success()
@@ -196,10 +235,43 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                         ->send();
                 }),
             EditAction::make('edit')
+                ->visible(fn(User $user) => auth()->user()->canManageUser($user))
                 ->schema([
                     TextInput::make('username')
-                        ->required()->unique(User::class, 'username')
-                ]),
+                        ->required()->unique(User::class, 'username'),
+                    Select::make('roles')
+                        ->multiple()
+                        ->options($selectableRoles)
+                        ->afterStateHydrated(function (Select $component, User $user) {
+                            $select = $component->getContainer()->getComponent('roles');
+                            $select->state($user->roles->pluck('name')->toArray());
+                        })
+                ])
+                ->before(function (EditAction $action, User $user, array $data): void {
+                    $userRoles = $user->roles->pluck('name')->toArray();
+
+                    //Allow if the role is lower than auth user
+                    $data['roles'] = array_filter($data['roles'], function ($roleName) {
+                        return auth()->user()->canManageRole($roleName);
+                    });
+
+                    //Add currently linked roles if they are higher than auth user
+                    foreach ($userRoles as $roleName) {
+                        if (!auth()->user()->canManageRole($roleName)) {
+                            $data['roles'][] = $roleName;
+                        }
+                    }
+
+                    //Skip if no changes
+                    if (empty(array_diff($userRoles, $data['roles']))) {
+                        return;
+                    }
+
+                    Log::channel("audit")->info("Actor: ".auth()->user()->username." (".auth()->id().") | Changed roles of user $user->username to ".implode(", ", $data['roles']));
+
+                    $user->syncRoles($data['roles']);
+                })
+            ,
             DeleteAction::make()
                 ->requiresConfirmation(),
         ];
@@ -209,6 +281,14 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
     {
         if ($user === null && empty($this->getSelectedTableRecordsQuery())) {
             return;
+        }
+
+        if (!empty($user)) {
+            Log::channel("audit")->info("Actor: ".auth()->user()->username." (".auth()->id().") | Changed status of user $user->username to $status");
+        } else {
+            foreach ($this->getSelectedTableRecordsQuery()->get() as $record) {
+                Log::channel("audit")->info("Actor: ".auth()->user()->username." (".auth()->id().") | Changed status of user $record->username to $status");
+            }
         }
 
         ($user ?? $this->getSelectedTableRecordsQuery())->update(['status' => $status]);

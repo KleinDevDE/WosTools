@@ -21,9 +21,11 @@ class LocalSeeder extends Seeder
                 'password' => Hash::make(hash('sha256', 'test')),
                 'status' => User::STATUS_ACTIVE
             ]);
-            $user->assignRole('developer');
+            $user->assignRole(['user', 'management', 'developer']);
 
-            User::factory(29)->create();
+            User::factory(29)->afterCreating(function (User $user) {
+                $user->assignRole('user');
+            })->create();
         }
     }
 }
