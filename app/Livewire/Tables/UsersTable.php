@@ -263,7 +263,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                     }
 
                     //Skip if no changes
-                    if (empty(array_diff($userRoles, $data['roles']))) {
+                    if (empty(array_diff($data['roles'], $userRoles))) {
                         return;
                     }
 
