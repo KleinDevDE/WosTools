@@ -14,7 +14,7 @@
             <div class="bg-navy-800 rounded-xl border border-navy-700 p-6 grid grid-cols-2 gap-4">
                 <h2 class="text-xl font-semibold text-white mb-4 col-span-2">{{ __('profile.username_section') }}</h2>
 
-                <div>
+                <div class="col-span-2 md:col-span-1">
                     <label for="display_name" class="block mb-2 text-sm font-medium text-navy-100">
                         {{ __('profile.display_name') }}
                     </label>
@@ -37,7 +37,7 @@
                     @enderror
                 </div>
 
-                <div>
+                <div class="col-span-2 md:col-span-1">
                     <label for="username" class="block mb-2 text-sm font-medium text-navy-100">
                         {{ __('profile.username') }}
                     </label>
