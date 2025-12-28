@@ -55,6 +55,7 @@ class PuzzleAlbumsImporter extends Importer
             $album = new PuzzlesAlbum([
                 'position' => $albumPosition + 1
             ]);
+            unset($this->data['id']);
         } else {
             $album = PuzzlesAlbum::find($this->data['id']);
             if (!$album) {

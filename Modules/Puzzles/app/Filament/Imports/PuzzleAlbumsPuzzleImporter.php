@@ -60,6 +60,7 @@ class PuzzleAlbumsPuzzleImporter extends Importer
             $puzzle = new PuzzlesAlbumPuzzle([
                 'position' => $position + 1
             ]);
+            unset($this->data['id']);
         } else {
             $puzzle = PuzzlesAlbumPuzzle::find($this->data['id']);
             if (!$puzzle) {
