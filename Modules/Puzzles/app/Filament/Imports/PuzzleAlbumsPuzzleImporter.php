@@ -66,9 +66,9 @@ class PuzzleAlbumsPuzzleImporter extends Importer
             if (!$puzzle) {
                 throw new RowImportFailedException("No puzzle found with ID [{$this->data['id']}].");
             }
-
-            $puzzle->name = $this->data['name'];
         }
+
+        $puzzle->name = $this->data['name'];
 
         return $puzzle;
     }
