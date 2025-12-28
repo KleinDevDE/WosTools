@@ -13,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\IconPosition;
+use Filament\Support\Enums\Size;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Collection;
@@ -59,7 +60,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
             TextColumn::make('username')
                 ->searchable()
                 ->iconPosition(IconPosition::After)->icon(Heroicon::Clipboard)
-                ->copyable()->copyMessage("Username copied to clipboard!")
+                ->copyable()->copyMessageDuration(500)
                 ->sortable(),
             TextColumn::make('last_login_at', 'last_login_at')
                 ->sortable(),
@@ -155,7 +156,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
             Action::make('copy_inv_url')
                 //Only if status === invited
                 ->hidden(fn(User $user) => $user->status !== User::STATUS_INVITED)
-                ->label("Copy Invitation")
+                ->label("Copy Invitation URL")
                 ->button()
                 ->icon(Heroicon::Clipboard)
                 ->iconPosition(IconPosition::After)
@@ -200,7 +201,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                         ->required()->unique(User::class, 'username')
                 ]),
             DeleteAction::make()
-                ->requiresConfirmation()
+                ->requiresConfirmation(),
         ];
     }
 

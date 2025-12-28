@@ -158,8 +158,41 @@
         {{-- Clipboard helper --}}
         <script>
             document.addEventListener('livewire:init', () => {
-                Livewire.on('copy-to-clipboard', ({text}) => {
+                Livewire.on('copy-to-clipboard', ({text, element}) => {
                     navigator.clipboard.writeText(text);
+
+                    if (element !== undefined) {
+                        const button = document.getElementById(element);
+                        const tooltip = document.createElement('div');
+                        tooltip.innerText = 'Copied!';
+
+                        //Place above the element
+                        const rect = button.getBoundingClientRect();
+                        tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+                        tooltip.style.top = `${rect.top + window.scrollY - 30}px`;
+                        tooltip.style.transform = 'translateX(-50%)';
+
+                        // Basis-Klassen mit Transition
+                        tooltip.className = 'absolute z-50 px-2 py-1 text-xs text-white bg-navy-800 rounded transition-opacity duration-300 opacity-0';
+                        document.body.appendChild(tooltip);
+
+                        // FadeIn: Nach dem Hinzufügen opacity auf 100 setzen
+                        setTimeout(() => {
+                            tooltip.classList.remove('opacity-0');
+                            tooltip.classList.add('opacity-100');
+                        }, 10);
+
+                        // FadeOut: Nach 700ms opacity wieder auf 0, dann entfernen
+                        setTimeout(() => {
+                            tooltip.classList.remove('opacity-100');
+                            tooltip.classList.add('opacity-0');
+
+                            // Element erst nach der Fade-Out-Animation entfernen
+                            setTimeout(() => {
+                                document.body.removeChild(tooltip);
+                            }, 300); // Wartet auf die 300ms transition-duration
+                        }, 500);
+                    }
                 });
             });
         </script>
