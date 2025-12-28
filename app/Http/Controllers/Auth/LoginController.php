@@ -27,7 +27,7 @@ class LoginController extends Controller
             return redirect()->back();
         }
 
-        if (!Auth::attempt(['username' => $loginRequest->username, 'password' => $loginRequest->password])) {
+        if (!Auth::attempt(['username' => $loginRequest->username, 'password' => $loginRequest->password], true)) {
             return redirect()->back()->withErrors(['username' => 'Invalid credentials']);
         }
 
