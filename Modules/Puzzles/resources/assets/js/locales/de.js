@@ -43,6 +43,8 @@ export default {
     offers_description: 'Du kannst dieses Teil anderen anbieten, ein oder mehrere',
     close: 'Schließen',
     loading: 'Lade Teile...',
+    album: 'Album',
+    puzzle: 'Puzzle',
   },
 
   // Matches View

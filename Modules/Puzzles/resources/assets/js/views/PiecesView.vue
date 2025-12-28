@@ -1,8 +1,10 @@
 <template>
   <div class="min-h-screen bg-navy-950">
-    <NavBar :title="puzzle?.name || $t('pieces.title', 2)" show-back />
+    <NavBar :title="$t('pieces.title', 2)" show-back />
 
     <div class="max-w-7xl mx-auto px-4 py-6 pb-safe">
+      <h1 v-if="puzzle?.name" class="text-2xl font-bold text-navy-400 mb-6">{{ puzzle.name }}</h1>
+
       <LoadingSpinner v-if="puzzleStore.loading && !puzzle" />
 
       <div v-else-if="puzzle" class="space-y-6">

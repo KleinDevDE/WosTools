@@ -43,6 +43,8 @@ export default {
     offers_description: 'Bu parçayı başkalarına teklif edebilirsin, bir veya birden fazla',
     close: 'Kapat',
     loading: 'Parçalar yükleniyor...',
+    album: 'Albüm',
+    puzzle: 'Yapboz',
   },
 
   // Matches View

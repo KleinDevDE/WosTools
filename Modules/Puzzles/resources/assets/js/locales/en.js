@@ -43,6 +43,8 @@ export default {
     offers_description: 'You can offer this piece to others, one or multiple',
     close: 'Close',
     loading: 'Loading pieces...',
+    album: 'Album',
+    puzzle: 'Puzzle',
   },
 
   // Matches View
