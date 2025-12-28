@@ -8,7 +8,6 @@
     <title>Puzzle Trading</title>
 
     <meta name="theme-color" content="#0a0f1c">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     @vite(['resources/assets/css/app.css', 'resources/assets/js/app.js'], 'build-puzzles')
