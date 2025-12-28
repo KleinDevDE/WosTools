@@ -41,6 +41,7 @@ class ManageUsers extends Command
                 'create' => 'Create a new user',
                 'reset-password' => 'Reset a user password',
                 'change-roles' => 'Change user roles',
+                'update-status' => 'Update user status',
                 'exit' => 'Exit'
             ]
         );
@@ -54,7 +55,10 @@ class ManageUsers extends Command
                 break;
             case 'change-roles':
                 $this->changeRoles();
-                breaK;
+                break;
+            case 'update-status':
+                $this->updateStatus();
+                break;
         }
     }
 
@@ -109,6 +113,31 @@ class ManageUsers extends Command
 
         User::where('username', $username)->first()
             ->update(['password' => hash('sha256', $password)]);
+    }
+
+    private function updateStatus()
+    {
+        $username = text(
+            label: 'Username',
+            validate: 'required|string'
+        );
+
+        if (!User::where('username', $username)->exists()) {
+            error("User with username $username does not exist!");
+            return;
+        }
+
+        $user = User::where('username', $username)->first();
+        $status = select(
+            label: 'Status',
+            options: [
+                User::STATUS_ACTIVE => 'Active',
+                User::STATUS_LOCKED => 'Locked',
+            ],
+            default: $user->status
+        );
+
+        $user->update(['status' => $status]);
     }
 
     private function changeRoles(): void
