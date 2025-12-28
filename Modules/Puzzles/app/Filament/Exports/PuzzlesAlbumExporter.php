@@ -15,6 +15,7 @@ class PuzzlesAlbumExporter extends Exporter
     public static function getColumns(): array
     {
         return [
+            ExportColumn::make('id')->label('ID'),
             ExportColumn::make('name.de')
                 ->label('Album (Deutsch)')
                 ->state(fn (PuzzlesAlbum $record) => $record->getTranslation('name', 'de')),

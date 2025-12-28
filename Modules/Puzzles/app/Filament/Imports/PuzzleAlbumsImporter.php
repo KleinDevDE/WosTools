@@ -2,6 +2,7 @@
 
 namespace Modules\Puzzles\Filament\Imports;
 
+use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
@@ -16,34 +17,54 @@ class PuzzleAlbumsImporter extends Importer
     public static function getColumns(): array
     {
         return [
-            ImportColumn::make('name.de')
+            ImportColumn::make('id')
+                ->requiredMapping()
+                ->label('ID'),
+            ImportColumn::make('name:de')
                 ->requiredMapping()
                 ->label('Album (Deutsch)'),
-            ImportColumn::make('name.en')
+            ImportColumn::make('name:en')
+                ->requiredMapping()
                 ->label('Album (English)'),
-            ImportColumn::make('name.tr')
+            ImportColumn::make('name:tr')
+                ->requiredMapping()
                 ->label('Album (Türkçe)'),
         ];
     }
 
+    public function remapData(): void
+    {
+        parent::remapData();
+        $this->data = [
+            'id' => $this->data['id'] ?? null,
+            'name' => [
+                'de' => $this->data['name:de'] ?? "",
+                'en' => $this->data['name:en'] ?? "",
+                'tr' => $this->data['name:tr'] ?? "",
+            ]
+        ];
+    }
+
+    /**
+     * @throws RowImportFailedException
+     */
     public function resolveRecord(): ?Model
     {
-        $translations = [];
-        if (!empty($this->data['name.de'])) $translations['de'] = $this->data['name.de'];
-        if (!empty($this->data['name.en'])) $translations['en'] = $this->data['name.en'];
-        if (!empty($this->data['name.tr'])) $translations['tr'] = $this->data['name.tr'];
+        $albumPosition = PuzzlesAlbum::query()->max('position') ?? 0;
+        if (empty($this->data['id'])) {
+            $album = new PuzzlesAlbum([
+                'position' => $albumPosition + 1
+            ]);
+        } else {
+            $album = PuzzlesAlbum::find($this->data['id']);
+            if (!$album) {
+                throw new RowImportFailedException("No album found with ID [{$this->data['id']}].");
+            }
 
-        // Fallback: If only one language provided, use it for all
-        if (count($translations) === 1) {
-            $fallback = reset($translations);
-            $translations = ['de' => $fallback, 'en' => $fallback, 'tr' => $fallback];
+            $album->name = $this->data['name'];
         }
 
-        $albumPosition = PuzzlesAlbum::query()->max('position') ?? 0;
-        return PuzzlesAlbum::firstOrNew([
-            'name' => $translations,
-            'position' => $albumPosition + 1
-        ]);
+        return $album;
     }
 
     public static function getCompletedNotificationBody(Import $import): string
