@@ -8,10 +8,11 @@ use Filament\Actions\Exports\Models\Export;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Number;
 use Modules\Puzzles\Models\PuzzlesAlbumPuzzle;
+use Modules\Puzzles\Models\PuzzlesAlbumPuzzlePiece;
 
 class PuzzlesAlbumPuzzlePieceExporter extends Exporter
 {
-    protected static ?string $model = PuzzlesAlbumPuzzle::class;
+    protected static ?string $model = PuzzlesAlbumPuzzlePiece::class;
 
     public static function getColumns(): array
     {
