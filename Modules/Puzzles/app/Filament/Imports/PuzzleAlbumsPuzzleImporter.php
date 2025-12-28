@@ -20,7 +20,7 @@ class PuzzleAlbumsPuzzleImporter extends Importer
     {
         return [
             ImportColumn::make('id')->label('ID')->requiredMapping(),
-            ImportColumn::make('album_id')->label('Album ID')->requiredMapping(),
+            ImportColumn::make('puzzles_album_id')->label('Album ID')->requiredMapping(),
             ImportColumn::make('name:de')->label('Puzzle (Deutsch)')->requiredMapping(),
             ImportColumn::make('name:en')->label('Puzzle (English)')->requiredMapping(),
             ImportColumn::make('name:tr')->label('Puzzle (Türkçe)')->requiredMapping(),
@@ -32,7 +32,7 @@ class PuzzleAlbumsPuzzleImporter extends Importer
         parent::remapData();
         $this->data = [
             'id' => $this->data['id'] ?? null,
-            'puzzles_album_id' => $this->data['album_id'] ?? null,
+            'puzzles_album_id' => $this->data['puzzles_album_id'] ?? null,
             'name' => [
                 'de' => $this->data['name:de'] ?? "",
                 'en' => $this->data['name:en'] ?? "",
