@@ -29,10 +29,11 @@ class LocaleController extends Controller
 
         // Store in session
         Session::put('locale', $locale);
+        app()->setLocale($locale);
 
         // Store in localStorage via cookie for Vue.js SPA
         cookie()->queue('locale', $locale, 525600); // 1 year
 
-        return back()->with('success', 'Language changed successfully.');
+        return back()->with('success', __('common.language_changed_successfully'));
     }
 }

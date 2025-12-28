@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function() {
         return [
             'id' => auth()->id(),
             'name' => auth()->user()->username,
+            'display_name' => auth()->user()->getName(),
             'roles' => auth()->user()->roles->pluck('name'),
             'permissions' => auth()->user()->getAllPermissions()->pluck('name'),
         ];

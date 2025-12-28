@@ -53,6 +53,7 @@ class MatchController extends Controller
                     "album.name->$locale as album_name",
                     'u.id as user_id',
                     'u.username',
+                    'u.display_name',
                     'up.offers',
                     'up.updated_at as last_updated'
                 )
@@ -74,6 +75,7 @@ class MatchController extends Controller
                         'user' => [
                             'id' => $piece->user_id,
                             'username' => $piece->username,
+                            'display_name' => $piece->display_name ?? $piece->username,
                         ],
                     ];
                 })
@@ -101,6 +103,7 @@ class MatchController extends Controller
                     "album.name->$locale as album_name",
                     'u.id as user_id',
                     'u.username',
+                    'u.display_name',
                     'up.updated_at as last_updated'
                 )
                 ->orderBy('album.position')
@@ -119,6 +122,7 @@ class MatchController extends Controller
                         'user' => [
                             'id' => $piece->user_id,
                             'username' => $piece->username,
+                            'display_name' => $piece->display_name ?? $piece->username,
                         ],
                         'last_updated' => $piece->last_updated,
                     ];

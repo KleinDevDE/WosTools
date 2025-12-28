@@ -20,4 +20,5 @@ return [
     'success' => 'Success',
     'warning' => 'Warning',
     'info' => 'Info',
+    'language_changed_successfully' => 'Language changed successfully.',
 ];

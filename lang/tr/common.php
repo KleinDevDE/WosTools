@@ -20,4 +20,5 @@ return [
     'success' => 'Başarılı',
     'warning' => 'Uyarı',
     'info' => 'Bilgi',
+    'language_changed_successfully' => 'Dil başarıyla değiştirildi.',
 ];

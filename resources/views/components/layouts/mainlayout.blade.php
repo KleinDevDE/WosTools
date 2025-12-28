@@ -124,6 +124,10 @@
                                 <span class="font-medium text-slate-200">{{ auth()->user()->username }}</span>
                             </div>
 
+                            <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm text-slate-200 hover:bg-navy-600">
+                                {{ __('navigation.profile') }}
+                            </a>
+
                             <form method="GET" action="{{ route('auth.logout') }}">
                                 @csrf
                                 <button type="submit" class="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-navy-600">
@@ -138,6 +142,7 @@
 
         {{-- Content --}}
         <main class="pt-28 md:pt-20 px-6 min-h-[calc(100vh-(var(--spacing)*10))]">
+            @include('flash-messages')
             {{ $slot }}
         </main>
 

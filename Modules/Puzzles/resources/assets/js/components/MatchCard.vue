@@ -45,12 +45,12 @@ async function copyToClipboard(text) {
         <div class="grid grid-cols-2 border-t border-navy-700">
             <!-- User info and action -->
             <div class="flex items-center justify-between pt-2 text-xs">
-                <div @click="copyToClipboard(match.user.username)">
+                <div @click="copyToClipboard(match.user.display_name)">
                     <div class="text-navy-400 mb-1">
                         {{ $t('matches.player') }}
                     </div>
                     <div class="flex text-white font-bold">
-                        {{ match.user.username }}
+                        {{ match.user.display_name }}
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
                              fill="currentColor" class="size-4 text-navy-500">
                             <path fill-rule="evenodd"

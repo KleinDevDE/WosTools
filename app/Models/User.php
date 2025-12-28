@@ -27,6 +27,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'username',
+        'display_name',
         'email',
         'password',
         'status',
@@ -68,5 +69,10 @@ class User extends Authenticatable
     public function ownInvitation():BelongsTo
     {
         return $this->belongsTo(UserInvitation::class, 'id', 'user_id');
+    }
+
+    public function getName(): string
+    {
+        return $this->display_name ?? $this->username;
     }
 }
