@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Modules\Puzzles\Http\Resources\AlbumResource;
 use Modules\Puzzles\Models\PuzzlesAlbum;
+use Modules\Puzzles\Models\PuzzlesAlbumPuzzlePiece;
 
 class AlbumController extends Controller
 {
@@ -26,7 +27,7 @@ class AlbumController extends Controller
                         $join->on('puzzles_album_puzzle_pieces.id', '=', 'puzzles_user_puzzle_pieces.puzzles_album_puzzle_piece_id')
                             ->where('puzzles_user_puzzle_pieces.user_id', '=', $userId);
                     })
-                    ->selectRaw('COUNT(*) as total, SUM(CASE WHEN puzzles_user_puzzle_pieces.offers > 0 THEN 1 ELSE 0 END) as completed')
+                    ->selectRaw('COUNT(*) as total, SUM(CASE WHEN puzzles_user_puzzle_pieces.offers > 0 OR puzzles_user_puzzle_pieces.owns THEN 1 ELSE 0 END) as completed')
                     ->first();
 
                 $album->total_pieces = $stats->total ?? 0;

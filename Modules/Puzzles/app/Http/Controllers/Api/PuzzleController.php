@@ -27,7 +27,7 @@ class PuzzleController extends Controller
 
         $puzzles->each(function ($puzzle) {
             $puzzle->completed_pieces = $puzzle->pieces->filter(function ($piece) {
-                return $piece->userStates->first()?->state === 'have';
+                return $piece->userStates->first()?->owns || $piece->userStates->first()?->offers > 0;
             })->count();
         });
 
@@ -57,8 +57,6 @@ class PuzzleController extends Controller
         $puzzle->completed_pieces = $puzzle->pieces->filter(function ($piece) {
             return $piece->user_state === 'have';
         })->count();
-
-        $puzzle->pieces_count = $puzzle->pieces->count();
 
         return response()->json([
             'data' => new PuzzleResource($puzzle),
