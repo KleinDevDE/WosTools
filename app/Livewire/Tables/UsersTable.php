@@ -164,19 +164,40 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                     'text' => $user->invitations()->first()?->invitationURL,
                     'element' => "copy-inv-url-$user->id"
                 ]),
+            Action::make('lock')
+                ->requiresConfirmation()
+                ->visible(fn(User $user) => $user->status === User::STATUS_ACTIVE)
+                ->icon(Heroicon::LockClosed)
+                ->button()->color('danger')
+                ->size(Size::ExtraSmall)
+                ->action(function(User $user) {
+                    $this->updateStatus(User::STATUS_LOCKED, $user);
+                    \Log::channel("audit")->info("User $user->username locked by ".auth()->user()->username);
+                    Notification::make()
+                        ->title('User locked')
+                        ->success()
+                        ->duration(10000)
+                        ->send();
+                }),
+            Action::make('unlock')
+                ->requiresConfirmation()
+                ->button()->color('success')
+                ->size(Size::ExtraSmall)
+                ->visible(fn(User $user) => $user->status === User::STATUS_LOCKED)
+                ->icon(Heroicon::LockOpen)
+                ->action(function(User $user) {
+                    $this->updateStatus(User::STATUS_ACTIVE, $user);
+                    \Log::channel("audit")->info("User $user->username unlocked by ".auth()->user()->username);
+                    Notification::make()
+                        ->title('User unlocked')
+                        ->success()
+                        ->duration(10000)
+                        ->send();
+                }),
             EditAction::make('edit')
                 ->schema([
                     TextInput::make('username')
-                        ->required()->unique(User::class, 'username'),
-                    Select::make('status')
-                        ->options([
-                            User::STATUS_ACTIVE => 'Active',
-                            User::STATUS_LOCKED => 'Locked',
-                            User::STATUS_INVITED => 'Invited',
-                        ])
-                        ->default(function (User $record) {
-                            return $record->status;
-                        })
+                        ->required()->unique(User::class, 'username')
                 ]),
             DeleteAction::make()
                 ->requiresConfirmation()

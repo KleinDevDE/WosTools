@@ -23,7 +23,8 @@ class LoginController extends Controller
         }
 
         if ($existingUser->status === User::STATUS_LOCKED) {
-            return redirect()->back()->withErrors(['username' => 'Your account is disabled. Please contact the management']);
+            \Session::flash('error_account_locked', true);
+            return redirect()->back();
         }
 
         if (!Auth::attempt(['username' => $loginRequest->username, 'password' => $loginRequest->password])) {

@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn (Request $request) => route('auth.login'));
         $middleware->appendToGroup('web', \App\Http\Middleware\NotificationSession::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\SetLocale::class);
+        $middleware->appendToGroup('web', \App\Http\Middleware\NotLocked::class);
         $middleware->appendToGroup('api', \App\Http\Middleware\SetLocale::class);
 
         // Sanctum SPA authentication

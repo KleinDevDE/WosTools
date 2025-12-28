@@ -145,6 +145,11 @@ return [
             'level' => 'debug'
         ],
 
+        'audit' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/audit.log'),
+            'level' => 'debug'
+        ]
     ],
 
 ];

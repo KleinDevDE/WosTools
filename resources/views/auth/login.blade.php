@@ -6,6 +6,19 @@
         class="space-y-6"
     >
         @csrf
+        @if(Session::has('error_account_locked'))
+            <div class="bg-danger-600/60 rounded-xl p-4 mb-8 text-center w-fit mx-auto">
+                <div class="flex flex-col items-center gap-2">
+                    <span class="flex items-center text-xl font-bold text-white">
+                        <x-heroicon-o-exclamation-triangle class="w-8 h-8 text-white mr-2 text-3xl"/>
+                        {{__('dashboard.locked_message.title')}}
+                    </span>
+                    <span class=" text-sm">
+                        {{__('dashboard.locked_message.description')}}
+                    </span>
+                </div>
+            </div>
+        @endif
 
         {{-- Username --}}
         <div>
