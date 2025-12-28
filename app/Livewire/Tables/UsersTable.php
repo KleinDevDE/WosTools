@@ -167,7 +167,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ]),
             Action::make('lock')
                 ->requiresConfirmation()
-                ->visible(fn(User $user) => $user->status === User::STATUS_ACTIVE)
+                ->visible(fn(User $user) => $user->status === User::STATUS_ACTIVE && $user->id !== auth()->id())
                 ->icon(Heroicon::LockClosed)
                 ->button()->color('danger')
                 ->size(Size::ExtraSmall)
@@ -184,7 +184,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ->requiresConfirmation()
                 ->button()->color('success')
                 ->size(Size::ExtraSmall)
-                ->visible(fn(User $user) => $user->status === User::STATUS_LOCKED)
+                ->visible(fn(User $user) => $user->status === User::STATUS_LOCKED && $user->id !== auth()->id())
                 ->icon(Heroicon::LockOpen)
                 ->action(function(User $user) {
                     $this->updateStatus(User::STATUS_ACTIVE, $user);
