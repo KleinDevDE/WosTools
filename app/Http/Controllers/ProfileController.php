@@ -44,7 +44,7 @@ class ProfileController extends Controller
             if (!Hash::check($request->current_password, $user->password)) {
                 return redirect()->back()
                     ->withInput($request->except(['current_password', 'new_password']))
-                    ->withErrors(['current_password' => 'Current password is incorrect.']);
+                    ->withErrors(['current_password' => __('profile.password_incorrect')]);
             }
 
             // Set new password (will be hashed by User model's 'hashed' cast)
@@ -57,6 +57,6 @@ class ProfileController extends Controller
         }
 
         return redirect()->route('profile.show')
-            ->with('success', 'Profile updated successfully.');
+            ->with('success', __('profile.updated'));
     }
 }
