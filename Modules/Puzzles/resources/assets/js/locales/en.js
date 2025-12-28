@@ -15,6 +15,7 @@ export default {
     progress: 'Progress',
     no_albums: 'No albums found',
     loading: 'Loading albums...',
+      found_matches: 'You have {count} Matches, check them now!'
   },
 
   // Puzzles View
@@ -34,12 +35,11 @@ export default {
     cannot_trade_message: 'This piece cannot be traded (5★ or higher)',
     no_pieces: 'No pieces found in this puzzle',
     your_status: 'Your Status',
-    neutral: 'Neutral',
     need: 'Need',
     need_description: "You don't have this piece yet",
-    have: 'Have (Collection)',
-    have_description: 'You have this piece, but not duplicated to trade',
-    offers: 'Offering for Trading',
+    own: 'Have',
+    own_description: 'You have this piece, but not duplicated to trade',
+    offers: 'Offers to Trade',
     offers_description: 'You can offer this piece to others, one or multiple',
     close: 'Close',
     loading: 'Loading pieces...',

@@ -17,7 +17,6 @@ class PieceResource extends JsonResource
             'stars' => $this->stars,
             'is_tradeable' => $this->isTradeable(),
             'image_url' => $this->getFirstMediaUrl('image'),
-            'user_state' => $this->when(isset($this->user_state), $this->user_state ?? 'neutral'),
         ];
     }
 }

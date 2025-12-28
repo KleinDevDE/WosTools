@@ -94,8 +94,8 @@
               <div class="flex items-center gap-3">
                 <div class="text-2xl">📦</div>
                 <div class="flex-1">
-                  <div class="text-sm font-bold text-white">{{ $t('pieces.have') }}</div>
-                  <div class="text-xs text-navy-400 mt-1">{{ $t('pieces.have_description') }}</div>
+                  <div class="text-sm font-bold text-white">{{ $t('pieces.own') }}</div>
+                  <div class="text-xs text-navy-400 mt-1">{{ $t('pieces.own_description') }}</div>
                 </div>
                 <div :class="[
                   'w-6 h-6 rounded border-2 flex items-center justify-center',

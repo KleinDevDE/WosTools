@@ -15,6 +15,7 @@ export default {
     progress: 'Fortschritt',
     no_albums: 'Keine Alben gefunden',
     loading: 'Lade Alben...',
+    found_matches: 'Du hast {count} Matches, sieh sie dir gleich an!'
   },
 
   // Puzzles View
@@ -34,11 +35,10 @@ export default {
     cannot_trade_message: 'Dieses Teil kann nicht getauscht werden (5★ oder höher)',
     no_pieces: 'Keine Teile in diesem Puzzle gefunden',
     your_status: 'Dein Status',
-    neutral: 'Neutral',
-    need: 'Brauche ich',
+    need: 'Benötigt',
     need_description: 'Du hast dieses Teil noch nicht',
-    have: 'Habe ich (Sammlung)',
-    have_description: 'Du hast dieses Teil, aber nicht doppelt zum Tauschen',
+    own: 'Im Besitz',
+    own_description: 'Du hast dieses Teil, aber nicht doppelt zum Tauschen',
     offers: 'Biete zum Handeln an',
     offers_description: 'Du kannst dieses Teil anderen anbieten, ein oder mehrere',
     close: 'Schließen',

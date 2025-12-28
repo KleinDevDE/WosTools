@@ -64,10 +64,6 @@ class AlbumController extends Controller
             $puzzle->completed_pieces = $puzzle->pieces->filter(function ($piece) {
                 return $piece->userStates->first()?->state === 'have';
             })->count();
-
-            $puzzle->pieces->each(function ($piece) {
-                $piece->user_state = $piece->userStates->first()?->state ?? 'neutral';
-            });
         });
 
         return response()->json([

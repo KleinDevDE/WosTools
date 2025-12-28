@@ -50,10 +50,6 @@ class PuzzleController extends Controller
                 }]);
         }]);
 
-        $puzzle->pieces->each(function ($piece) {
-            $piece->user_state = $piece->userStates->first()?->state ?? 'neutral';
-        });
-
         $puzzle->completed_pieces = $puzzle->pieces->filter(function ($piece) {
             return $piece->user_state === 'have';
         })->count();

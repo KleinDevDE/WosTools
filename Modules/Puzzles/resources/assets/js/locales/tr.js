@@ -15,6 +15,7 @@ export default {
     progress: 'İlerleme',
     no_albums: 'Albüm bulunamadı',
     loading: 'Albümler yükleniyor...',
+    found_matches: '{count} eşleşmen var, hemen kontrol et!'
   },
 
   // Puzzles View
@@ -34,11 +35,10 @@ export default {
     cannot_trade_message: 'Bu parça takas edilemez (5★ veya daha yüksek)',
     no_pieces: 'Bu yapbozda parça bulunamadı',
     your_status: 'Durumun',
-    neutral: 'Nötr',
     need: 'İhtiyaç',
     need_description: 'Bu parçaya henüz sahip değilsin',
-    have: 'Var',
-    have_description: 'Bu parçaya sahipsin, ancak takas için yedek yok',
+    own: 'Var',
+    own_description: 'Bu parçaya sahipsin, ancak takas için yedek yok',
     offers: 'Takas için Teklif',
     offers_description: 'Bu parçayı başkalarına teklif edebilirsin, bir veya birden fazla',
     close: 'Kapat',
