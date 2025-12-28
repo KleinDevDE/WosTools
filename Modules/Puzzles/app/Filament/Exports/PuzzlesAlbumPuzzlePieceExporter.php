@@ -16,8 +16,9 @@ class PuzzlesAlbumPuzzlePieceExporter extends Exporter
     public static function getColumns(): array
     {
         return [
-            ExportColumn::make('puzzle.album.name')->label('Album'),
-            ExportColumn::make('puzzle.name')->label('Puzzle'),
+            ExportColumn::make('id')->label('ID'),
+            ExportColumn::make('puzzle.album.id')->label('Album ID'),
+            ExportColumn::make('puzzle.id')->label('Puzzle ID'),
             ExportColumn::make('stars')->label('Piece Stars'),
         ];
     }

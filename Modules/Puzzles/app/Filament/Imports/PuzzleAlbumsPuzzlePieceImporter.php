@@ -2,10 +2,11 @@
 
 namespace Modules\Puzzles\Filament\Imports;
 
+use Filament\Actions\Imports\Exceptions\RowImportFailedException;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Number;
 use Modules\Puzzles\Models\PuzzlesAlbum;
 use Modules\Puzzles\Models\PuzzlesAlbumPuzzle;
@@ -18,61 +19,53 @@ class PuzzleAlbumsPuzzlePieceImporter extends Importer
     public static function getColumns(): array
     {
         return [
-            ImportColumn::make('album')->label('Album'),
-            ImportColumn::make('puzzle')->label('Puzzle'),
+            ImportColumn::make('id')->label('ID'),
+            ImportColumn::make('puzzles_album_id')->label('Album ID'),
+            ImportColumn::make('puzzles_album_puzzle_id')->label('Puzzle ID'),
             ImportColumn::make('stars')->label('Piece Stars'),
         ];
     }
 
-    public function remapData(): void
+    /**
+     * @throws RowImportFailedException
+     */
+    public function resolveRecord(): ?Model
     {
-        parent::remapData();
-        if (str_starts_with($this->data['album'], '{')) {
-            $this->data['album'] = json_decode($this->data['album'], true)['name'] ?? null;
+        if (empty($this->data['puzzles_album_id'])) {
+            throw new RowImportFailedException("Album ID cannot be empty");
         }
 
-        $albumPosition = PuzzlesAlbum::query()->max('position') ?? 0;
-        $album = PuzzlesAlbum::query()->firstOrCreate(
-            ['name' => $this->data['album']],
-            ['position' => $albumPosition + 1]
-        );
+        $album = PuzzlesAlbum::find($this->data['puzzles_album_id']);
+        if (!$album) {
+            throw new RowImportFailedException("No album found with ID {$this->data['puzzles_album_id']}");
+        }
 
-        $puzzlePosition = PuzzlesAlbumPuzzle::query()
-            ->where('puzzles_album_id', $album->id)->max('position') ?? 0;
-        $puzzle = PuzzlesAlbumPuzzle::query()->firstOrCreate(
-            [
-                'puzzles_album_id' => $album->id,
-                'name' => $this->data['puzzle'],
-            ],
-            [
-                'position' => $puzzlePosition + 1,
-            ]
-        );
+        if (empty($this->data['puzzles_album_puzzle_id'])) {
+            throw new RowImportFailedException("Puzzle ID cannot be empty");
+        }
+
+        $puzzle = PuzzlesAlbumPuzzle::find($this->data['puzzles_album_puzzle_id']);
+        if (!$puzzle) {
+            throw new RowImportFailedException("No puzzle found with ID [{$this->data['puzzles_album_puzzle_id']}].");
+        }
 
         $piecePosition = PuzzlesAlbumPuzzlePiece::query()
             ->where('puzzles_album_id', $album->id)
             ->where('puzzles_album_puzzle_id', $puzzle->id)
             ->max('position') ?? 0;
-        $this->data = [
-            'puzzles_album_id' => $album->id,
-            'puzzles_album_puzzle_id' => $puzzle->id,
-            'stars' => $this->data['stars'],
-            'position' => $piecePosition + 1
-        ];
-    }
+        if (empty($this->data['id'])) {
+            $piece = new PuzzlesAlbumPuzzlePiece([
+                'position' => $piecePosition + 1,
+            ]);
+            unset($this->data['id']);
+        } else {
+            $piece = PuzzlesAlbumPuzzlePiece::find($this->data['id']);
+            if (!$piece) {
+                throw new RowImportFailedException("No puzzle piece found with ID {$this->data['id']}");
+            }
+        }
 
-    public function resolveRecord(): ?PuzzlesAlbumPuzzlePiece
-    {
-        return PuzzlesAlbumPuzzlePiece::query()->firstOrNew(
-            [
-                'puzzles_album_id' => $this->data['puzzles_album_id'],
-                'puzzles_album_puzzle_id' => $this->data['puzzles_album_puzzle_id'],
-                'position' => $this->data['position']
-            ],
-            [
-                'stars' => $this->data['stars'],
-            ]
-        );
+        return $piece;
     }
 
     public static function getCompletedNotificationBody(Import $import): string
