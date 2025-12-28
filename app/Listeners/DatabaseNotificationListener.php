@@ -40,7 +40,7 @@ class DatabaseNotificationListener
         //Get last notification
         $databaseNotification = DatabaseNotification::query()
             ->whereMorphedTo('notifiable', $currentUser)
-            ->whereRaw("NOT (data ? 'notified_at')")
+            ->whereRaw("NOT (data ?? 'notified_at')") //json has no field 'notified_at' in data
             ->where('created_at', '>=', now()->subMinutes(5))
             ->orderBy('created_at', 'desc')
             ->first();
