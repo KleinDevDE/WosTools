@@ -25,7 +25,7 @@
         @endphp
 
         {{-- Header --}}
-        <nav class="fixed top-0 z-50 w-full border-b border-navy-700 bg-navy-700">
+        <nav class="fixed top-0 z-20 w-full border-b border-navy-700 bg-navy-700">
             <div class="flex flex-wrap items-center justify-between px-4 py-2 md:py-0 md:h-15.25">
                 {{-- Branding --}}
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-2 order-1">
@@ -105,6 +105,8 @@
 
                 {{-- Right: Language + User --}}
                 <div class="flex items-center gap-2 order-2 md:order-3">
+                    <livewire:database-notifications></livewire:database-notifications>
+
                     <x-language-switcher/>
 
                     <div x-data="{ open: false }" class="relative">

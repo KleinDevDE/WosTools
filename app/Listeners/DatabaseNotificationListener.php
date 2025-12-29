@@ -2,11 +2,9 @@
 
 namespace App\Listeners;
 
+use App\Models\User;
 use Filament\Notifications\Events\DatabaseNotificationsSent;
-use Filament\Notifications\Notification;
 use Illuminate\Notifications\DatabaseNotification;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class DatabaseNotificationListener
 {
@@ -26,13 +24,13 @@ class DatabaseNotificationListener
         try {
             $reflection = new \ReflectionClass(DatabaseNotificationsSent::class);
             $property = $reflection->getProperty('user');
-            $property->setAccessible(true);
             $currentUser = $property->getValue($event);
         } catch (\ReflectionException $exception) {
             report($exception);
             return;
         }
 
+        /** @var User|null $currentUser */
         if ($currentUser === null) {
             return;
         }
