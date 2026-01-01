@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Objects\PlayerStats;
 use App\Services\WhiteoutSurvivalApiService;
 use Illuminate\Console\Command;
 
@@ -34,7 +35,7 @@ class FetchPlayerData extends Command
 
         info("Fetching player data for ID: {$playerId}");
 
-        $playerData = $apiService->getPlayerInfo($playerId);
+        $playerData = $apiService->getPlayerStats($playerId);
 
         if ($playerData === null) {
             error("Failed to fetch player data for ID {$playerId}. This may be due to an invalid player ID, network connectivity issues, or a problem with the Whiteout Survival API. Please verify the ID and check the application logs for more details.");
@@ -49,10 +50,10 @@ class FetchPlayerData extends Command
     /**
      * Display player data in a formatted table
      *
-     * @param array $playerData
+     * @param PlayerStats $playerStats
      * @return void
      */
-    private function displayPlayerData(array $playerData): void
+    private function displayPlayerData(PlayerStats $playerStats): void
     {
         $this->newLine();
         $this->line('<fg=green>Player Information:</>');
@@ -60,7 +61,7 @@ class FetchPlayerData extends Command
 
         // Prepare data for table display
         $tableData = [];
-        foreach ($playerData as $key => $value) {
+        foreach ($playerStats->toArray() as $key => $value) {
             if (is_array($value)) {
                 $value = json_encode($value, JSON_PRETTY_PRINT);
             }
