@@ -5,6 +5,15 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Service for interacting with the Whiteout Survival external API.
+ *
+ * This service is responsible for building and sending HTTP requests to the
+ * official Whiteout Survival gift code API, including generating the required
+ * request signatures and headers. It currently provides functionality to
+ * retrieve player information by player ID and handles logging of any
+ * non-successful responses or exceptions encountered during API calls.
+ */
 class WhiteoutSurvivalApiService
 {
     private const API_BASE_URL = 'https://wos-giftcode-api.centurygame.com';
@@ -24,7 +33,7 @@ class WhiteoutSurvivalApiService
             $timestamp = (int)(microtime(true) * 1000);
             $data = [
                 'fid' => $playerId,
-                'time' => (string)$timestamp,
+                'time' => $timestamp,
             ];
 
             $sign = $this->generateSignature($data);
@@ -76,12 +85,8 @@ class WhiteoutSurvivalApiService
         // Sort data by key
         ksort($data);
 
-        // Build query string
-        $parts = [];
-        foreach ($data as $key => $value) {
-            $parts[] = $key . '=' . $value;
-        }
-        $queryString = implode('&', $parts);
+        // Build URL-encoded query string
+        $queryString = http_build_query($data, '', '&', PHP_QUERY_RFC3986);
 
         // Append secret and generate MD5 hash
         $stringToSign = $queryString . self::API_SECRET;

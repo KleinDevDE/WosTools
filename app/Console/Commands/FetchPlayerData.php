@@ -37,7 +37,7 @@ class FetchPlayerData extends Command
         $playerData = $apiService->getPlayerInfo($playerId);
 
         if ($playerData === null) {
-            error('Failed to fetch player data. Check the player ID or try again later.');
+            error("Failed to fetch player data for ID {$playerId}. This may be due to an invalid player ID, network connectivity issues, or a problem with the Whiteout Survival API. Please verify the ID and check the application logs for more details.");
             return self::FAILURE;
         }
 
