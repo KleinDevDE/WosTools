@@ -5,7 +5,7 @@ namespace App\Objects;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 
-readonly class PlayerStats implements Jsonable, Arrayable
+readonly class PlayerInfo implements Jsonable, Arrayable
 {
     public function __construct(
         public int $playerID,

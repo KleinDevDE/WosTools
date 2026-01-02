@@ -10,16 +10,17 @@ use Illuminate\Support\Str;
 
 class UserInvitationService
 {
-    public static function inviteUser(string $username): ?UserInvitation
+    public static function inviteUser(int $playerId, string $playerName): ?UserInvitation
     {
         try {
-            if (User::where('username', $username)->exists()) {
-                throw new \Exception('User already exists');
+            if (User::where('player_id', $playerId)->exists()) {
+                throw new \Exception('Player already exists');
             }
             \DB::beginTransaction();
 
             $user = User::create([
-                'username' => $username,
+                'player_id' => $playerId,
+                'player_name' => $playerName,
                 'password' => \Hash::make(Str::random(100)),
                 'status' => User::STATUS_INVITED
             ]);

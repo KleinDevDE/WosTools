@@ -26,7 +26,8 @@ class User extends Authenticatable
     ];
 
     protected $fillable = [
-        'username',
+        'player_id',
+        'player_name',
         'display_name',
         'email',
         'password',
@@ -73,6 +74,6 @@ class User extends Authenticatable
 
     public function getName(): string
     {
-        return $this->display_name ?? $this->username;
+        return $this->display_name ?? $this->player_name;
     }
 }

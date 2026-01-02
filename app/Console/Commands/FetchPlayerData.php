@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Objects\PlayerStats;
+use App\Objects\PlayerInfo;
 use App\Services\WhiteoutSurvivalApiService;
 use Illuminate\Console\Command;
 
@@ -50,10 +50,10 @@ class FetchPlayerData extends Command
     /**
      * Display player data in a formatted table
      *
-     * @param PlayerStats $playerStats
+     * @param PlayerInfo $playerStats
      * @return void
      */
-    private function displayPlayerData(PlayerStats $playerStats): void
+    private function displayPlayerData(PlayerInfo $playerStats): void
     {
         $this->newLine();
         $this->line('<fg=green>Player Information:</>');

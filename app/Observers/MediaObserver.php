@@ -10,7 +10,7 @@ class MediaObserver
     {
         if (auth()->check()) {
             $media->setCustomProperty('uploaded_by', auth()->id());
-            $media->setCustomProperty('uploaded_by_username', auth()->user()->username);
+            $media->setCustomProperty('uploaded_by_username', auth()->user()->getName());
         }
     }
 
@@ -18,7 +18,7 @@ class MediaObserver
     {
         if (auth()->check()) {
             $media->setCustomProperty('last_modified_by', auth()->id());
-            $media->setCustomProperty('last_modified_by_username', auth()->user()->username);
+            $media->setCustomProperty('last_modified_by_username', auth()->user()->getName());
         }
     }
 }

@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
+use Illuminate\Support\Facades\Cache;
 
 trait WoSAPITrait
 {
@@ -14,6 +15,9 @@ trait WoSAPITrait
     private const API_BASE_URL = 'https://wos-giftcode-api.centurygame.com';
     private const API_SECRET = 'tB87#kPtkxqOS2';
     private const CORS_ORIGIN = 'https://wos-giftcode.centurygame.com';
+    private const RATE_LIMIT_KEY = 'wos_api_rate_limit';
+    private const RATE_LIMIT_MAX = 29;
+    private const RATE_LIMIT_WINDOW = 60;
 
     public function __construct()
     {
@@ -27,6 +31,8 @@ trait WoSAPITrait
     }
 
     protected function request(string $method, string $endpoint, array $queryParams = [], array $postData = []): ?Response {
+        $this->waitForRateLimit();
+
         $options = [];
 
         if (!empty($queryParams)) {
@@ -39,11 +45,41 @@ trait WoSAPITrait
         }
 
         try {
-            return $this->client->request($method, self::API_BASE_URL . $endpoint, $options);
+            $response = $this->client->request($method, self::API_BASE_URL . $endpoint, $options);
+            $this->incrementRateLimit();
+            return $response;
         } catch (GuzzleException $e) {
             report($e);
             return null;
         }
+    }
+
+    private function waitForRateLimit(): void
+    {
+        $attempts = Cache::get(self::RATE_LIMIT_KEY, 0);
+
+        if ($attempts >= self::RATE_LIMIT_MAX) {
+            $ttl = Cache::get(self::RATE_LIMIT_KEY . '_ttl');
+            if ($ttl) {
+                $waitTime = max(0, $ttl - time());
+                if ($waitTime > 0) {
+                    sleep($waitTime);
+                    Cache::forget(self::RATE_LIMIT_KEY);
+                    Cache::forget(self::RATE_LIMIT_KEY . '_ttl');
+                }
+            }
+        }
+    }
+
+    private function incrementRateLimit(): void
+    {
+        $attempts = Cache::get(self::RATE_LIMIT_KEY, 0);
+
+        if ($attempts === 0) {
+            Cache::put(self::RATE_LIMIT_KEY . '_ttl', time() + self::RATE_LIMIT_WINDOW, self::RATE_LIMIT_WINDOW);
+        }
+
+        Cache::put(self::RATE_LIMIT_KEY, $attempts + 1, self::RATE_LIMIT_WINDOW);
     }
 
     private function generateSignature(array $data): string

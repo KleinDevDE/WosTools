@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Objects\PlayerStats;
+use App\Objects\PlayerInfo;
 use App\Traits\WoSAPITrait;
 
 class WhiteoutSurvivalApiService
@@ -10,7 +10,7 @@ class WhiteoutSurvivalApiService
     use WoSAPITrait;
     private const API_PLAYER_ENDPOINT = '/api/player';
 
-    public function getPlayerStats(int $playerID): ?PlayerStats
+    public function getPlayerStats(int $playerID): ?PlayerInfo
     {
         if (!\Validator::validate(['playerID' => $playerID], [
             'playerID' => 'required|integer',
@@ -28,7 +28,7 @@ class WhiteoutSurvivalApiService
             return null;
         }
 
-        return new PlayerStats(
+        return new PlayerInfo(
             $data["data"]["fid"],
             $data["data"]["nickname"],
             $data["data"]["kid"],
