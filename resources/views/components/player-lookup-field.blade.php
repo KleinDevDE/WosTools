@@ -82,17 +82,15 @@
 
             <!-- Player Info -->
             <div class="flex-1">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white" x-text="playerData?.playerName"></h3>
+                <div class="flex justify-start items-center">
                     <img
-                        x-show="playerData?.playerAvatarURL"
-                        :src="playerData?.playerAvatarURL"
+                        x-show="playerData?.furnaceLevelIcon"
+                        :src="playerData?.furnaceLevelIcon"
                         alt="Player Avatar"
-                        class="w-16 h-16 rounded-full border-2 border-primary-500"
+                        class="w-8 h-8"
                     >
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white" x-text="playerData?.playerName"></h3>
                 </div>
-
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white" x-text="playerData?.playerName"></h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                     ID: <span x-text="playerData?.playerID"></span>
                 </p>
