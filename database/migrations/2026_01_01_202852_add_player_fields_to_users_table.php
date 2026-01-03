@@ -24,6 +24,7 @@ return new class extends Migration
         //Delete username
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('username');
+            $table->string('player_name')->nullable()->after('player_id')->change();
         });
     }
 
@@ -33,12 +34,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('username')->nullable(false);
+            $table->string('username')->nullable(true)->after('id');
         });
         DB::table('users')->update(['username' => DB::raw('player_name')]);
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['invited_by']);
-            $table->dropColumn(['player_id', 'player_name', 'display_name', 'invited_by', 'token', 'locale']);
+            $table->string('username')->nullable(false)->after('id')->change();
+            $table->dropColumn(['player_id', 'player_name']);
         });
     }
 };
