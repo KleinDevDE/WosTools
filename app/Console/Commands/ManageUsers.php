@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use App\Services\WhiteoutSurvivalApiService;
 use Illuminate\Console\Command;
 
 use Illuminate\Support\Str;
@@ -64,15 +65,22 @@ class ManageUsers extends Command
 
     private function createUser(): void
     {
-        $username = text(
-            label: 'Username',
+        $playerID = text(
+            label: 'Player ID',
             validate: 'required|string'
         );
 
-        if (User::where('username', $username)->exists()) {
-            error("User with username $username already exists!");
+        if (User::where('player_id', $playerID)->exists()) {
+            error("User with player_id $playerID already exists!");
             return;
         }
+
+        $playerStats = app(WhiteoutSurvivalApiService::class)->getPlayerStats($playerID);
+        $playerName = text(
+            label: 'Player Name',
+            default: $playerStats?->playerName ?? 0,
+            validate: 'required|string'
+        );
 
         $password = text(
             label: 'Password',
@@ -85,20 +93,21 @@ class ManageUsers extends Command
         }
 
         User::create([
-            'username' => $username,
+            'player_id' => $playerID,
+            'player_name' => $playerName,
             'password' => hash('sha256', $password),
         ]);
     }
 
     private function resetUserPassword(): void
     {
-        $username = text(
-            label: 'Username',
+        $playerID = text(
+            label: 'Player ID',
             validate: 'required|string'
         );
 
-        if (!User::where('username', $username)->exists()) {
-            error("User with username $username does not exist!");
+        if (!User::where('player_id', $playerID)->exists()) {
+            error("User with player-id $playerID does not exist!");
             return;
         }
 
@@ -111,23 +120,23 @@ class ManageUsers extends Command
             $password = Str::random();
         }
 
-        User::where('username', $username)->first()
+        User::where('player_id', $playerID)->first()
             ->update(['password' => hash('sha256', $password)]);
     }
 
     private function updateStatus()
     {
-        $username = text(
-            label: 'Username',
+        $playerID = text(
+            label: 'Player ID',
             validate: 'required|string'
         );
 
-        if (!User::where('username', $username)->exists()) {
-            error("User with username $username does not exist!");
+        if (!User::where('player_id', $playerID)->exists()) {
+            error("User with player-id $playerID does not exist!");
             return;
         }
 
-        $user = User::where('username', $username)->first();
+        $user = User::where('player_id', $playerID)->first();
         $status = select(
             label: 'Status',
             options: [
@@ -142,17 +151,17 @@ class ManageUsers extends Command
 
     private function changeRoles(): void
     {
-        $username = text(
-            label: 'Username',
+        $playerID = text(
+            label: 'Player ID',
             validate: 'required|string'
         );
 
-        if (!User::where('username', $username)->exists()) {
-            error("User with username $username does not exist!");
+        if (!User::where('player_id', $playerID)->exists()) {
+            error("User with player-id $playerID does not exist!");
             return;
         }
 
-        $user = User::where('username', $username)->first();
+        $user = User::where('player_id', $playerID)->first();
         $roles = multiselect(
             label: 'Role',
             options: Role::pluck('name', 'name')->toArray(),
