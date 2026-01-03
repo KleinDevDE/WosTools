@@ -274,7 +274,6 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                     Notification::make()
                         ->title('Invitation created')
                         ->success()
-                        ->id("copy-inv-url-{$invitation->id}")
                         ->body($invitation->invitationURL)
                         ->duration(10000)
                         ->actions([
