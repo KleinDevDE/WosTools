@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use \Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
+use Sentry\Laravel\Integration;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,7 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        Integration::handles($exceptions);
     })->withSchedule(function (Schedule $schedule): void {
         $schedule->command('backup:run')->daily()->name('Backup')->withoutOverlapping();
     })
