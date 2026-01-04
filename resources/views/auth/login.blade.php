@@ -23,10 +23,10 @@
         {{-- Username --}}
         <div>
             <label
-                for="username"
+                for="player_id"
                 class="block mb-2 text-sm font-medium text-navy-100"
             >
-                Username
+                Player-ID
             </label>
 
             <div class="flex rounded-xl overflow-hidden border border-white/10 bg-navy-800 focus-within:ring-2 focus-within:ring-glow-400/60 transition">
@@ -44,12 +44,12 @@
 
                 <input
                     type="text"
-                    id="username"
-                    name="username"
+                    id="player_id"
+                    name="player_id"
                     autocomplete="username"
                     class="w-full bg-transparent px-4 py-3 text-navy-50 placeholder-navy-400 focus:outline-none border-0"
-                    placeholder="Enter your username"
-                    value="{{ old('username') }}"
+                    placeholder="Enter your player-id"
+                    value="{{ old('player_id') }}"
                     autofocus
                 />
             </div>
