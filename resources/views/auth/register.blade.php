@@ -1,84 +1,77 @@
 <x-auth.layout>
+    <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-800">
+        <div class="flex items-center gap-4">
+            @if($playerProfile ?? false)
+                <img
+                    src="{{ $playerProfile->player_avatar_url }}"
+                    alt="Player Avatar"
+                    class="w-16 h-16 rounded-full border-2 border-primary-500">
+            @else
+                <div class="w-16 h-16 rounded-full border-2 border-gray-400 dark:border-gray-600 bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-500 dark:text-gray-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/>
+                    </svg>
+                </div>
+            @endif
+            <div class="flex-1">
+                <div class="flex justify-start items-center">
+                    @if($playerProfile ?? false)
+                        <img
+                            src="{{ $playerProfile->furnace_level_icon }}"
+                            alt="Furnace Level"
+                            class="w-8 h-8">
+                    @endif
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $userInvitation?->user?->player_name ?? '???' }}</h3>
+                </div>
+                <p class="text-sm text-gray-500 dark:text-gray-400">ID: {{ $userInvitation?->user?->player_id ?? '???' }}</p>
+                @if($playerProfile ?? false)
+                    <p class="text-sm text-gray-500 dark:text-gray-400">State: {{ $playerProfile->state }}</p>
+                @endif
+            </div>
+        </div>
+    </div>
     <form
         id="registerForm"
         method="POST"
         action="{{ route('auth.register') }}"
-        class="space-y-6"
+        class="space-y-6 pt-4"
     >
         @csrf
-
+        {{-- Display Name --}}
         <div>
             <label
-                for="token"
+                for="display_name"
                 class="block mb-2 text-sm font-medium text-navy-100"
             >
-                Token
+                Display Name
+                <small>
+                    (Optional)
+                </small>
             </label>
 
-            <div class="flex rounded-xl overflow-hidden border border-white/10 bg-navy-800 focus-within:ring-2 focus-within:ring-glow-400/60 transition">
+            <div
+                class="flex rounded-xl overflow-hidden border border-white/10 bg-navy-800 focus-within:ring-2 focus-within:ring-glow-400/60 transition">
             <span class="inline-flex items-center px-3 text-navy-300 bg-navy-700">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke-width="1.5" stroke="currentColor" class="size-5">
                     <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M16.5 10.5V6.75
-                             a4.5 4.5 0 1 0-9 0v3.75
-                             m-.75 11.25h10.5
-                             a2.25 2.25 0 0 0 2.25-2.25
-                             v-6.75
-                             a2.25 2.25 0 0 0-2.25-2.25H6.75
-                             a2.25 2.25 0 0 0-2.25 2.25v6.75
-                             a2.25 2.25 0 0 0 2.25 2.25Z"/>
+                          d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                 </svg>
             </span>
 
                 <input
                     type="text"
-                    id="token"
-                    name="token"
-                    value="{{ old('token', $userInvitation->token) }}"
+                    id="display_name"
+                    name="display_name"
+                    autocomplete="name"
                     class="w-full bg-transparent px-4 py-3 text-navy-50 placeholder-navy-400 focus:outline-none border-0"
+                    placeholder="Choose your display name"
+                    value="{{ old('display_name', $userInvitation?->user?->display_name ?? '') }}"
+                    autofocus
                 />
             </div>
 
-            @error('token')
-            <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
-            @enderror
-        </div>
-
-        <div>
-            <label
-                for="username"
-                class="block mb-2 text-sm font-medium text-navy-100"
-            >
-                Username
-            </label>
-
-            <div class="flex rounded-xl overflow-hidden border border-white/10 bg-navy-800 focus-within:ring-2 focus-within:ring-glow-400/60 transition">
-            <span class="inline-flex items-center px-3 text-navy-300 bg-navy-700">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                     stroke-width="1.5" stroke="currentColor" class="size-5">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M15.75 6a3.75 3.75 0 1 1-7.5 0
-                             3.75 3.75 0 0 1 7.5 0ZM4.501 20.118
-                             a7.5 7.5 0 0 1 14.998 0
-                             A17.933 17.933 0 0 1 12 21.75
-                             c-2.676 0-5.216-.584-7.499-1.632Z"/>
-                </svg>
-            </span>
-
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    autocomplete="username"
-                    class="w-full bg-transparent px-4 py-3 text-navy-50 placeholder-navy-400 focus:outline-none border-0"
-                    placeholder="Enter your username"
-                    value="{{ $userInvitation->user->username }}"
-                    readonly
-                />
-            </div>
-
-            @error('username')
+            @error('display_name')
             <p class="mt-2 text-sm text-red-400">{{ $message }}</p>
             @enderror
         </div>
@@ -91,7 +84,8 @@
                 Password
             </label>
 
-            <div class="flex rounded-xl overflow-hidden border border-white/10 bg-navy-800 focus-within:ring-2 focus-within:ring-glow-400/60 transition">
+            <div
+                class="flex rounded-xl overflow-hidden border border-white/10 bg-navy-800 focus-within:ring-2 focus-within:ring-glow-400/60 transition">
             <span class="inline-flex items-center px-3 text-navy-300 bg-navy-700">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                      stroke-width="1.5" stroke="currentColor" class="size-5">
@@ -111,10 +105,10 @@
                     type="password"
                     id="password"
                     name="password"
-                    autocomplete="current-password"
+                    autocomplete="new-password"
                     class="w-full bg-transparent px-4 py-3 text-navy-50 placeholder-navy-400 focus:outline-none border-0"
                     placeholder="••••••••"
-                    autofocus
+                    required
                 />
             </div>
 

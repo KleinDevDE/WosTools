@@ -16,7 +16,8 @@ class LocalSeeder extends Seeder
     {
         if (User::count() === 0) {
             $user = User::factory()->create([
-                'username' => 'test',
+                'player_id' => 1,
+                'player_name' => 'test',
                 'email_verified_at' => now(),
                 'password' => Hash::make(hash('sha256', 'test')),
                 'status' => User::STATUS_ACTIVE

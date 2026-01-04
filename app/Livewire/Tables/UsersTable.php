@@ -3,8 +3,10 @@
 namespace App\Livewire\Tables;
 
 use App\Helpers\Permissions;
+use App\Models\PlayerProfile;
 use App\Models\Role;
 use App\Models\User;
+use App\Objects\PlayerInfo;
 use App\Services\UserInvitationService;
 use App\Services\WhiteoutSurvivalApiService;
 use Filament\Actions\Action;
@@ -262,6 +264,23 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                             ->danger()
                             ->send();
                         $action->halt();
+                    }
+
+                    // Save player profile if API data is available (not in manual mode)
+                    if (!empty($data['player_preview']) && !($data['manual_mode'] ?? false)) {
+                        $playerData = json_decode($data['player_preview'], true);
+                        if ($playerData) {
+                            $playerInfo = new PlayerInfo(
+                                playerID: $playerData['playerID'],
+                                playerName: $playerData['playerName'],
+                                state: $playerData['state'],
+                                furnaceLevel: $playerData['furnaceLevel'],
+                                furnaceLevelIcon: $playerData['furnaceLevelIcon'],
+                                playerAvatarURL: $playerData['playerAvatarURL'],
+                                totalRechargeAmount: $playerData['totalRechargeAmount']
+                            );
+                            PlayerProfile::createOrUpdateFromPlayerInfo($playerInfo);
+                        }
                     }
 
                     Log::channel("audit")->info(

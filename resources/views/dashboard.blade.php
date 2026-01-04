@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto px-4 pt-12">
         <div class="text-center mb-12">
             <h1 class="text-3xl font-bold text-white mb-4">
-                {{__('dashboard.welcome', ['name' => auth()->user()->username])}} 👋
+                {{__('dashboard.welcome', ['name' => auth()->user()->player_name])}} 👋
             </h1>
             <p class="text-lg text-navy-400">
                 {{__('dashboard.choose_module')}}

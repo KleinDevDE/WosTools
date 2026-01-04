@@ -17,9 +17,9 @@ class LoginController extends Controller
 
     public function process(LoginRequest $loginRequest)
     {
-        $existingUser = User::where('username', $loginRequest->username)->first();
+        $existingUser = User::where('player_name', $loginRequest->username)->first();
         if (!$existingUser) {
-            return redirect()->back()->withErrors(['username' => 'No account found with this email.']);
+            return redirect()->back()->withErrors(['username' => 'No account found with this username.']);
         }
 
         if ($existingUser->status === User::STATUS_LOCKED) {
@@ -27,7 +27,7 @@ class LoginController extends Controller
             return redirect()->back();
         }
 
-        if (!Auth::attempt(['username' => $loginRequest->username, 'password' => $loginRequest->password], true)) {
+        if (!Auth::attempt(['player_name' => $loginRequest->username, 'password' => $loginRequest->password], true)) {
             return redirect()->back()->withErrors(['username' => 'Invalid credentials']);
         }
 

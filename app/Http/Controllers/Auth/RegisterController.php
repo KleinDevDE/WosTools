@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
+use App\Models\PlayerProfile;
 use App\Models\User;
 use App\Models\UserInvitation;
 use Auth;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\View;
 
 class RegisterController extends Controller
@@ -16,7 +18,7 @@ class RegisterController extends Controller
     public function show(Request $request): RedirectResponse|View
     {
         if (!$request->hasValidSignature(true)) {
-            return view('auth.register')->withErrors(['token' => 'Could not determine registration token, please insert it manually.']);
+            abort(403, 'Invalid or expired registration link.');
         }
 
         $userInvitation = UserInvitation::where('token', $request->token)->first();
@@ -28,7 +30,13 @@ class RegisterController extends Controller
             return redirect()->route('auth.login')->withErrors(['username' => 'Your account has already been activated, please login.']);
         }
 
-        return view('auth.register', ['userInvitation' => $userInvitation]);
+        // Get player profile if available
+        $playerProfile = PlayerProfile::where('player_id', $userInvitation->user->player_id)->first();
+
+        return view('auth.register', [
+            'userInvitation' => $userInvitation,
+            'playerProfile' => $playerProfile
+        ]);
     }
 
     public function process(RegisterRequest $registerRequest)
@@ -38,11 +46,15 @@ class RegisterController extends Controller
             return redirect()->back()->withInput($registerRequest->only(['username', 'token']))->withErrors(['token' => 'Invalid registration token!']);
         }
 
-        $userInvitation->user->update(['status' => User::STATUS_ACTIVE, 'last_login_at' => now(), 'password' => ($registerRequest->password)]);
+        $userInvitation->user->update([
+            'status' => User::STATUS_ACTIVE,
+            'last_login_at' => now(),
+            'password' => $registerRequest->password,
+            'display_name' => $registerRequest->display_name,
+        ]);
         $userInvitation->status = UserInvitation::STATUS_ACCEPTED;
         $userInvitation->accepted_at = now();
         $userInvitation->save();
-
 
         Auth::login($userInvitation->user);
         return redirect()->intended('/');
