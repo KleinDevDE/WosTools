@@ -32,6 +32,7 @@ class User extends Authenticatable
         'email',
         'password',
         'status',
+        'is_virtual',
         'invited_by',
         'token',
         'last_login_at',

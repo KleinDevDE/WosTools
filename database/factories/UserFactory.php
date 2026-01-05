@@ -32,7 +32,8 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make(hash('sha256', fake()->userName())),
             'remember_token' => Str::random(10),
             'last_login_at' => fake()->dateTime(),
-            'status' => fake()->randomElement(User::STATUS_VALUES)
+            'status' => fake()->randomElement(User::STATUS_VALUES),
+            'is_virtual' => true
         ];
     }
 

@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class UserInvitationService
 {
-    public static function inviteUser(int $playerId, string $playerName): ?UserInvitation
+    public static function inviteUser(int $playerId, string $playerName, bool $isVirtualUser = false): ?UserInvitation
     {
         try {
             if (User::where('player_id', $playerId)->exists()) {
@@ -22,7 +22,8 @@ class UserInvitationService
                 'player_id' => $playerId,
                 'player_name' => $playerName,
                 'password' => \Hash::make(Str::random(100)),
-                'status' => User::STATUS_INVITED
+                'status' => User::STATUS_INVITED,
+                'is_virtual' => $isVirtualUser
             ]);
             $user->assignRole('user');
 

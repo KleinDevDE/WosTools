@@ -257,10 +257,14 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                         $action->halt();
                     }
 
-                    $invitation = UserInvitationService::inviteUser((int)$data['player_id'], $data['player_name']);
+                    $invitation = UserInvitationService::inviteUser(
+                        (int)$data['player_id'],
+                        $data['player_name'],
+                        $data['manual_mode'] ?? false
+                    );
                     if (!$invitation) {
                         Notification::make()
-                            ->title('Error creating invitation - Player may already exist')
+                            ->title('Error creating invitation!')
                             ->danger()
                             ->send();
                         $action->halt();

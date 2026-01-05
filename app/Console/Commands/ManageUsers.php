@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 
 use Spatie\Permission\Models\Role;
 
+use function Laravel\Prompts\confirm;
 use function Laravel\Prompts\error;
 use function Laravel\Prompts\multiselect;
 use function Laravel\Prompts\select;
@@ -65,6 +66,8 @@ class ManageUsers extends Command
 
     private function createUser(): void
     {
+        $isVirtual = confirm('Are you creating a virtual user?');
+
         $playerID = text(
             label: 'Player ID',
             validate: 'required|string'
@@ -75,10 +78,13 @@ class ManageUsers extends Command
             return;
         }
 
-        $playerStats = app(WhiteoutSurvivalApiService::class)->getPlayerStats($playerID);
+        $playerStats = null;
+        if (!$isVirtual) {
+            $playerStats = app(WhiteoutSurvivalApiService::class)->getPlayerStats($playerID);
+        }
         $playerName = text(
             label: 'Player Name',
-            default: $playerStats?->playerName ?? 0,
+            default: $playerStats?->playerName ?? '',
             validate: 'required|string'
         );
 
@@ -96,6 +102,7 @@ class ManageUsers extends Command
             'player_id' => $playerID,
             'player_name' => $playerName,
             'password' => hash('sha256', $password),
+            'is_virtual' => $isVirtual
         ]);
     }
 
