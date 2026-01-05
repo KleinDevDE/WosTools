@@ -51,7 +51,7 @@ class WhiteoutSurvivalApiService
         );
 
         if ($store) {
-            PlayerProfile::createIfChanged($playerInfo);
+            PlayerProfile::storeIfChanged($playerInfo);
         }
 
         return $playerInfo;

@@ -21,7 +21,7 @@ class PlayerProfile extends Model
     /**
      * Create or update player profile from PlayerInfo object
      */
-    public static function createIfChanged(PlayerInfo $playerInfo): self
+    public static function storeIfChanged(PlayerInfo $playerInfo): self
     {
         $playerProfile = self::where('player_id', $playerInfo->playerID)->orderBy('created_at', 'desc')->first();
 
