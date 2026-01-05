@@ -13,7 +13,6 @@ trait WoSAPITrait
     private Client $client;
 
     private const API_BASE_URL = 'https://wos-giftcode-api.centurygame.com';
-    private const API_SECRET = 'tB87#kPtkxqOS2';
     private const CORS_ORIGIN = 'https://wos-giftcode.centurygame.com';
     private const RATE_LIMIT_KEY = 'wos_api_rate_limit';
     private const RATE_LIMIT_MAX = 29;
@@ -91,7 +90,7 @@ trait WoSAPITrait
         $queryString = http_build_query($data, '', '&', PHP_QUERY_RFC3986);
 
         // Append secret and generate MD5 hash
-        $stringToSign = $queryString . self::API_SECRET;
+        $stringToSign = $queryString . config('wos.api_secret');
 
         return md5($stringToSign);
     }
