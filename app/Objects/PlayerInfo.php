@@ -79,4 +79,9 @@ readonly class PlayerInfo implements Jsonable, Arrayable
 
         return true;
     }
+
+    public function getFurnaceLevelReadable(): string
+    {
+        return config('wos.furnace_level_mappings')[$this->furnaceLevel] ?? $this->furnaceLevel;
+    }
 }

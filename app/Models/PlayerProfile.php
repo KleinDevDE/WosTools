@@ -39,4 +39,9 @@ class PlayerProfile extends Model
             'total_recharge_amount' => $playerInfo->totalRechargeAmount,
         ]);
     }
+
+    public function getFurnaceLevelReadable(): string
+    {
+        return config('wos.furnace_level_mappings')[$this->furnace_level] ?? $this->furnace_level;
+    }
 }
