@@ -460,7 +460,11 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
         $html .= '<div class="flex justify-start items-center">';
 
         if (!empty($playerData['furnaceLevelIcon'])) {
-            $html .= '<img src="' . e($playerData['furnaceLevelIcon']) . '" alt="Furnace Level" class="w-8 h-8">';
+            if($playerData['furnaceLevel'] > 30) {
+                $html .= '<img src="' . e($playerData['furnaceLevelIcon']) . '" alt="Furnace Level" class="w-8 h-8">';
+            } else {
+                $html .= '<div class="w-8 h-8 text-center align-middle leading-8 font-bold text-white rounded-full mr-2 flex items-center justify-center p-0 bg-glow-500">' . e($playerData['furnaceLevel'] ?? '') . '</div>';
+            }
         }
 
         $html .= '<h3 class="text-lg font-semibold text-gray-900 dark:text-white">' . e($playerData['playerName'] ?? '') . '</h3>';

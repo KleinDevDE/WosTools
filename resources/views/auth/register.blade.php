@@ -16,10 +16,16 @@
             <div class="flex-1">
                 <div class="flex justify-start items-center">
                     @if($playerProfile ?? false)
-                        <img
-                            src="{{ $playerProfile->furnace_level_icon }}"
-                            alt="Furnace Level"
-                            class="w-8 h-8">
+                        @if($playerProfile->furnace_level > 30)
+                            <img
+                                src="{{ $playerProfile->furnace_level_icon }}"
+                                alt="Furnace Level"
+                                class="w-8 h-8">
+                        @else
+                            <div class="w-8 h-8 text-center align-middle leading-8 font-bold text-white rounded-full mr-2 flex items-center justify-center p-0 bg-glow-500">
+                                {{$playerProfile->furnace_level}}
+                            </div>
+                        @endif
                     @endif
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ $userInvitation?->user?->player_name ?? '???' }}</h3>
                 </div>
