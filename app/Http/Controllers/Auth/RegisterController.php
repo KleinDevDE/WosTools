@@ -26,6 +26,10 @@ class RegisterController extends Controller
             return view('auth.register')->withErrors(['token' => 'Invalid registration token!']);
         }
 
+        if (!$userInvitation->user || $userInvitation->user->status !== User::STATUS_INVITED) {
+            return redirect()->route('auth.login')->withErrors(['username' => 'This invitation is no longer valid.']);
+        }
+
         if ($userInvitation->status === UserInvitation::STATUS_ACCEPTED) {
             return redirect()->route('auth.login')->withErrors(['username' => 'Your account has already been activated, please login.']);
         }
