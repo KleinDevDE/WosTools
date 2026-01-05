@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Objects\PlayerInfo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PlayerProfile extends Model
 {
@@ -20,18 +21,22 @@ class PlayerProfile extends Model
     /**
      * Create or update player profile from PlayerInfo object
      */
-    public static function createOrUpdateFromPlayerInfo(PlayerInfo $playerInfo): self
+    public static function createIfChanged(PlayerInfo $playerInfo): self
     {
-        return self::updateOrCreate(
-            ['player_id' => $playerInfo->playerID],
-            [
-                'player_name' => $playerInfo->playerName,
-                'state' => $playerInfo->state,
-                'furnace_level' => $playerInfo->furnaceLevel,
-                'furnace_level_icon' => $playerInfo->furnaceLevelIcon,
-                'player_avatar_url' => $playerInfo->playerAvatarURL,
-                'total_recharge_amount' => $playerInfo->totalRechargeAmount,
-            ]
-        );
+        $playerProfile = self::where('player_id', $playerInfo->playerID)->orderBy('created_at', 'desc')->first();
+
+        if ($playerProfile && $playerInfo->isSame($playerProfile)) {
+            return $playerProfile;
+        }
+
+        return self::create([
+            'player_id' => $playerInfo->playerID,
+            'player_name' => $playerInfo->playerName,
+            'state' => $playerInfo->state,
+            'furnace_level' => $playerInfo->furnaceLevel,
+            'furnace_level_icon' => $playerInfo->furnaceLevelIcon,
+            'player_avatar_url' => $playerInfo->playerAvatarURL,
+            'total_recharge_amount' => $playerInfo->totalRechargeAmount,
+        ]);
     }
 }

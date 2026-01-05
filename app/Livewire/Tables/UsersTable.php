@@ -266,23 +266,6 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                         $action->halt();
                     }
 
-                    // Save player profile if API data is available (not in manual mode)
-                    if (!empty($data['player_preview']) && !($data['manual_mode'] ?? false)) {
-                        $playerData = json_decode($data['player_preview'], true);
-                        if ($playerData) {
-                            $playerInfo = new PlayerInfo(
-                                playerID: $playerData['playerID'],
-                                playerName: $playerData['playerName'],
-                                state: $playerData['state'],
-                                furnaceLevel: $playerData['furnaceLevel'],
-                                furnaceLevelIcon: $playerData['furnaceLevelIcon'],
-                                playerAvatarURL: $playerData['playerAvatarURL'],
-                                totalRechargeAmount: $playerData['totalRechargeAmount']
-                            );
-                            PlayerProfile::createOrUpdateFromPlayerInfo($playerInfo);
-                        }
-                    }
-
                     Log::channel("audit")->info(
                         "Actor: ".auth()->user()->getName()." (".auth()->id().") | " .
                         "Invited player {$data['player_name']} (ID: {$data['player_id']})" .

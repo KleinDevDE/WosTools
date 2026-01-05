@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PlayerProfile;
 use App\Objects\PlayerInfo;
 use App\Traits\WoSAPITrait;
 
@@ -10,12 +11,23 @@ class WhiteoutSurvivalApiService
     use WoSAPITrait;
     private const API_PLAYER_ENDPOINT = '/api/player';
 
-    public function getPlayerStats(int $playerID): ?PlayerInfo
+    public function getPlayerStats(int $playerID, bool $fromCache = true, bool $store = true): ?PlayerInfo
     {
         if (!\Validator::validate(['playerID' => $playerID], [
             'playerID' => 'required|integer',
         ])) {
             return null;
+        }
+
+        if ($fromCache) {
+            $playerProfile = PlayerProfile::query()
+                ->where('player_id', $playerID)
+                ->whereDate('created_at', '>=', now()->subDay())
+                ->orderBy('created_at',    'desc')
+                ->first();
+            if ($playerProfile) {
+                return PlayerInfo::fromPlayerProfile($playerProfile);
+            }
         }
 
         $response = $this->request("POST", self::API_PLAYER_ENDPOINT, [], [
@@ -28,7 +40,7 @@ class WhiteoutSurvivalApiService
             return null;
         }
 
-        return new PlayerInfo(
+        $playerInfo = new PlayerInfo(
             $data["data"]["fid"],
             $data["data"]["nickname"],
             $data["data"]["kid"],
@@ -37,5 +49,11 @@ class WhiteoutSurvivalApiService
             $data["data"]["avatar_image"],
             $data["data"]["total_recharge_amount"],
         );
+
+        if ($store) {
+            PlayerProfile::createIfChanged($playerInfo);
+        }
+
+        return $playerInfo;
     }
 }

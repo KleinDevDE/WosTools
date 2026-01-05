@@ -162,7 +162,7 @@ class PuzzlesTable extends Component implements HasActions, HasSchemas, HasTable
                     ->columnSpanFull(),
             ]),
             CreateAction::make('create-multiple')
-                ->label('Add Multiple Puzzles (German only)')
+                ->label('Add Multiple Puzzles')
                 ->schema([
                     SpatieMediaLibraryFileUpload::make('image')
                         ->collection('cover')
