@@ -26,14 +26,6 @@ class PermissionsSeeder extends Seeder
                     'puzzles::view', 'puzzles::own.view', 'puzzles::own.manage',
                 ]
             ],
-            'test2' => [
-                'weight' => 10,
-                'inherits' => [],
-                'permissions' => [
-                    'pages:dashboard:view',
-                    'puzzles::view', 'puzzles::own.view', 'puzzles::own.manage',
-                ]
-            ],
             'management' => [
                 'weight' => 80,
                 'inherits' => ['user'],
