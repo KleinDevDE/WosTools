@@ -24,7 +24,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'player_id' => 'required|string',
+            'username' => 'required|string',
             'password' => 'required|string|size:64',
         ];
     }

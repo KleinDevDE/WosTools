@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CharacterInvitationController;
+use App\Http\Controllers\CharacterSwitchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\MediaController;
@@ -17,9 +19,26 @@ Route::middleware(['guest'])->group(function() {
     Route::post('/register', [RegisterController::class, 'process']);
 });
 
+// Public invitation routes (signed)
+Route::get('/invitation/{token}/accept', [CharacterInvitationController::class, 'accept'])
+    ->name('invitation.accept')
+    ->middleware('signed');
+Route::post('/invitation/{token}/decline', [CharacterInvitationController::class, 'decline'])
+    ->name('invitation.decline')
+    ->middleware('signed');
+
 Route::middleware(['auth'])->group(function() {
     Route::get('/', [DashboardController::class, 'show'])->name('dashboard');
     Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+
+    // Character switching
+    Route::get('/characters', [CharacterSwitchController::class, 'list'])->name('characters.list');
+    Route::post('/characters/{character}/switch', [CharacterSwitchController::class, 'switch'])->name('characters.switch');
+
+    // Character invitations
+    Route::get('/invitations', [CharacterInvitationController::class, 'index'])->name('invitations.index');
+    Route::post('/invitations', [CharacterInvitationController::class, 'create'])->name('invitations.create');
+    Route::post('/invitations/{invitation}/revoke', [CharacterInvitationController::class, 'revoke'])->name('invitations.revoke');
 
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
