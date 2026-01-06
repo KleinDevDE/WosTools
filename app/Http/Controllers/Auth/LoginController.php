@@ -34,7 +34,7 @@ class LoginController extends Controller
         }
 
         // Step 3: Authenticate Character with character guard
-        Auth::guard('character')->login($firstCharacter, true);
+        session(['active_character_id' => $firstCharacter->id]);
 
         return redirect()->intended('/');
     }

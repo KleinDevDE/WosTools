@@ -2,16 +2,16 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
-class Character extends Authenticatable
+class Character extends Model
 {
     use HasRolesAndAbilities, Notifiable;
+    private static Character $activeCharacter;
 
     protected $fillable = [
         'user_id',
@@ -78,5 +78,21 @@ class Character extends Authenticatable
     public function getName(): string
     {
         return $this->player_name;
+    }
+
+    /**
+     * @param Character $activeCharacter
+     */
+    public static function setActiveCharacter(Character $activeCharacter): void
+    {
+        self::$activeCharacter = $activeCharacter;
+    }
+
+    /**
+     * @return Character|null
+     */
+    public static function getActiveCharacter(): ?Character
+    {
+        return self::$activeCharacter ?? null;
     }
 }
