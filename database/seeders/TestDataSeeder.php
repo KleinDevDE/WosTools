@@ -51,7 +51,7 @@ class TestDataSeeder extends Seeder
             ['username' => 'developer'],
             [
                 'email' => 'developer@test.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make(hash('sha256', 'password123')),
                 'locale' => 'en',
             ]
         );
@@ -81,7 +81,7 @@ class TestDataSeeder extends Seeder
             ['username' => 'alliance_leader'],
             [
                 'email' => 'r5@test.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make(hash('sha256', 'password123')),
                 'locale' => 'en',
             ]
         );
@@ -101,7 +101,7 @@ class TestDataSeeder extends Seeder
             ['username' => 'alliance_manager'],
             [
                 'email' => 'r4@test.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make(hash('sha256', 'password123')),
                 'locale' => 'en',
             ]
         );
@@ -121,7 +121,7 @@ class TestDataSeeder extends Seeder
             ['username' => 'testuser1'],
             [
                 'email' => 'user1@test.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make(hash('sha256', 'password123')),
                 'locale' => 'de',
             ]
         );
@@ -140,7 +140,7 @@ class TestDataSeeder extends Seeder
             ['username' => 'testuser2'],
             [
                 'email' => 'user2@test.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make(hash('sha256', 'password123')),
                 'locale' => 'tr',
             ]
         );
@@ -160,7 +160,7 @@ class TestDataSeeder extends Seeder
             ['username' => 'testuser3'],
             [
                 'email' => 'user3@test.com',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make(hash('sha256', 'password123')),
                 'locale' => 'en',
             ]
         );
