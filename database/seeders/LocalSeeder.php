@@ -8,6 +8,7 @@ use App\Models\User;
 use Hash;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Silber\Bouncer\Bouncer;
 
 class LocalSeeder extends Seeder
 {
@@ -29,7 +30,8 @@ class LocalSeeder extends Seeder
              * @var Character $char
              */
             $char = $user->characters()->create(['state' => 1, 'alliance_id' => $alliance->id, 'player_id' => 1, 'player_name' => 'test']);
-            $char->assignRole(['developer', 'wos_r5', 'developer']);
+            app(Bouncer::class)->assign('developer')->to($user);
+            app(Bouncer::class)->assign('developer')->to($char);
         }
     }
 }

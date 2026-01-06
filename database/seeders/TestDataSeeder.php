@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Silber\Bouncer\Bouncer;
 
 class TestDataSeeder extends Seeder
 {
@@ -64,7 +65,7 @@ class TestDataSeeder extends Seeder
             'state' => 1234,
             'alliance_id' => $alliance1->id,
         ]);
-        $devChar1->assignRole('developer');
+        app(Bouncer::class)->assign('developer')->to($devChar1);
 
         $devChar2 = Character::firstOrCreate([
             'player_id' => 1000002,
@@ -74,7 +75,7 @@ class TestDataSeeder extends Seeder
             'state' => 5678,
             'alliance_id' => $alliance3->id,
         ]);
-        $devChar2->assignRole('developer');
+        app(Bouncer::class)->assign('developer')->to($devChar2);
 
         // R5 Alliance Leader
         $r5User = User::firstOrCreate(
@@ -94,7 +95,7 @@ class TestDataSeeder extends Seeder
             'state' => 1234,
             'alliance_id' => $alliance1->id,
         ]);
-        $r5Char->assignRole('wos_r5');
+        app(Bouncer::class)->assign('wos_r5')->to($r5Char);
 
         // R4 Alliance Manager
         $r4User = User::firstOrCreate(
@@ -114,7 +115,7 @@ class TestDataSeeder extends Seeder
             'state' => 1234,
             'alliance_id' => $alliance1->id,
         ]);
-        $r4Char->assignRole('wos_r4');
+        app(Bouncer::class)->assign('wos_r4')->to($r4Char);
 
         // Regular users with single character
         $user1 = User::firstOrCreate(
@@ -134,7 +135,7 @@ class TestDataSeeder extends Seeder
             'state' => 1234,
             'alliance_id' => $alliance1->id,
         ]);
-        $char1->assignRole('user');
+        app(Bouncer::class)->assign('user')->to($char1);
 
         $user2 = User::firstOrCreate(
             ['username' => 'testuser2'],
@@ -153,7 +154,7 @@ class TestDataSeeder extends Seeder
             'state' => 1234,
             'alliance_id' => $alliance2->id,
         ]);
-        $char2->assignRole('user');
+        app(Bouncer::class)->assign('user')->to($char2);
 
         // User without alliance
         $user3 = User::firstOrCreate(
@@ -173,7 +174,7 @@ class TestDataSeeder extends Seeder
             'state' => 1234,
             'alliance_id' => null,
         ]);
-        $char3->assignRole('user');
+        app(Bouncer::class)->assign('user')->to($char3);
 
         // Create some test invitations
         CharacterInvitation::firstOrCreate([
