@@ -1,5 +1,6 @@
 <?php
 
+use App\Jobs\SyncPlayerProfilesJob;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -28,5 +29,8 @@ return Application::configure(basePath: dirname(__DIR__))
         Integration::handles($exceptions);
     })->withSchedule(function (Schedule $schedule): void {
         $schedule->command('backup:run')->daily()->name('Backup')->withoutOverlapping();
+        $schedule->call(function() {
+            Bus::batch(SyncPlayerProfilesJob::prepareBatch())->name('Sync player profiles')->dispatch();
+        })->daily()->name('Sync player profiles')->withoutOverlapping();
     })
     ->create();
