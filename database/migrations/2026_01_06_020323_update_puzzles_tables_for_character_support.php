@@ -11,23 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Rename table
-        Schema::rename('puzzles_user_puzzle_pieces', 'puzzles_character_puzzle_pieces');
-
         // Drop foreign key and primary key, rename column, recreate constraints
-        Schema::table('puzzles_character_puzzle_pieces', function (Blueprint $table) {
+        Schema::table('puzzles_user_puzzle_pieces', function (Blueprint $table) {
             $table->dropPrimary('user_piece_primary');
             $table->dropForeign(['user_id']);
         });
 
-        Schema::table('puzzles_character_puzzle_pieces', function (Blueprint $table) {
+        Schema::table('puzzles_user_puzzle_pieces', function (Blueprint $table) {
             $table->renameColumn('user_id', 'character_id');
         });
 
-        Schema::table('puzzles_character_puzzle_pieces', function (Blueprint $table) {
+        Schema::table('puzzles_user_puzzle_pieces', function (Blueprint $table) {
             $table->foreign('character_id')->references('id')->on('characters')->cascadeOnDelete();
             $table->primary(['character_id', 'puzzles_album_puzzle_piece_id'], 'character_piece_primary');
         });
+
+        // Rename table
+        Schema::rename('puzzles_user_puzzle_pieces', 'puzzles_character_puzzle_pieces');
     }
 
     /**

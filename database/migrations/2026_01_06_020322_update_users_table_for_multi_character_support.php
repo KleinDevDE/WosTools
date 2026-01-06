@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('username')->unique()->after('id');
-            $table->dropColumn(['player_id', 'player_name', 'display_name', 'is_virtual', 'invited_by', 'token', 'status']);
+            $table->dropColumn(['player_id', 'player_name', 'display_name', 'is_virtual', 'status']);
         });
     }
 
