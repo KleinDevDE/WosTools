@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Events\PlayerInfoUpdatedEvent;
 use App\Objects\PlayerInfo;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PlayerProfile extends Model
 {
@@ -29,7 +29,7 @@ class PlayerProfile extends Model
             return $playerProfile;
         }
 
-        return self::create([
+        $newProfile = self::create([
             'player_id' => $playerInfo->playerID,
             'player_name' => $playerInfo->playerName,
             'state' => $playerInfo->state,
@@ -38,6 +38,9 @@ class PlayerProfile extends Model
             'player_avatar_url' => $playerInfo->playerAvatarURL,
             'total_recharge_amount' => $playerInfo->totalRechargeAmount,
         ]);
+
+        event(new PlayerInfoUpdatedEvent(PlayerInfo::fromPlayerProfile($playerProfile), $playerInfo));
+        return $newProfile;
     }
 
     public function getFurnaceLevelReadable(): string
