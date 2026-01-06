@@ -1,6 +1,6 @@
 <?php
 
-use App\Jobs\SyncPlayerProfilesJob;
+use App\Jobs\SyncCharacterStatsJob;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,7 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(fn (Request $request) => route('auth.login'));
         $middleware->appendToGroup('web', \App\Http\Middleware\NotificationSession::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\SetLocale::class);
-        $middleware->appendToGroup('web', \App\Http\Middleware\NotLocked::class);
         $middleware->appendToGroup('api', \App\Http\Middleware\SetLocale::class);
 
         // Sanctum SPA authentication
@@ -30,7 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })->withSchedule(function (Schedule $schedule): void {
         $schedule->command('backup:run')->daily()->name('Backup')->withoutOverlapping();
         $schedule->call(function() {
-            Bus::batch(SyncPlayerProfilesJob::prepareBatch())->name('Sync player profiles')->dispatch();
-        })->daily()->name('Sync player profiles')->withoutOverlapping();
+            Bus::batch(SyncCharacterStatsJob::prepareBatch())->name('Sync character stats')->dispatch();
+        })->daily()->name('Sync character stats')->withoutOverlapping();
     })
     ->create();

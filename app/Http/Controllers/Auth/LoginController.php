@@ -22,11 +22,6 @@ class LoginController extends Controller
             return redirect()->back()->withErrors(['username' => 'No account found with this username.']);
         }
 
-        if ($existingUser->status === User::STATUS_LOCKED) {
-            \Session::flash('error_account_locked', true);
-            return redirect()->back();
-        }
-
         if (!Auth::attempt(['player_id' => $loginRequest->player_id, 'password' => $loginRequest->password], true)) {
             return redirect()->back()->withErrors(['username' => 'Invalid credentials']);
         }

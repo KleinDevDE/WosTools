@@ -35,8 +35,6 @@ class PermissionsSeeder extends Seeder
                     'alliance.members.list',
                     'alliance.members.invite',
                     'alliance.members.kick',
-                    'alliance.members.lock',
-                    'alliance.members.unlock',
                 ]
             ],
             'wos_r5' => [
@@ -56,7 +54,7 @@ class PermissionsSeeder extends Seeder
                     'puzzles::albums.view', 'puzzles::albums.create', 'puzzles::albums.edit', 'puzzles::albums.delete',
                     'puzzles::puzzles.view', 'puzzles::puzzles.create', 'puzzles::puzzles.edit', 'puzzles::puzzles.delete',
                     'puzzles::pieces.view', 'puzzles::pieces.create', 'puzzles::pieces.edit', 'puzzles::pieces.delete',
-                    'users.show', 'users.edit', 'users.delete', 'users.lock', 'users.invite',
+                    'users.show', 'users.edit', 'users.delete', 'users.invite',
                     'characters.view', 'characters.edit', 'characters.delete',
                     'alliances.create', 'alliances.edit', 'alliances.delete',
                     'media.gallery.view', 'media.gallery.edit', 'media.gallery.delete'

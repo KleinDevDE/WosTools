@@ -13,18 +13,10 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_LOCKED = 'locked';
-    public const STATUS_VALUES = [
-        self::STATUS_ACTIVE,
-        self::STATUS_LOCKED,
-    ];
-
     protected $fillable = [
         'username',
         'email',
         'password',
-        'status',
         'last_login_at',
         'locale'
     ];

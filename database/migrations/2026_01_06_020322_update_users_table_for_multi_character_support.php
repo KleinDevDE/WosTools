@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('username')->unique()->after('id');
-            $table->dropColumn(['player_id', 'player_name', 'display_name', 'is_virtual', 'invited_by', 'token']);
+            $table->dropColumn(['player_id', 'player_name', 'display_name', 'is_virtual', 'invited_by', 'token', 'status']);
         });
     }
 
@@ -27,6 +27,7 @@ return new class extends Migration
             $table->unsignedBigInteger('player_id')->nullable()->unique()->after('id');
             $table->string('player_name')->nullable()->after('player_id');
             $table->string('display_name')->nullable()->after('player_name');
+            $table->string('status')->default('active')->after('password');
             $table->boolean('is_virtual')->default(false)->after('status');
             $table->unsignedBigInteger('invited_by')->nullable()->after('is_virtual');
             $table->string('token')->nullable()->after('invited_by');

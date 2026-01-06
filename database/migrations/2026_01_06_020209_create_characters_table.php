@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('player_name');
             $table->unsignedBigInteger('state');
             $table->foreignId('alliance_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('status')->default('active');
             $table->timestamps();
 
             $table->foreign('state')->references('id')->on('states')->onDelete('cascade');

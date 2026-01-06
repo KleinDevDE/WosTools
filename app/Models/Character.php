@@ -13,20 +13,12 @@ class Character extends Model
 {
     use HasRoles, HasRoleHierarchy;
 
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_LOCKED = 'locked';
-    public const STATUS_VALUES = [
-        self::STATUS_ACTIVE,
-        self::STATUS_LOCKED,
-    ];
-
     protected $fillable = [
         'user_id',
         'player_id',
         'player_name',
         'state',
         'alliance_id',
-        'status',
     ];
 
     protected function casts(): array

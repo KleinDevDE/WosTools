@@ -92,29 +92,6 @@ class CharacterPolicy
         return $character->user_id === $user->id;
     }
 
-    public function lock(User $user, Character $character): bool
-    {
-        $activeCharacter = $user->activeCharacter();
-
-        if (!$activeCharacter) {
-            return false;
-        }
-
-        // Developer can lock all
-        if ($activeCharacter->hasRole('developer')) {
-            return true;
-        }
-
-        // Must be same state and alliance
-        if ($character->state !== $activeCharacter->state ||
-            $character->alliance_id !== $activeCharacter->alliance_id) {
-            return false;
-        }
-
-        // R5 and R4 can lock alliance members
-        return $activeCharacter->hasAnyRole(['wos_r5', 'wos_r4']);
-    }
-
     public function kick(User $user, Character $character): bool
     {
         $activeCharacter = $user->activeCharacter();

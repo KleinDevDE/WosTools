@@ -3,10 +3,10 @@
 namespace App\Livewire\Tables;
 
 use App\Helpers\Permissions;
-use App\Models\PlayerProfile;
+use App\Models\CharacterStats;
 use App\Models\Role;
 use App\Models\User;
-use App\Objects\PlayerInfo;
+use App\Objects\CharacterStatsObject;
 use App\Services\UserInvitationService;
 use App\Services\WhiteoutSurvivalApiService;
 use Filament\Actions\Action;
@@ -52,14 +52,7 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
 
     protected function getTableFilters(): array
     {
-        return [
-            SelectFilter::make('status')
-                ->options([
-                    User::STATUS_ACTIVE => 'Active',
-                    User::STATUS_LOCKED => 'Locked',
-                    User::STATUS_INVITED => 'Invited',
-                ]),
-        ];
+        return [];
     }
 
     public function getTableColumns(): array
@@ -86,54 +79,12 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
             TextColumn::make('roles')
                 ->getStateUsing(fn(User $record) => $record->roles->sortBy('weight')->pluck('name')->join(', '))
                 ->sortable(),
-            TextColumn::make('status')
-                ->badge()
-                ->color(fn(User $record) => match ($record->status) {
-                    User::STATUS_ACTIVE => 'success',
-                    User::STATUS_LOCKED => 'danger',
-                    User::STATUS_INVITED => 'primary',
-                    default => 'gray',
-                })
-                ->sortable(),
         ];
     }
 
     public function getTableBulkActions(): array
     {
-        $actions = [];
-        if (auth()->user()->can(Permissions::USERS_LOCK)) {
-            $actions[] = BulkAction::make('Lock')
-                //Confirm
-                ->requiresConfirmation()
-                ->action(function (Collection $records): void {
-                    foreach ($records as $record) {
-                        $record->update(['status' => User::STATUS_LOCKED]);
-                    }
-                });
-        }
-
-        if (auth()->user()->can(Permissions::USERS_LOCK)) {
-            $actions[] = BulkAction::make('Unlock')
-                ->requiresConfirmation()
-                ->action(function (Collection $records): void {
-                    foreach ($records as $record) {
-                        $record->update(['status' => User::STATUS_ACTIVE]);
-                    }
-                });
-        }
-
-        $actions[] = BulkAction::make('edit')
-            ->requiresConfirmation()
-            ->schema([
-                Select::make('status')
-                ->options([
-                    User::STATUS_ACTIVE => 'Active',
-                    User::STATUS_LOCKED => 'Locked',
-                    User::STATUS_INVITED => 'Invited',
-                ])
-            ])
-        ->action(fn (Collection $records, array $data) => $this->updateStatus($data['status']));
-        return $actions;
+        return [];
     }
 
     protected function getTableHeaderActions(): array
@@ -313,68 +264,9 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
             })->toArray();
 
         return [
-            Action::make('copy_inv_url')
-                //Only if status === invited
-                ->hidden(fn(User $user) => $user->status !== User::STATUS_INVITED)
-                ->label("Copy Invitation URL")
-                ->button()
-                ->icon(Heroicon::Clipboard)
-                ->iconPosition(IconPosition::After)
-                ->extraAttributes(fn(User $user) => ['id' => "copy-inv-url-$user->id"])
-                ->dispatch('copy-to-clipboard', fn(User $user) => [
-                    'text' => $user->invitations()->first()?->invitationURL,
-                    'element' => "copy-inv-url-$user->id"
-                ]),
-            Action::make('lock')
-                ->requiresConfirmation()
-                ->visible(fn(User $user) =>
-                    auth()->user()->can(Permissions::USERS_LOCK)
-                    && $user->status === User::STATUS_ACTIVE
-                    && $user->id !== auth()->id()
-                    && auth()->user()->canManageUser($user)
-                )
-                ->icon(Heroicon::LockClosed)
-                ->button()->color('danger')
-                ->size(Size::ExtraSmall)
-                ->action(function(User $user) {
-                    $this->updateStatus(User::STATUS_LOCKED, $user);
-                    \Log::channel("audit")->info("Actor: ".auth()->user()->getName()." (".auth()->id().") | Locked user ".$user->getName());
-                    Notification::make()
-                        ->title('User locked')
-                        ->success()
-                        ->duration(10000)
-                        ->send();
-                }),
-            Action::make('unlock')
-                ->requiresConfirmation()
-                ->button()->color('success')
-                ->size(Size::ExtraSmall)
-                ->visible(fn(User $user) =>
-                    auth()->user()->can(Permissions::USERS_LOCK)
-                    && $user->status === User::STATUS_LOCKED
-                    && $user->id !== auth()->id()
-                    && auth()->user()->canManageUser($user)
-                )
-                ->icon(Heroicon::LockOpen)
-                ->action(function(User $user) {
-                    $this->updateStatus(User::STATUS_ACTIVE, $user);
-                    \Log::channel("audit")->info("Actor: ".auth()->user()->getName()." (".auth()->id().") | Unlocked user ".$user->getName());
-                    Notification::make()
-                        ->title('User unlocked')
-                        ->success()
-                        ->duration(10000)
-                        ->send();
-                }),
             EditAction::make('edit')
                 ->visible(fn(User $user) => auth()->user()->canManageUser($user))
                 ->schema([
-                    TextInput::make('player_name')
-                        ->label('Player Name')
-                        ->disabled()
-                        ->dehydrated(false),
-                    TextInput::make('display_name')
-                        ->label('Display Name')
-                        ->placeholder('Optional - overrides player name'),
                     Select::make('locale')
                         ->options(['en' => 'English', 'de' => 'German', 'tr' => 'Turkish'])
                         ->afterStateUpdated(function (Select $component, User $user) {
@@ -417,23 +309,6 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
             DeleteAction::make()
                 ->requiresConfirmation(),
         ];
-    }
-
-    public function updateStatus(string $status, ?User $user = null): void
-    {
-        if ($user === null && empty($this->getSelectedTableRecordsQuery())) {
-            return;
-        }
-
-        if (!empty($user)) {
-            Log::channel("audit")->info("Actor: ".auth()->user()->getName()." (".auth()->id().") | Changed status of user ".$user->getName()." to $status");
-        } else {
-            foreach ($this->getSelectedTableRecordsQuery()->get() as $record) {
-                Log::channel("audit")->info("Actor: ".auth()->user()->getName()." (".auth()->id().") | Changed status of user ".$record->getName()." to $status");
-            }
-        }
-
-        ($user ?? $this->getSelectedTableRecordsQuery())->update(['status' => $status]);
     }
 
     protected function renderPlayerPreview(?string $playerDataJson): HtmlString
