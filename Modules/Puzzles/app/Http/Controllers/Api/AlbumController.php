@@ -13,21 +13,25 @@ class AlbumController extends Controller
 {
     public function index(): JsonResponse
     {
-        $userId = auth()->id();
+        $characterId = auth()->user()->activeCharacter()?->id;
+
+        if (!$characterId) {
+            return response()->json(['error' => 'No active character'], 400);
+        }
 
         $albums = PuzzlesAlbum::query()
             ->withCount('puzzles')
             ->orderBy('position')
             ->get()
-            ->map(function ($album) use ($userId) {
+            ->map(function ($album) use ($characterId) {
                 // Calculate total pieces and completed pieces for this album
                 $stats = DB::table('puzzles_album_puzzle_pieces')
                     ->where('puzzles_album_id', $album->id)
-                    ->leftJoin('puzzles_user_puzzle_pieces', function ($join) use ($userId) {
-                        $join->on('puzzles_album_puzzle_pieces.id', '=', 'puzzles_user_puzzle_pieces.puzzles_album_puzzle_piece_id')
-                            ->where('puzzles_user_puzzle_pieces.user_id', '=', $userId);
+                    ->leftJoin('puzzles_character_puzzle_pieces', function ($join) use ($characterId) {
+                        $join->on('puzzles_album_puzzle_pieces.id', '=', 'puzzles_character_puzzle_pieces.puzzles_album_puzzle_piece_id')
+                            ->where('puzzles_character_puzzle_pieces.character_id', '=', $characterId);
                     })
-                    ->selectRaw('COUNT(*) as total, SUM(CASE WHEN puzzles_user_puzzle_pieces.offers > 0 OR puzzles_user_puzzle_pieces.owns THEN 1 ELSE 0 END) as completed')
+                    ->selectRaw('COUNT(*) as total, SUM(CASE WHEN puzzles_character_puzzle_pieces.offers > 0 OR puzzles_character_puzzle_pieces.owns THEN 1 ELSE 0 END) as completed')
                     ->first();
 
                 $album->total_pieces = $stats->total ?? 0;
@@ -47,22 +51,26 @@ class AlbumController extends Controller
 
     public function show(PuzzlesAlbum $album): JsonResponse
     {
-        $userId = auth()->id();
+        $characterId = auth()->user()->activeCharacter()?->id;
 
-        $album->load(['puzzles' => function ($query) use ($userId) {
+        if (!$characterId) {
+            return response()->json(['error' => 'No active character'], 400);
+        }
+
+        $album->load(['puzzles' => function ($query) use ($characterId) {
             $query->withCount('pieces')
-                ->with(['pieces' => function ($pieceQuery) use ($userId) {
+                ->with(['pieces' => function ($pieceQuery) use ($characterId) {
                     $pieceQuery->orderBy('position')
-                        ->with(['userStates' => function ($stateQuery) use ($userId) {
-                            $stateQuery->where('user_id', $userId);
+                        ->with(['characterStates' => function ($stateQuery) use ($characterId) {
+                            $stateQuery->where('character_id', $characterId);
                         }]);
                 }]);
         }]);
 
-        // Add user state to each piece
+        // Add character state to each piece
         $album->puzzles->each(function ($puzzle) {
             $puzzle->completed_pieces = $puzzle->pieces->filter(function ($piece) {
-                return $piece->userStates->first()?->state === 'have';
+                return $piece->characterStates->first()?->owns === true;
             })->count();
         });
 

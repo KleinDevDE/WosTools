@@ -20,7 +20,11 @@ class PieceController extends Controller
             'offers' => ['required', 'integer', 'min:0'],
         ]);
 
-        $userId = auth()->id();
+        $characterId = auth()->user()->activeCharacter()?->id;
+
+        if (!$characterId) {
+            return response()->json(['error' => 'No active character'], 400);
+        }
 
         // Check if piece is tradeable (5+ stars cannot be traded)
         if (!$piece->isTradeable() && ($validated['needs'] || $validated['offers'] > 0)) {
@@ -29,10 +33,10 @@ class PieceController extends Controller
             ], 422);
         }
 
-        // Update or create user piece state
-        $userPiece = PuzzlesUserPuzzlePiece::updateOrCreate(
+        // Update or create character piece state
+        $characterPiece = PuzzlesUserPuzzlePiece::updateOrCreate(
             [
-                'user_id' => $userId,
+                'character_id' => $characterId,
                 'puzzles_album_puzzle_piece_id' => $piece->id,
             ],
             [

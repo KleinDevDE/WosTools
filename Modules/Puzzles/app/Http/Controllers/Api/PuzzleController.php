@@ -12,14 +12,18 @@ class PuzzleController extends Controller
 {
     public function index(PuzzlesAlbum $album): JsonResponse
     {
-        $userId = auth()->id();
+        $characterId = auth()->user()->activeCharacter()?->id;
+
+        if (!$characterId) {
+            return response()->json(['error' => 'No active character'], 400);
+        }
 
         $puzzles = $album->puzzles()
             ->withCount('pieces')
-            ->with(['pieces' => function ($query) use ($userId) {
+            ->with(['pieces' => function ($query) use ($characterId) {
                 $query->orderBy('position')
-                    ->with(['userStates' => function ($stateQuery) use ($userId) {
-                        $stateQuery->where('user_id', $userId);
+                    ->with(['characterStates' => function ($stateQuery) use ($characterId) {
+                        $stateQuery->where('character_id', $characterId);
                     }]);
             }])
             ->orderBy('position')
@@ -27,7 +31,7 @@ class PuzzleController extends Controller
 
         $puzzles->each(function ($puzzle) {
             $puzzle->completed_pieces = $puzzle->pieces->filter(function ($piece) {
-                return $piece->userStates->first()?->owns || $piece->userStates->first()?->offers > 0;
+                return $piece->characterStates->first()?->owns || $piece->characterStates->first()?->offers > 0;
             })->count();
         });
 
@@ -41,17 +45,21 @@ class PuzzleController extends Controller
 
     public function show(PuzzlesAlbumPuzzle $puzzle): JsonResponse
     {
-        $userId = auth()->id();
+        $characterId = auth()->user()->activeCharacter()?->id;
 
-        $puzzle->load(['pieces' => function ($query) use ($userId) {
+        if (!$characterId) {
+            return response()->json(['error' => 'No active character'], 400);
+        }
+
+        $puzzle->load(['pieces' => function ($query) use ($characterId) {
             $query->orderBy('position')
-                ->with(['userStates' => function ($stateQuery) use ($userId) {
-                    $stateQuery->where('user_id', $userId);
+                ->with(['characterStates' => function ($stateQuery) use ($characterId) {
+                    $stateQuery->where('character_id', $characterId);
                 }]);
         }]);
 
         $puzzle->completed_pieces = $puzzle->pieces->filter(function ($piece) {
-            return $piece->user_state === 'have';
+            return $piece->characterStates->first()?->owns === true;
         })->count();
 
         return response()->json([

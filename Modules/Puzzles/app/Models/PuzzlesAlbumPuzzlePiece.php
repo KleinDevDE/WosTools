@@ -35,7 +35,7 @@ class PuzzlesAlbumPuzzlePiece extends Model implements HasMedia
         return $this->belongsTo(PuzzlesAlbumPuzzle::class, 'puzzles_album_puzzle_id');
     }
 
-    public function userStates(): HasMany
+    public function characterStates(): HasMany
     {
         return $this->hasMany(PuzzlesUserPuzzlePiece::class, 'puzzles_album_puzzle_piece_id');
     }
