@@ -20,7 +20,7 @@ class PieceController extends Controller
             'offers' => ['required', 'integer', 'min:0'],
         ]);
 
-        $characterId = auth()->user()->activeCharacter()?->id;
+        $characterId = auth('character')->id();
 
         if (!$characterId) {
             return response()->json(['error' => 'No active character'], 400);

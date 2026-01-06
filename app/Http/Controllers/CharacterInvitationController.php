@@ -15,12 +15,11 @@ class CharacterInvitationController extends Controller
      */
     public function index(): View
     {
-        $user = auth()->user();
-        $activeCharacter = $user->activeCharacter();
+        $character = auth('character')->user();
 
         // Get pending invitations for alliances managed by the active character
         $sentInvitations = CharacterInvitation::query()
-            ->where('invited_by_character_id', $activeCharacter?->id)
+            ->where('invited_by_character_id', $character?->id)
             ->whereIn('status', [CharacterInvitation::STATUS_PENDING])
             ->with(['alliance'])
             ->get();
@@ -33,11 +32,10 @@ class CharacterInvitationController extends Controller
      */
     public function create(Request $request): RedirectResponse
     {
-        $user = auth()->user();
-        $activeCharacter = $user->activeCharacter();
+        $character = auth('character')->user();
 
         // Check permission to invite
-        if (!$activeCharacter || !$activeCharacter->hasAnyRole(['wos_r4', 'wos_r5', 'developer'])) {
+        if (!$character || !$character->hasAnyRole(['wos_r4', 'wos_r5', 'developer'])) {
             abort(403, 'You do not have permission to invite characters.');
         }
 
@@ -53,7 +51,7 @@ class CharacterInvitationController extends Controller
         // Check if pending invitation already exists
         $existingInvitation = CharacterInvitation::query()
             ->where('player_id', $validated['player_id'])
-            ->where('alliance_id', $activeCharacter->alliance_id)
+            ->where('alliance_id', $character->alliance_id)
             ->where('status', CharacterInvitation::STATUS_PENDING)
             ->first();
 
@@ -64,8 +62,8 @@ class CharacterInvitationController extends Controller
         // Create new invitation
         $invitation = CharacterInvitation::create([
             'player_id' => $validated['player_id'],
-            'alliance_id' => $activeCharacter->alliance_id,
-            'invited_by_character_id' => $activeCharacter->id,
+            'alliance_id' => $character->alliance_id,
+            'invited_by_character_id' => $character->id,
             'token' => Str::random(64),
             'status' => CharacterInvitation::STATUS_PENDING,
         ]);
@@ -83,12 +81,12 @@ class CharacterInvitationController extends Controller
             ->firstOrFail();
 
         // If user is not authenticated, show registration form with token
-        if (!auth()->check()) {
+        if (!auth('web')->check()) {
             return view('auth.register', compact('invitation'));
         }
 
         // User is authenticated, create character and accept invitation
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         // Check if character already exists
         if (\App\Models\Character::where('player_id', $invitation->player_id)->exists()) {
@@ -113,8 +111,8 @@ class CharacterInvitationController extends Controller
             'accepted_at' => now(),
         ]);
 
-        // Set as active character
-        session(['active_character_id' => $character->id]);
+        // Login with the new character
+        auth()->guard('character')->login($character, true);
 
         return redirect()->route('dashboard')->with('success', 'Welcome! Your character has been created.');
     }
@@ -141,11 +139,10 @@ class CharacterInvitationController extends Controller
      */
     public function revoke(CharacterInvitation $invitation): RedirectResponse
     {
-        $user = auth()->user();
-        $activeCharacter = $user->activeCharacter();
+        $character = auth('character')->user();
 
         // Verify permission
-        if ($invitation->invited_by_character_id !== $activeCharacter->id) {
+        if ($invitation->invited_by_character_id !== $character->id) {
             abort(403, 'Unauthorized to revoke this invitation.');
         }
 

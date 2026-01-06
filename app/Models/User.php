@@ -50,50 +50,8 @@ class User extends Authenticatable
         return $this->hasMany(Character::class);
     }
 
-    public function activeCharacter(): ?Character
-    {
-        $characterId = session('active_character_id');
-
-        if (!$characterId) {
-            return null;
-        }
-
-        return $this->characters()->find($characterId);
-    }
-
-    // Proxy methods for Spatie Permission (delegates to active character)
-    public function hasRole($roles, string $guard = null): bool
-    {
-        return $this->activeCharacter()?->hasRole($roles, $guard) ?? false;
-    }
-
-    public function hasAnyRole($roles, string $guard = null): bool
-    {
-        return $this->activeCharacter()?->hasAnyRole($roles, $guard) ?? false;
-    }
-
-    public function hasAllRoles($roles, string $guard = null): bool
-    {
-        return $this->activeCharacter()?->hasAllRoles($roles, $guard) ?? false;
-    }
-
-    public function hasPermissionTo($permission, $guardName = null): bool
-    {
-        return $this->activeCharacter()?->hasPermissionTo($permission, $guardName) ?? false;
-    }
-
-    public function hasAnyPermission(...$permissions): bool
-    {
-        return $this->activeCharacter()?->hasAnyPermission(...$permissions) ?? false;
-    }
-
-    public function hasAllPermissions(...$permissions): bool
-    {
-        return $this->activeCharacter()?->hasAllPermissions(...$permissions) ?? false;
-    }
-
     public function getName(): string
     {
-        return $this->activeCharacter()?->player_name ?? $this->username;
+        return $this->username;
     }
 }

@@ -17,24 +17,24 @@ class LoginController extends Controller
 
     public function process(LoginRequest $loginRequest)
     {
-        // Attempt to authenticate with username and password
-        if (!Auth::attempt(['username' => $loginRequest->username, 'password' => $loginRequest->password], true)) {
+        // Step 1: Authenticate User with web guard
+        if (!Auth::guard('web')->attempt(['username' => $loginRequest->username, 'password' => $loginRequest->password], true)) {
             return redirect()->back()->withErrors(['username' => 'Invalid credentials']);
         }
 
-        $user = Auth::user();
+        $user = Auth::guard('web')->user();
         $user->update(['last_login_at' => now()]);
 
-        // Get the user's first character and set as active
+        // Step 2: Get the user's first character
         $firstCharacter = $user->characters()->first();
 
         if (!$firstCharacter) {
-            Auth::logout();
+            Auth::guard('web')->logout();
             return redirect()->back()->withErrors(['username' => 'No character found for this account.']);
         }
 
-        // Set active character in session
-        session(['active_character_id' => $firstCharacter->id]);
+        // Step 3: Authenticate Character with character guard
+        Auth::guard('character')->login($firstCharacter, true);
 
         return redirect()->intended('/');
     }

@@ -12,7 +12,7 @@ class PuzzleController extends Controller
 {
     public function index(PuzzlesAlbum $album): JsonResponse
     {
-        $characterId = auth()->user()->activeCharacter()?->id;
+        $characterId = auth('character')->id();
 
         if (!$characterId) {
             return response()->json(['error' => 'No active character'], 400);
@@ -45,7 +45,7 @@ class PuzzleController extends Controller
 
     public function show(PuzzlesAlbumPuzzle $puzzle): JsonResponse
     {
-        $characterId = auth()->user()->activeCharacter()?->id;
+        $characterId = auth('character')->id();
 
         if (!$characterId) {
             return response()->json(['error' => 'No active character'], 400);

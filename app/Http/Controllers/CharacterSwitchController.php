@@ -9,19 +9,19 @@ use Illuminate\Http\Request;
 class CharacterSwitchController extends Controller
 {
     /**
-     * Switch to a different character
+     * Switch to a different character (re-login with character guard)
      */
     public function switch(Request $request, Character $character): RedirectResponse
     {
-        $user = auth()->user();
+        $user = auth()->guard('web')->user();
 
         // Verify that the character belongs to the authenticated user
         if ($character->user_id !== $user->id) {
             abort(403, 'Unauthorized to switch to this character.');
         }
 
-        // Set the new active character in session
-        session(['active_character_id' => $character->id]);
+        // Re-login with the new character
+        auth()->guard('character')->login($character, true);
 
         return redirect()->back()->with('success', 'Switched to character: ' . $character->player_name);
     }
@@ -31,8 +31,8 @@ class CharacterSwitchController extends Controller
      */
     public function list()
     {
-        $user = auth()->user();
-        $activeCharacterId = session('active_character_id');
+        $user = auth()->guard('web')->user();
+        $activeCharacter = auth()->guard('character')->user();
 
         $characters = $user->characters()
             ->with(['stateRelation', 'alliance'])
@@ -41,7 +41,7 @@ class CharacterSwitchController extends Controller
 
         return response()->json([
             'characters' => $characters,
-            'active_character_id' => $activeCharacterId,
+            'active_character_id' => $activeCharacter?->id,
         ]);
     }
 }

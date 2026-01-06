@@ -3,15 +3,16 @@
 namespace App\Models;
 
 use App\Traits\HasRoleHierarchy;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-class Character extends Model
+class Character extends Authenticatable
 {
-    use HasRoles, HasRoleHierarchy;
+    use HasRoles, HasRoleHierarchy, Notifiable;
 
     protected $guard_name = 'character';
 
@@ -64,5 +65,21 @@ class Character extends Model
     public function invitations(): HasMany
     {
         return $this->hasMany(CharacterInvitation::class, 'invited_by_character_id');
+    }
+
+    /**
+     * Get the password for authentication (delegate to user)
+     */
+    public function getAuthPassword()
+    {
+        return $this->user->password;
+    }
+
+    /**
+     * Get the name for display
+     */
+    public function getName(): string
+    {
+        return $this->player_name;
     }
 }

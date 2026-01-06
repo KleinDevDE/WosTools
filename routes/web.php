@@ -27,11 +27,11 @@ Route::post('/invitation/{token}/decline', [CharacterInvitationController::class
     ->name('invitation.decline')
     ->middleware('signed');
 
-Route::middleware(['auth'])->group(function() {
+Route::middleware(['auth:web,character'])->group(function() {
     Route::get('/', [DashboardController::class, 'show'])->name('dashboard');
     Route::get('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-    // Character switching
+    // Character switching (needs both guards)
     Route::get('/characters', [CharacterSwitchController::class, 'list'])->name('characters.list');
     Route::post('/characters/{character}/switch', [CharacterSwitchController::class, 'switch'])->name('characters.switch');
 
