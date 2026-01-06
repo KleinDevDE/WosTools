@@ -22,26 +22,43 @@ class PermissionsSeeder extends Seeder
                 'weight' => 0,
                 'inherits' => [],
                 'permissions' => [
-                    'pages:dashboard:view',
+                    'dashboard.view',
                     'puzzles::view', 'puzzles::own.view', 'puzzles::own.manage',
+                    'profile.view', 'profile.edit',
                 ]
             ],
-            'management' => [
-                'weight' => 80,
+            'wos_r4' => [
+                'weight' => 40,
                 'inherits' => ['user'],
                 'permissions' => [
-                    'puzzles::albums.view', 'puzzles::puzzles.view', 'puzzles::pieces.view',
-                    'users.show', 'users.invite', 'users.lock'
+                    'alliance.view',
+                    'alliance.members.list',
+                    'alliance.members.invite',
+                    'alliance.members.kick',
+                    'alliance.members.lock',
+                    'alliance.members.unlock',
+                ]
+            ],
+            'wos_r5' => [
+                'weight' => 50,
+                'inherits' => ['wos_r4'],
+                'permissions' => [
+                    'alliance.edit',
+                    'alliance.members.promote.r4',
+                    'alliance.members.demote.r4',
+                    'alliance.role.transfer.r5',
                 ]
             ],
             'developer' => [
                 'weight' => 100,
-                'inherits' => ['management'],
+                'inherits' => [],
                 'permissions' => [
                     'puzzles::albums.view', 'puzzles::albums.create', 'puzzles::albums.edit', 'puzzles::albums.delete',
                     'puzzles::puzzles.view', 'puzzles::puzzles.create', 'puzzles::puzzles.edit', 'puzzles::puzzles.delete',
                     'puzzles::pieces.view', 'puzzles::pieces.create', 'puzzles::pieces.edit', 'puzzles::pieces.delete',
                     'users.show', 'users.edit', 'users.delete', 'users.lock', 'users.invite',
+                    'characters.view', 'characters.edit', 'characters.delete',
+                    'alliances.create', 'alliances.edit', 'alliances.delete',
                     'media.gallery.view', 'media.gallery.edit', 'media.gallery.delete'
                 ]
             ]

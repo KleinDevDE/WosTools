@@ -2,11 +2,11 @@
 
 namespace App\Objects;
 
-use App\Models\PlayerProfile;
+use App\Models\CharacterStats;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 
-readonly class PlayerInfo implements Jsonable, Arrayable
+readonly class CharacterStatsObject implements Jsonable, Arrayable
 {
     public function __construct(
         public int $playerID,
@@ -20,16 +20,16 @@ readonly class PlayerInfo implements Jsonable, Arrayable
     {
     }
 
-    public static function fromPlayerProfile(PlayerProfile $playerProfile): self
+    public static function fromCharacterStats(CharacterStats $characterStats): self
     {
         return new self(
-            $playerProfile->player_id,
-            $playerProfile->player_name,
-            $playerProfile->state,
-            $playerProfile->furnace_level,
-            $playerProfile->furnace_level_icon,
-            $playerProfile->player_avatar_url,
-            $playerProfile->total_recharge_amount
+            $characterStats->player_id,
+            $characterStats->player_name,
+            $characterStats->state,
+            $characterStats->furnace_level,
+            $characterStats->furnace_level_icon,
+            $characterStats->player_avatar_url,
+            $characterStats->total_recharge_amount
         );
     }
 
@@ -51,29 +51,29 @@ readonly class PlayerInfo implements Jsonable, Arrayable
         ];
     }
 
-    public function isSame(?PlayerProfile $playerProfile): bool
+    public function isSame(?CharacterStats $characterStats): bool
     {
-        if (!$playerProfile) {
+        if (!$characterStats) {
             return false;
         }
 
-        if ($playerProfile->player_id !== $this->playerID) {
+        if ($characterStats->player_id !== $this->playerID) {
             return false;
         }
 
-        if ($playerProfile->player_name !== $this->playerName) {
+        if ($characterStats->player_name !== $this->playerName) {
             return false;
         }
 
-        if ($playerProfile->state !== $this->state) {
+        if ($characterStats->state !== $this->state) {
             return false;
         }
 
-        if ($playerProfile->furnace_level !== $this->furnaceLevel) {
+        if ($characterStats->furnace_level !== $this->furnaceLevel) {
             return false;
         }
 
-        if ($playerProfile->total_recharge_amount !== $this->totalRechargeAmount) {
+        if ($characterStats->total_recharge_amount !== $this->totalRechargeAmount) {
             return false;
         }
 

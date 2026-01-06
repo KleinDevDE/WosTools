@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\PlayerProfile;
-use App\Objects\PlayerInfo;
+use App\Models\CharacterStats;
+use App\Objects\CharacterStatsObject;
 use App\Traits\WoSAPITrait;
 
 class WhiteoutSurvivalApiService
@@ -11,7 +11,7 @@ class WhiteoutSurvivalApiService
     use WoSAPITrait;
     private const API_PLAYER_ENDPOINT = '/api/player';
 
-    public function getPlayerStats(int $playerID, bool $fromCache = true, bool $store = true): ?PlayerInfo
+    public function getPlayerStats(int $playerID, bool $fromCache = true, bool $store = true): ?CharacterStatsObject
     {
         if (!\Validator::validate(['playerID' => $playerID], [
             'playerID' => 'required|integer',
@@ -20,13 +20,13 @@ class WhiteoutSurvivalApiService
         }
 
         if ($fromCache) {
-            $playerProfile = PlayerProfile::query()
+            $characterStats = CharacterStats::query()
                 ->where('player_id', $playerID)
                 ->whereDate('created_at', '>=', now()->subDay())
                 ->orderBy('created_at',    'desc')
                 ->first();
-            if ($playerProfile) {
-                return PlayerInfo::fromPlayerProfile($playerProfile);
+            if ($characterStats) {
+                return CharacterStatsObject::fromCharacterStats($characterStats);
             }
         }
 
@@ -40,7 +40,7 @@ class WhiteoutSurvivalApiService
             return null;
         }
 
-        $playerInfo = new PlayerInfo(
+        $statsObject = new CharacterStatsObject(
             $data["data"]["fid"],
             $data["data"]["nickname"],
             $data["data"]["kid"],
@@ -51,9 +51,9 @@ class WhiteoutSurvivalApiService
         );
 
         if ($store) {
-            PlayerProfile::storeIfChanged($playerInfo);
+            CharacterStats::storeIfChanged($statsObject);
         }
 
-        return $playerInfo;
+        return $statsObject;
     }
 }

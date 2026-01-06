@@ -2,39 +2,29 @@
 
 namespace App\Models;
 
-use App\Traits\HasRoleHierarchy;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasRoles, HasRoleHierarchy;
+    use HasFactory, Notifiable;
 
     public const STATUS_ACTIVE = 'active';
-    public const STATUS_INVITED = 'invited';
     public const STATUS_LOCKED = 'locked';
     public const STATUS_VALUES = [
         self::STATUS_ACTIVE,
-        self::STATUS_INVITED,
         self::STATUS_LOCKED,
     ];
 
     protected $fillable = [
-        'player_id',
-        'player_name',
-        'display_name',
+        'username',
         'email',
         'password',
         'status',
-        'is_virtual',
-        'invited_by',
-        'token',
         'last_login_at',
         'locale'
     ];
@@ -63,18 +53,55 @@ class User extends Authenticatable
         ];
     }
 
-    public function invitations(): HasMany
+    public function characters(): HasMany
     {
-        return $this->hasMany(UserInvitation::class, 'user_id', 'id');
+        return $this->hasMany(Character::class);
     }
 
-    public function ownInvitation():BelongsTo
+    public function activeCharacter(): ?Character
     {
-        return $this->belongsTo(UserInvitation::class, 'id', 'user_id');
+        $characterId = session('active_character_id');
+
+        if (!$characterId) {
+            return null;
+        }
+
+        return $this->characters()->find($characterId);
+    }
+
+    // Proxy methods for Spatie Permission (delegates to active character)
+    public function hasRole($roles, string $guard = null): bool
+    {
+        return $this->activeCharacter()?->hasRole($roles, $guard) ?? false;
+    }
+
+    public function hasAnyRole($roles, string $guard = null): bool
+    {
+        return $this->activeCharacter()?->hasAnyRole($roles, $guard) ?? false;
+    }
+
+    public function hasAllRoles($roles, string $guard = null): bool
+    {
+        return $this->activeCharacter()?->hasAllRoles($roles, $guard) ?? false;
+    }
+
+    public function hasPermissionTo($permission, $guardName = null): bool
+    {
+        return $this->activeCharacter()?->hasPermissionTo($permission, $guardName) ?? false;
+    }
+
+    public function hasAnyPermission(...$permissions): bool
+    {
+        return $this->activeCharacter()?->hasAnyPermission(...$permissions) ?? false;
+    }
+
+    public function hasAllPermissions(...$permissions): bool
+    {
+        return $this->activeCharacter()?->hasAllPermissions(...$permissions) ?? false;
     }
 
     public function getName(): string
     {
-        return $this->display_name ?? $this->player_name;
+        return $this->activeCharacter()?->player_name ?? $this->username;
     }
 }
