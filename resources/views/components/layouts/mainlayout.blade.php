@@ -42,7 +42,7 @@
                     </li>
 
                     @module('Puzzles')
-                    @role('developer')
+                    @if(\App\Models\Character::getActiveCharacter()->isAn('developer'))
                     <li x-data="{ open: false }" class="relative">
                         <button @click="open = !open" class="flex items-center gap-1 {{ $isActive('module.puzzles.*') }}">
                             {{ __('navigation.puzzles') }}
@@ -69,7 +69,7 @@
                             </a>
                         </div>
                     </li>
-                    @endrole
+                    @endif
                     @endmodule
 
                     @canany([\App\Helpers\Permissions::USERS_SHOW, \App\Helpers\Permissions::MEDIA_GALLERY_VIEW])
