@@ -2,13 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\User;
+use App\Models\Character;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\Response;
 
-class NotLocked
+class LoadCharacter
 {
     /**
      * Handle an incoming request.
@@ -17,20 +16,11 @@ class NotLocked
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (App::runningInConsole()) {
+        if (!session()->has('active_character_id')) {
             return $next($request);
         }
 
-        if (!\auth()->hasUser()) {
-            return $next($request);
-        }
-
-        if (\auth()->user()->status === User::STATUS_LOCKED) {
-            \Session::flash('error_account_locked', true);
-            \Auth::logout();
-            return redirect()->route('auth.login');
-        }
-
+        Character::setActiveCharacter(Character::find(session('active_character_id')));
         return $next($request);
     }
 }

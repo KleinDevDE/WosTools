@@ -8,7 +8,10 @@ class AuthController extends Controller
 {
     public function logout()
     {
-        auth()->logout();
+        auth()->guard('character')->logout();
+        auth()->guard('web')->logout();
+        session()->invalidate();
+        session()->regenerateToken();
         return redirect()->route('auth.login');
     }
 }

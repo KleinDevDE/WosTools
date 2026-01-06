@@ -11,9 +11,13 @@ class UserStateController extends Controller
 {
     public function index(): JsonResponse
     {
-        $userId = auth()->id();
+        $characterId = auth('character')->id();
 
-        $states = PuzzlesUserPuzzlePiece::where('user_id', $userId)
+        if (!$characterId) {
+            return response()->json(['error' => 'No active character'], 400);
+        }
+
+        $states = PuzzlesUserPuzzlePiece::where('character_id', $characterId)
             ->where(function ($query) {
                 $query->where('needs', true)
                     ->orWhere('owns', true)

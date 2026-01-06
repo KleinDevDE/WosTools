@@ -11,13 +11,57 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * Show the profile edit form
+     * Show the profile settings page
      */
     public function show(): View
     {
-        return view('profile.edit', [
+        return view('profile.settings', [
             'user' => Auth::user()
         ]);
+    }
+
+    /**
+     * Delete a single character
+     */
+    public function deleteCharacter($characterId): RedirectResponse
+    {
+        $user = Auth::user();
+        $character = $user->characters()->findOrFail($characterId);
+
+        // Prevent deletion of last character
+        if ($user->characters()->count() <= 1) {
+            return redirect()->back()
+                ->withErrors(['character' => 'Cannot delete your last character.']);
+        }
+
+        // If this is the active character, switch to another one
+        if (session('active_character_id') == $character->id) {
+            $newCharacter = $user->characters()->where('id', '!=', $character->id)->first();
+            session(['active_character_id' => $newCharacter->id]);
+        }
+
+        $character->delete();
+
+        return redirect()->route('profile.show')
+            ->with('success', 'Character deleted successfully.');
+    }
+
+    /**
+     * Delete the entire user account
+     */
+    public function deleteAccount(): RedirectResponse
+    {
+        $user = Auth::user();
+
+        // Logout first
+        Auth::guard('web')->logout();
+        Auth::guard('character')->logout();
+
+        // Delete user (cascades to characters)
+        $user->delete();
+
+        return redirect()->route('auth.login')
+            ->with('success', 'Your account has been deleted.');
     }
 
     /**

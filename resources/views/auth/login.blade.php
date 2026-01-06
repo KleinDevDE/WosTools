@@ -6,27 +6,14 @@
         class="space-y-6"
     >
         @csrf
-        @if(Session::has('error_account_locked'))
-            <div class="bg-danger-600/60 rounded-xl p-4 mb-8 text-center w-fit mx-auto">
-                <div class="flex flex-col items-center gap-2">
-                    <span class="flex items-center text-xl font-bold text-white">
-                        <x-heroicon-o-exclamation-triangle class="w-8 h-8 text-white mr-2 text-3xl"/>
-                        {{__('dashboard.locked_message.title')}}
-                    </span>
-                    <span class=" text-sm">
-                        {{__('dashboard.locked_message.description')}}
-                    </span>
-                </div>
-            </div>
-        @endif
 
         {{-- Username --}}
         <div>
             <label
-                for="player_id"
+                for="username"
                 class="block mb-2 text-sm font-medium text-navy-100"
             >
-                Player-ID
+                Username
             </label>
 
             <div class="flex rounded-xl overflow-hidden border border-white/10 bg-navy-800 focus-within:ring-2 focus-within:ring-glow-400/60 transition">
@@ -44,12 +31,12 @@
 
                 <input
                     type="text"
-                    id="player_id"
-                    name="player_id"
+                    id="username"
+                    name="username"
                     autocomplete="username"
                     class="w-full bg-transparent px-4 py-3 text-navy-50 placeholder-navy-400 focus:outline-none border-0"
-                    placeholder="Enter your player-id"
-                    value="{{ old('player_id') }}"
+                    placeholder="Enter your username"
+                    value="{{ old('username') }}"
                     autofocus
                 />
             </div>

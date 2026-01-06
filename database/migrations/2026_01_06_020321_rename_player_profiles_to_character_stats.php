@@ -11,9 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->unsignedInteger('weight')->default(0);
-        });
+        Schema::rename('player_profiles', 'character_stats');
     }
 
     /**
@@ -21,8 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('roles', function (Blueprint $table) {
-            $table->dropColumn('weight');
-        });
+        Schema::rename('character_stats', 'player_profiles');
     }
 };

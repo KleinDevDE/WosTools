@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Queue\Queueable;
 
-class SyncPlayerProfilesJob implements ShouldQueue
+class SyncCharacterStatsJob implements ShouldQueue
 {
     use Batchable, Queueable;
     private WhiteoutSurvivalApiService $apiService;

@@ -2,39 +2,21 @@
 
 namespace App\Models;
 
-use App\Traits\HasRoleHierarchy;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasRoles, HasRoleHierarchy;
-
-    public const STATUS_ACTIVE = 'active';
-    public const STATUS_INVITED = 'invited';
-    public const STATUS_LOCKED = 'locked';
-    public const STATUS_VALUES = [
-        self::STATUS_ACTIVE,
-        self::STATUS_INVITED,
-        self::STATUS_LOCKED,
-    ];
+    use HasFactory, Notifiable;
 
     protected $fillable = [
-        'player_id',
-        'player_name',
-        'display_name',
+        'username',
         'email',
         'password',
-        'status',
-        'is_virtual',
-        'invited_by',
-        'token',
         'last_login_at',
         'locale'
     ];
@@ -63,18 +45,13 @@ class User extends Authenticatable
         ];
     }
 
-    public function invitations(): HasMany
+    public function characters(): HasMany
     {
-        return $this->hasMany(UserInvitation::class, 'user_id', 'id');
-    }
-
-    public function ownInvitation():BelongsTo
-    {
-        return $this->belongsTo(UserInvitation::class, 'id', 'user_id');
+        return $this->hasMany(Character::class);
     }
 
     public function getName(): string
     {
-        return $this->display_name ?? $this->player_name;
+        return $this->username;
     }
 }
