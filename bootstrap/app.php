@@ -22,6 +22,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', \App\Http\Middleware\LoadCharacter::class);
         $middleware->appendToGroup('api', \App\Http\Middleware\SetLocale::class);
 
+        $middleware->alias([
+            'characterCanAny' => \App\Http\Middleware\CharacterCanAny::class,
+        ]);
+
         // Sanctum SPA authentication
         $middleware->statefulApi();
     })

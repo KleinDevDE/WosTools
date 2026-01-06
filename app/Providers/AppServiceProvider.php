@@ -2,13 +2,14 @@
 
 namespace App\Providers;
 
+use App\Models\Character;
 use App\Observers\MediaObserver;
 use Filament\Notifications\Livewire\DatabaseNotifications;
-use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Bouncer;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,20 +30,11 @@ class AppServiceProvider extends ServiceProvider
 //        $this->app->register(CustomLivewireServiceProvider::class);
 
         // Configure Gate to use active character instead of user
-        Gate::resolveAuthUsing(function () {
-            // For character guard authentication
-            if (auth()->guard('character')->check()) {
-                return auth()->guard('character')->user();
-            }
-
-            // Fallback to web guard with active character
-            if (auth()->guard('web')->check()) {
-                $user = auth()->guard('web')->user();
-                return $user->characters()->find(session('active_character_id'));
-            }
-
-            return null;
-        });
+//        $this->app->singleton(\Illuminate\Contracts\Auth\Access\Gate::class, function ($app) {
+//            return new \Illuminate\Auth\Access\Gate($app, function () use($app) {
+//                return Character::getActiveCharacter();
+//            });
+//        });
 
         // Register Media Observer for tracking uploads
         Media::observe(MediaObserver::class);
@@ -128,5 +120,8 @@ class AppServiceProvider extends ServiceProvider
                 950 => 'oklch(0.20 0.08 240)',
             ],
         ]);
+
+        Bouncer::useUserModel(Character::class);
+        Bouncer::ownedVia('character_id');
     }
 }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
+use Silber\Bouncer\Bouncer;
 use Silber\Bouncer\Database\HasRolesAndAbilities;
 
 class Character extends Model
@@ -94,5 +95,17 @@ class Character extends Model
     public static function getActiveCharacter(): ?Character
     {
         return self::$activeCharacter ?? null;
+    }
+
+    public function canAny(string|iterable $abilities): bool
+    {
+        $bouncer = app(Bouncer::class);
+        return $bouncer->gate()->forUser(Character::getActiveCharacter())->any($abilities);
+    }
+
+    public function can(string $ability): bool
+    {
+        $bouncer = app(Bouncer::class);
+        return $bouncer->gate()->forUser(Character::getActiveCharacter())->any($ability);
     }
 }

@@ -46,7 +46,7 @@ Route::middleware(['auth:web,character'])->group(function() {
 
     Route::prefix('/admin')->group(function() {
 //        Route::get('/', [DashboardController::class, 'adminShow'])->name('admin.dashboard');
-        Route::prefix('users')->middleware('can:'.App\Helpers\Permissions::USERS_SHOW)->group(function() {
+        Route::prefix('users')->middleware('characterCanAny:'.App\Helpers\Permissions::USERS_SHOW)->group(function() {
             Route::get('/', [UserController::class, 'list'])->name('admin.users.list');
         });
 

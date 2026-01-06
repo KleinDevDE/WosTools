@@ -72,7 +72,7 @@
                     @endif
                     @endmodule
 
-                    @canany([\App\Helpers\Permissions::USERS_SHOW, \App\Helpers\Permissions::MEDIA_GALLERY_VIEW])
+                    @if(\App\Models\Character::getActiveCharacter()->canAny(\App\Helpers\Permissions::USERS_SHOW, \App\Helpers\Permissions::MEDIA_GALLERY_VIEW))
                         <li x-data="{ open: false }" class="relative">
                             <button @click="open = !open" class="flex items-center gap-1 {{ $isActive('admin.*') }}">
                                 {{ __('navigation.administration') }}
@@ -85,22 +85,22 @@
                                 x-transition
                                 class="absolute left-1/2 mt-2 w-44 -translate-x-1/2 rounded-md border border-navy-600 bg-navy-700 shadow-lg md:left-0 md:translate-x-0"
                             >
-                                @can(App\Helpers\Permissions::USERS_SHOW)
+                                @if(\App\Models\Character::getActiveCharacter()->can(\App\Helpers\Permissions::USERS_SHOW))
                                     <a href="{{ route('admin.users.list') }}"
                                        class="block rounded-t-md px-4 py-2 text-sm hover:bg-navy-600 {{ $isActive('admin.users.*') }}">
                                         Users
                                     </a>
-                                @endcan
+                                @endif
 
-                                @can(App\Helpers\Permissions::MEDIA_GALLERY_VIEW)
+                                @if(\App\Models\Character::getActiveCharacter()->can(App\Helpers\Permissions::MEDIA_GALLERY_VIEW))
                                     <a href="{{ route('admin.media.gallery') }}"
                                        class="block rounded-b-md px-4 py-2 text-sm hover:bg-navy-600 {{ $isActive('admin.media.*') }}">
                                         Media Gallery
                                     </a>
-                                @endcan
+                                @endif
                             </div>
                         </li>
-                    @endcanany
+                    @endif
                 </ul>
 
                 {{-- Right: Language + User --}}

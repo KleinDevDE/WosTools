@@ -17,6 +17,9 @@ class PermissionsSeeder extends Seeder
      */
     public function run(): void
     {
+        Bouncer::allow('superadmin')->everything();
+
+
         $roles = [
             'user' => [
                 'title' => 'User',
