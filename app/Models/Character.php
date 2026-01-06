@@ -2,19 +2,16 @@
 
 namespace App\Models;
 
-use App\Traits\HasRoleHierarchy;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
+use Silber\Bouncer\Database\HasRolesAndAbilities;
 
 class Character extends Authenticatable
 {
-    use HasRoles, HasRoleHierarchy, Notifiable;
-
-    protected $guard_name = 'character';
+    use HasRolesAndAbilities, Notifiable;
 
     protected $fillable = [
         'user_id',

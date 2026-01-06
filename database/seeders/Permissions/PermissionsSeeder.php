@@ -2,11 +2,11 @@
 
 namespace Database\Seeders\Permissions;
 
-use App\Models\User;
+use Bouncer;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use Silber\Bouncer\Database\Ability;
+use Silber\Bouncer\Database\Role;
 
 class PermissionsSeeder extends Seeder
 {
@@ -17,22 +17,20 @@ class PermissionsSeeder extends Seeder
      */
     public function run(): void
     {
-        $guardName = 'character';
-
-        $permissions = [
+        $roles = [
             'user' => [
-                'weight' => 0,
+                'title' => 'User',
                 'inherits' => [],
-                'permissions' => [
+                'abilities' => [
                     'dashboard.view',
                     'puzzles::view', 'puzzles::own.view', 'puzzles::own.manage',
                     'profile.view', 'profile.edit',
                 ]
             ],
             'wos_r4' => [
-                'weight' => 40,
+                'title' => 'WoS R4',
                 'inherits' => ['user'],
-                'permissions' => [
+                'abilities' => [
                     'alliance.view',
                     'alliance.members.list',
                     'alliance.members.invite',
@@ -40,9 +38,9 @@ class PermissionsSeeder extends Seeder
                 ]
             ],
             'wos_r5' => [
-                'weight' => 50,
+                'title' => 'WoS R5',
                 'inherits' => ['wos_r4'],
-                'permissions' => [
+                'abilities' => [
                     'alliance.edit',
                     'alliance.members.promote.r4',
                     'alliance.members.demote.r4',
@@ -50,9 +48,9 @@ class PermissionsSeeder extends Seeder
                 ]
             ],
             'developer' => [
-                'weight' => 100,
+                'title' => 'Developer',
                 'inherits' => [],
-                'permissions' => [
+                'abilities' => [
                     'puzzles::albums.view', 'puzzles::albums.create', 'puzzles::albums.edit', 'puzzles::albums.delete',
                     'puzzles::puzzles.view', 'puzzles::puzzles.create', 'puzzles::puzzles.edit', 'puzzles::puzzles.delete',
                     'puzzles::pieces.view', 'puzzles::pieces.create', 'puzzles::pieces.edit', 'puzzles::pieces.delete',
@@ -64,38 +62,48 @@ class PermissionsSeeder extends Seeder
             ]
         ];
 
-        $allPermissions = [];
-        $knownPermissions = Permission::where('guard_name', $guardName)->pluck('name')->toArray();
-
-        foreach ($permissions as $roleName => $group) {
-            foreach ($group['permissions'] AS $index => $permission) {
-                $permissions[$roleName]['permissions'][$index] = $allPermissions[$permission] ?? Permission::updateOrCreate(
-                    ['name' => $permission, 'guard_name' => $guardName],
-                    ['name' => $permission, 'guard_name' => $guardName]
-                );
-                $allPermissions[$permission] = $permissions[$roleName]['permissions'][$index];
+        // Collect all unique abilities
+        $allAbilities = [];
+        foreach ($roles as $roleName => $roleData) {
+            foreach ($roleData['abilities'] as $abilityName) {
+                if (!isset($allAbilities[$abilityName])) {
+                    $allAbilities[$abilityName] = true;
+                }
             }
         }
 
-        //Handle inherited permissions
-        foreach ($permissions as $roleName => $group) {
-            foreach ($group['inherits'] AS $inheritedRole) {
-                $permissions[$roleName]['permissions'] = array_merge($permissions[$inheritedRole]['permissions'], $permissions[$roleName]['permissions']);
-            }
+        // Create all abilities
+        foreach (array_keys($allAbilities) as $abilityName) {
+            Ability::firstOrCreate(['name' => $abilityName]);
         }
 
-        $permsToDelete = array_diff($knownPermissions, array_keys($allPermissions));
-        Permission::where('guard_name', $guardName)->whereIn('name', $permsToDelete)->delete();
-
-        foreach ($permissions as $roleName => $group) {
-            $role = Role::updateOrCreate(
-                ['name' => $roleName, 'guard_name' => $guardName],
-                ['weight' => $group['weight'], 'guard_name' => $guardName]
+        // Create roles and assign abilities
+        foreach ($roles as $roleName => $roleData) {
+            $role = Bouncer::role()->firstOrCreate(
+                ['name' => $roleName],
+                ['title' => $roleData['title']]
             );
 
-            $role->syncPermissions(...$group['permissions']);
+            // Collect all abilities for this role (including inherited)
+            $roleAbilities = $roleData['abilities'];
+            foreach ($roleData['inherits'] as $inheritedRoleName) {
+                if (isset($roles[$inheritedRoleName])) {
+                    $roleAbilities = array_merge($roles[$inheritedRoleName]['abilities'], $roleAbilities);
+                }
+            }
+
+            // Remove duplicate abilities
+            $roleAbilities = array_unique($roleAbilities);
+
+            // Sync abilities to role
+            Bouncer::sync($role)->abilities($roleAbilities);
         }
 
-        Role::where('guard_name', $guardName)->whereNotIn('name', array_keys($permissions))->delete();
+        // Clean up roles that are not in our list
+        Role::whereNotIn('name', array_keys($roles))->delete();
+
+        // Clean up abilities that are no longer used
+        $usedAbilities = array_keys($allAbilities);
+        Ability::whereNotIn('name', $usedAbilities)->delete();
     }
 }
