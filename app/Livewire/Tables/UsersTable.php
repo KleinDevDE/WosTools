@@ -4,8 +4,8 @@ namespace App\Livewire\Tables;
 
 use App\Helpers\Permissions;
 use App\Models\CharacterStats;
-use App\Models\Role;
 use App\Models\User;
+use Silber\Bouncer\Database\Role;
 use App\Objects\CharacterStatsObject;
 use App\Services\UserInvitationService;
 use App\Services\WhiteoutSurvivalApiService;
@@ -76,8 +76,9 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
                 ->formatStateUsing(fn(string $state) => ['en' => 'English', 'de' => 'German', 'tr' => 'Turkish'][$state] ?? "N/A"),
             TextColumn::make('last_login_at', 'last_login_at')
                 ->sortable(),
-            TextColumn::make('roles')
-                ->getStateUsing(fn(User $record) => $record->roles->sortBy('weight')->pluck('name')->join(', '))
+            TextColumn::make('characters_count')
+                ->label('Characters')
+                ->counts('characters')
                 ->sortable(),
         ];
     }
@@ -252,62 +253,41 @@ class UsersTable extends Component implements HasActions, HasSchemas, HasTable
 
     protected function getTableActions(): array
     {
-        $selectableRoles = Role::query()->get()
-            ->mapWithKeys(function(Role $role) {
-                $displayName = $role->name;
-                if (!auth()->user()->canManageRole($role)) {
-                    $displayName .= " - (No rights to change role, read-only)";
-                    return [$role->name => $displayName];
-                }
-
-                return [$role->name => $displayName];
-            })->toArray();
-
         return [
             EditAction::make('edit')
-                ->visible(fn(User $user) => auth()->user()->canManageUser($user))
                 ->schema([
                     Select::make('locale')
+                        ->label('Language')
                         ->options(['en' => 'English', 'de' => 'German', 'tr' => 'Turkish'])
-                        ->afterStateUpdated(function (Select $component, User $user) {
-                            $select = $component->getContainer()->getComponent('roles');
-                            $select->state($user->locale);
-                        }),
-                    Select::make('roles')
-                        ->multiple()
-                        ->options($selectableRoles)
-                        ->afterStateHydrated(function (Select $component, User $user) {
-                            $select = $component->getContainer()->getComponent('roles');
-                            $select->state($user->roles->pluck('name')->toArray());
-                        })
+                        ->required(),
                 ])
-                ->before(function (EditAction $action, User $user, array $data): void {
-                    $userRoles = $user->roles->pluck('name')->toArray();
+                ->action(function (User $user, array $data): void {
+                    $user->update([
+                        'locale' => $data['locale'],
+                    ]);
 
-                    //Allow if the role is lower than auth user
-                    $data['roles'] = array_filter($data['roles'], function ($roleName) {
-                        return auth()->user()->canManageRole($roleName);
-                    });
+                    Log::channel("audit")->info(
+                        "Actor: " . (auth('character')->user()?->getName() ?? 'System') . " | " .
+                        "Changed locale of user " . $user->player_name . " to " . $data['locale']
+                    );
 
-                    //Add currently linked roles if they are higher than auth user
-                    foreach ($userRoles as $roleName) {
-                        if (!auth()->user()->canManageRole($roleName)) {
-                            $data['roles'][] = $roleName;
-                        }
-                    }
-
-                    //Skip if no changes
-                    if (empty(array_diff($data['roles'], $userRoles))) {
-                        return;
-                    }
-
-                    Log::channel("audit")->info("Actor: ".auth()->user()->getName()." (".auth()->id().") | Changed roles of user ".$user->getName()." to ".implode(", ", $data['roles']));
-
-                    $user->syncRoles($data['roles']);
-                })
-            ,
+                    Notification::make()
+                        ->title('User updated successfully')
+                        ->success()
+                        ->send();
+                }),
             DeleteAction::make()
-                ->requiresConfirmation(),
+                ->requiresConfirmation()
+                ->modalHeading('Delete User')
+                ->modalDescription(fn(User $user) =>
+                    "Are you sure you want to delete user '{$user->player_name}'? This will delete all associated characters and data. This action cannot be undone."
+                )
+                ->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title('User deleted')
+                        ->body('The user and all associated characters have been deleted successfully.')
+                ),
         ];
     }
 

@@ -19,6 +19,12 @@ Route::middleware(['guest'])->group(function() {
     Route::post('/register', [RegisterController::class, 'process']);
 });
 
+// Character selection (requires web auth only)
+Route::middleware(['auth:web'])->group(function() {
+    Route::get('/select-character', [LoginController::class, 'showCharacterSelect'])->name('character.select');
+    Route::get('/select-character/{character}', [LoginController::class, 'selectCharacter'])->name('character.select.process');
+});
+
 // Public invitation routes (signed)
 Route::get('/invitation/{token}/accept', [CharacterInvitationController::class, 'accept'])
     ->name('invitation.accept')
@@ -43,6 +49,8 @@ Route::middleware(['auth:web,character'])->group(function() {
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'deleteAccount'])->name('profile.delete');
+    Route::delete('/characters/{character}', [ProfileController::class, 'deleteCharacter'])->name('characters.delete');
 
     Route::prefix('/admin')->group(function() {
 //        Route::get('/', [DashboardController::class, 'adminShow'])->name('admin.dashboard');

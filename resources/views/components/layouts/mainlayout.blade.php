@@ -119,20 +119,47 @@
                             x-show="open"
                             @click.outside="open = false"
                             x-transition
-                            class="absolute right-0 mt-2 w-44 rounded-md border border-navy-600 bg-navy-700 shadow-lg"
+                            class="absolute right-0 mt-2 w-64 rounded-md border border-navy-600 bg-navy-700 shadow-lg"
                         >
                             <div class="border-b border-navy-600 px-4 py-2 text-xs text-slate-400">
                                 Signed in as<br>
                                 <span class="font-medium text-slate-200">{{ auth()->user()->username }}</span>
                             </div>
 
+                            @php
+                                $activeCharacter = \App\Models\Character::getActiveCharacter();
+                                $characters = auth()->user()->characters;
+                            @endphp
+
+                            @if($characters->count() > 1)
+                                <div class="border-b border-navy-600 px-4 py-2">
+                                    <div class="text-xs text-slate-400 mb-2">Active Character</div>
+                                    @foreach($characters as $character)
+                                        <a
+                                            href="{{ route('character.select.process', $character->id) }}"
+                                            class="flex items-center justify-between px-2 py-1.5 rounded text-sm hover:bg-navy-600 transition {{ $activeCharacter?->id === $character->id ? 'bg-navy-600 text-sky-400' : 'text-slate-200' }}"
+                                        >
+                                            <span class="truncate">{{ $character->player_name }}</span>
+                                            @if($activeCharacter?->id === $character->id)
+                                                <x-heroicon-o-check-circle class="h-4 w-4 text-sky-400 ml-2"/>
+                                            @endif
+                                        </a>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="border-b border-navy-600 px-4 py-2">
+                                    <div class="text-xs text-slate-400 mb-1">Character</div>
+                                    <div class="text-sm text-slate-200">{{ $activeCharacter?->player_name ?? 'No character' }}</div>
+                                </div>
+                            @endif
+
                             <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm text-slate-200 hover:bg-navy-600">
-                                {{ __('navigation.profile') }}
+                                {{ __('navigation.settings') }}
                             </a>
 
                             <form method="GET" action="{{ route('auth.logout') }}">
                                 @csrf
-                                <button type="submit" class="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-navy-600">
+                                <button type="submit" class="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-navy-600 rounded-b-md">
                                     {{ __('navigation.logout') }}
                                 </button>
                             </form>

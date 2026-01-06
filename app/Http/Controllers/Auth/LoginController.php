@@ -25,16 +25,45 @@ class LoginController extends Controller
         $user = Auth::guard('web')->user();
         $user->update(['last_login_at' => now()]);
 
-        // Step 2: Get the user's first character
-        $firstCharacter = $user->characters()->first();
-
-        if (!$firstCharacter) {
+        // Step 2: Check if user has characters
+        if ($user->characters()->count() === 0) {
             Auth::guard('web')->logout();
             return redirect()->back()->withErrors(['username' => 'No character found for this account.']);
         }
 
-        // Step 3: Authenticate Character with character guard
-        session(['active_character_id' => $firstCharacter->id]);
+        // Step 3: Redirect to character selection
+        return redirect()->route('character.select');
+    }
+
+    public function showCharacterSelect(): View
+    {
+        // Ensure user is authenticated via web guard
+        if (!Auth::guard('web')->check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::guard('web')->user();
+        $characters = $user->characters()->with(['stateRelation', 'alliance'])->get();
+
+        return view('auth.character-select', compact('characters'));
+    }
+
+    public function selectCharacter($characterId)
+    {
+        // Ensure user is authenticated via web guard
+        if (!Auth::guard('web')->check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::guard('web')->user();
+        $character = $user->characters()->find($characterId);
+
+        if (!$character) {
+            return redirect()->route('character.select')->withErrors(['character' => 'Character not found.']);
+        }
+
+        // Set active character in session
+        session(['active_character_id' => $character->id]);
 
         return redirect()->intended('/');
     }
