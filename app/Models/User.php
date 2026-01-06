@@ -26,14 +26,10 @@ class User extends Authenticatable
     ];
 
     protected $fillable = [
-        'player_id',
-        'player_name',
-        'display_name',
+        'username',
         'email',
         'password',
         'status',
-        'is_virtual',
-        'invited_by',
         'token',
         'last_login_at',
         'locale'
@@ -68,13 +64,13 @@ class User extends Authenticatable
         return $this->hasMany(UserInvitation::class, 'user_id', 'id');
     }
 
-    public function ownInvitation():BelongsTo
-    {
-        return $this->belongsTo(UserInvitation::class, 'id', 'user_id');
-    }
-
     public function getName(): string
     {
         return $this->display_name ?? $this->player_name;
+    }
+
+    public function characters(): HasMany
+    {
+        return $this->hasMany(Character::class);
     }
 }
