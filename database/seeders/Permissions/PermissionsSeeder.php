@@ -17,6 +17,8 @@ class PermissionsSeeder extends Seeder
      */
     public function run(): void
     {
+        $guardName = 'character';
+
         $permissions = [
             'user' => [
                 'weight' => 0,
@@ -63,11 +65,14 @@ class PermissionsSeeder extends Seeder
         ];
 
         $allPermissions = [];
-        $knownPermissions = Permission::pluck('name')->toArray();
+        $knownPermissions = Permission::where('guard_name', $guardName)->pluck('name')->toArray();
 
         foreach ($permissions as $roleName => $group) {
             foreach ($group['permissions'] AS $index => $permission) {
-                $permissions[$roleName]['permissions'][$index] = $allPermissions[$permission] ?? Permission::updateOrCreate(['name' => $permission]);
+                $permissions[$roleName]['permissions'][$index] = $allPermissions[$permission] ?? Permission::updateOrCreate(
+                    ['name' => $permission, 'guard_name' => $guardName],
+                    ['name' => $permission, 'guard_name' => $guardName]
+                );
                 $allPermissions[$permission] = $permissions[$roleName]['permissions'][$index];
             }
         }
@@ -80,14 +85,17 @@ class PermissionsSeeder extends Seeder
         }
 
         $permsToDelete = array_diff($knownPermissions, array_keys($allPermissions));
-        Permission::whereIn('name', $permsToDelete)->delete();
+        Permission::where('guard_name', $guardName)->whereIn('name', $permsToDelete)->delete();
 
         foreach ($permissions as $roleName => $group) {
-            $role = Role::updateOrCreate(['name' => $roleName], ['weight' => $group['weight']]);
+            $role = Role::updateOrCreate(
+                ['name' => $roleName, 'guard_name' => $guardName],
+                ['weight' => $group['weight'], 'guard_name' => $guardName]
+            );
 
             $role->syncPermissions(...$group['permissions']);
         }
 
-        Role::whereNotIn('name', array_keys($permissions))->delete();
+        Role::where('guard_name', $guardName)->whereNotIn('name', array_keys($permissions))->delete();
     }
 }

@@ -13,6 +13,8 @@ class Character extends Model
 {
     use HasRoles, HasRoleHierarchy;
 
+    protected $guard_name = 'character';
+
     protected $fillable = [
         'user_id',
         'player_id',
