@@ -6,6 +6,7 @@ use App\Observers\MediaObserver;
 use Filament\Notifications\Livewire\DatabaseNotifications;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
@@ -26,6 +27,22 @@ class AppServiceProvider extends ServiceProvider
     {
         DatabaseNotifications::trigger('notifications-trigger');
 //        $this->app->register(CustomLivewireServiceProvider::class);
+
+        // Configure Gate to use active character instead of user
+        Gate::resolveAuthUsing(function () {
+            // For character guard authentication
+            if (auth()->guard('character')->check()) {
+                return auth()->guard('character')->user();
+            }
+
+            // Fallback to web guard with active character
+            if (auth()->guard('web')->check()) {
+                $user = auth()->guard('web')->user();
+                return $user->characters()->find(session('active_character_id'));
+            }
+
+            return null;
+        });
 
         // Register Media Observer for tracking uploads
         Media::observe(MediaObserver::class);
