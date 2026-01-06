@@ -2,20 +2,20 @@
 
 namespace Modules\Puzzles\Models;
 
+use App\Models\Character;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\User;
 
 class PuzzlesUserPuzzlePiece extends Model
 {
-    protected $table = 'puzzles_user_puzzle_pieces';
+    protected $table = 'puzzles_character_puzzle_pieces';
 
     public $incrementing = false;
 
-    protected $primaryKey = ['user_id', 'puzzles_album_puzzle_piece_id'];
+    protected $primaryKey = ['character_id', 'puzzles_album_puzzle_piece_id'];
 
     protected $fillable = [
-        'user_id',
+        'character_id',
         'puzzles_album_puzzle_piece_id',
         'needs',
         'owns',
@@ -55,9 +55,9 @@ class PuzzlesUserPuzzlePiece extends Model
         return $this->getAttribute($keyName);
     }
 
-    public function user(): BelongsTo
+    public function character(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Character::class);
     }
 
     public function piece(): BelongsTo

@@ -13,36 +13,41 @@ class MatchController extends Controller
 {
     public function index(): JsonResponse
     {
-        $userId = auth()->id();
+        $characterId = auth()->user()->activeCharacter()?->id;
+
+        if (!$characterId) {
+            return response()->json(['error' => 'No active character'], 400);
+        }
+
         $locale = app()->getLocale();
 
         // Get pieces I need (tradeable only)
-        $myNeeds = DB::table('puzzles_user_puzzle_pieces as up')
+        $myNeeds = DB::table('puzzles_character_puzzle_pieces as up')
             ->join('puzzles_album_puzzle_pieces as p', 'up.puzzles_album_puzzle_piece_id', '=', 'p.id')
-            ->where('up.user_id', $userId)
+            ->where('up.character_id', $characterId)
             ->where('up.needs', true)
             ->where('p.stars', '<', 5)
             ->pluck('up.puzzles_album_puzzle_piece_id');
 
         // Get pieces I'm offering (tradeable only)
-        $myOffers = DB::table('puzzles_user_puzzle_pieces as up')
+        $myOffers = DB::table('puzzles_character_puzzle_pieces as up')
             ->join('puzzles_album_puzzle_pieces as p', 'up.puzzles_album_puzzle_piece_id', '=', 'p.id')
-            ->where('up.user_id', $userId)
+            ->where('up.character_id', $characterId)
             ->where('up.offers', '>', 0)
             ->where('p.stars', '<', 5)
             ->pluck('up.puzzles_album_puzzle_piece_id');
 
-        // Find pieces that other users are offering that I need
+        // Find pieces that other characters are offering that I need
         $canGetFrom = [];
         if ($myNeeds->isNotEmpty()) {
-            $canGetFrom = DB::table('puzzles_user_puzzle_pieces as up')
-                ->join('users as u', 'up.user_id', '=', 'u.id')
+            $canGetFrom = DB::table('puzzles_character_puzzle_pieces as up')
+                ->join('characters as c', 'up.character_id', '=', 'c.id')
                 ->join('puzzles_album_puzzle_pieces as p', 'up.puzzles_album_puzzle_piece_id', '=', 'p.id')
                 ->join('puzzles_album_puzzles as puzzle', 'p.puzzles_album_puzzle_id', '=', 'puzzle.id')
                 ->join('puzzles_albums as album', 'p.puzzles_album_id', '=', 'album.id')
                 ->whereIn('up.puzzles_album_puzzle_piece_id', $myNeeds)
                 ->where('up.offers', '>', 0)
-                ->where('up.user_id', '!=', $userId)
+                ->where('up.character_id', '!=', $characterId)
                 ->select(
                     'p.id as piece_id',
                     'p.position',
@@ -51,9 +56,9 @@ class MatchController extends Controller
                     "puzzle.name->$locale as puzzle_name",
                     'album.id as album_id',
                     "album.name->$locale as album_name",
-                    'u.id as user_id',
-                    'u.username',
-                    'u.display_name',
+                    'c.id as character_id',
+                    'c.player_id',
+                    'c.player_name',
                     'up.offers',
                     'up.updated_at as last_updated'
                 )
@@ -72,27 +77,27 @@ class MatchController extends Controller
                         'puzzle_name' => $piece->puzzle_name,
                         'offers' => $piece->offers,
                         'last_updated' => $piece->last_updated,
-                        'user' => [
-                            'id' => $piece->user_id,
-                            'username' => $piece->username,
-                            'display_name' => $piece->display_name ?? $piece->username,
+                        'character' => [
+                            'id' => $piece->character_id,
+                            'player_id' => $piece->player_id,
+                            'player_name' => $piece->player_name,
                         ],
                     ];
                 })
                 ->toArray();
         }
 
-        // Find pieces that other users need that I'm offering
+        // Find pieces that other characters need that I'm offering
         $canHelpWith = [];
         if ($myOffers->isNotEmpty()) {
-            $canHelpWith = DB::table('puzzles_user_puzzle_pieces as up')
-                ->join('users as u', 'up.user_id', '=', 'u.id')
+            $canHelpWith = DB::table('puzzles_character_puzzle_pieces as up')
+                ->join('characters as c', 'up.character_id', '=', 'c.id')
                 ->join('puzzles_album_puzzle_pieces as p', 'up.puzzles_album_puzzle_piece_id', '=', 'p.id')
                 ->join('puzzles_album_puzzles as puzzle', 'p.puzzles_album_puzzle_id', '=', 'puzzle.id')
                 ->join('puzzles_albums as album', 'p.puzzles_album_id', '=', 'album.id')
                 ->whereIn('up.puzzles_album_puzzle_piece_id', $myOffers)
                 ->where('up.needs', true)
-                ->where('up.user_id', '!=', $userId)
+                ->where('up.character_id', '!=', $characterId)
                 ->select(
                     'p.id as piece_id',
                     'p.position',
@@ -101,9 +106,9 @@ class MatchController extends Controller
                     "puzzle.name->$locale as puzzle_name",
                     'album.id as album_id',
                     "album.name->$locale as album_name",
-                    'u.id as user_id',
-                    'u.username',
-                    'u.display_name',
+                    'c.id as character_id',
+                    'c.player_id',
+                    'c.player_name',
                     'up.updated_at as last_updated'
                 )
                 ->orderBy('album.position')
@@ -119,10 +124,10 @@ class MatchController extends Controller
                         'album_name' => $piece->album_name,
                         'puzzle_id' => $piece->puzzle_id,
                         'puzzle_name' => $piece->puzzle_name,
-                        'user' => [
-                            'id' => $piece->user_id,
-                            'username' => $piece->username,
-                            'display_name' => $piece->display_name ?? $piece->username,
+                        'character' => [
+                            'id' => $piece->character_id,
+                            'player_id' => $piece->player_id,
+                            'player_name' => $piece->player_name,
                         ],
                         'last_updated' => $piece->last_updated,
                     ];
