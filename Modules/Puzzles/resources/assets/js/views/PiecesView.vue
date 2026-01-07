@@ -11,7 +11,7 @@
         v-if="puzzle && pieces.length > 0"
         @click="markAllAsOwned"
         :disabled="isMarkingAll"
-        class="justify-self-end p-3 bg-glow-600 hover:bg-glow-500 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+        class="justify-self-end px-3 py-1 md:py-3 bg-glow-600 hover:bg-glow-500 hover:cursor-pointer text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
       >
         <span v-if="!isMarkingAll">📦 {{ $t('pieces.mark_all_owned') }}</span>
         <span v-else>{{ $t('common.loading') }}</span>
@@ -19,7 +19,7 @@
 
       <LoadingSpinner v-if="puzzleStore.loading && !puzzle" />
 
-      <div v-else-if="puzzle" class="space-y-6 p-6">
+      <div v-else-if="puzzle" class="space-y-6 py-6">
         <div v-if="puzzle.image_url" class="rounded-2xl overflow-hidden flex align-middle justify-center">
           <img :src="puzzle.image_url" :alt="puzzle.name" class="w-auto max-h-64" loading="lazy" />
         </div>
