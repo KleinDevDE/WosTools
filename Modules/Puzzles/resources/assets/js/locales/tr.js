@@ -45,6 +45,7 @@ export default {
     loading: 'Parçalar yükleniyor...',
     album: 'Albüm',
     puzzle: 'Yapboz',
+    mark_all_owned: 'Tümünü Var olarak işaretle',
   },
 
   // Matches View

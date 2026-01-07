@@ -81,6 +81,48 @@ export const useUserStateStore = defineStore('userStates', () => {
     }
   }
 
+  async function bulkUpdatePieceData(pieces) {
+    // pieces is an array of { pieceId, needs, owns, offers, isTradeable }
+    const previousStates = new Map();
+
+    // Save previous states and update local state optimistically
+    pieces.forEach(({ pieceId, needs, owns, offers }) => {
+      previousStates.set(pieceId, states.value.get(pieceId) || { needs: false, owns: false, offers: 0 });
+      states.value.set(pieceId, { needs, owns, offers });
+    });
+
+    try {
+      const payload = {
+        pieces: pieces.map(({ pieceId, needs, owns, offers }) => ({
+          piece_id: pieceId,
+          needs,
+          owns,
+          offers,
+        })),
+      };
+
+      const { data } = await api.post('/pieces/bulk-update', payload);
+
+      // Check if any tradeable pieces were affected
+      const hasTradeable = pieces.some(p => p.isTradeable);
+      if (hasTradeable) {
+        const matchStore = useMatchStore();
+        await matchStore.fetchMatches(true);
+      }
+
+      return data;
+    } catch (err) {
+      // Revert all changes on error
+      previousStates.forEach((previousState, pieceId) => {
+        states.value.set(pieceId, previousState);
+      });
+
+      error.value = err.response?.data?.message || 'Failed to bulk update piece states';
+      console.error('Failed to bulk update piece states:', err);
+      throw err;
+    }
+  }
+
   return {
     states,
     loading,
@@ -91,5 +133,6 @@ export const useUserStateStore = defineStore('userStates', () => {
     offeringPieces,
     fetchUserStates,
     updatePieceData,
+    bulkUpdatePieceData,
   };
 });

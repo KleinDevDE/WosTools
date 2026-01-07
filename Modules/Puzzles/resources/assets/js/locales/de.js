@@ -45,6 +45,7 @@ export default {
     loading: 'Lade Teile...',
     album: 'Album',
     puzzle: 'Puzzle',
+    mark_all_owned: 'Alle als Im Besitz markieren',
   },
 
   // Matches View

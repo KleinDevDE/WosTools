@@ -47,4 +47,53 @@ class PieceController extends Controller
             'message' => 'Piece state updated successfully',
         ]);
     }
+
+    public function bulkUpdateState(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'pieces' => ['required', 'array', 'min:1'],
+            'pieces.*.piece_id' => ['required', 'integer', 'exists:puzzles_album_puzzle_pieces,id'],
+            'pieces.*.needs' => ['required', 'boolean'],
+            'pieces.*.owns' => ['required', 'boolean'],
+            'pieces.*.offers' => ['required', 'integer', 'min:0'],
+        ]);
+
+        $userId = auth()->id();
+        $updatedCount = 0;
+        $errors = [];
+
+        foreach ($validated['pieces'] as $pieceData) {
+            $piece = PuzzlesAlbumPuzzlePiece::find($pieceData['piece_id']);
+
+            // Check if piece is tradeable (5+ stars cannot be traded)
+            if (!$piece->isTradeable() && ($pieceData['needs'] || $pieceData['offers'] > 0)) {
+                $errors[] = [
+                    'piece_id' => $piece->id,
+                    'error' => 'This piece cannot be traded (5+ stars)',
+                ];
+                continue;
+            }
+
+            // Update or create user piece state
+            PuzzlesUserPuzzlePiece::updateOrCreate(
+                [
+                    'user_id' => $userId,
+                    'puzzles_album_puzzle_piece_id' => $piece->id,
+                ],
+                [
+                    'needs' => $pieceData['needs'],
+                    'owns' => $pieceData['owns'],
+                    'offers' => $pieceData['offers'],
+                ]
+            );
+
+            $updatedCount++;
+        }
+
+        return response()->json([
+            'message' => 'Bulk update completed',
+            'updated_count' => $updatedCount,
+            'errors' => $errors,
+        ]);
+    }
 }

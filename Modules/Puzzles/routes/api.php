@@ -19,6 +19,7 @@ Route::middleware(['auth:sanctum'])->prefix('v1/puzzles')->name('puzzles.')->gro
 
     // Piece state management
     Route::post('pieces/{piece}/state', [PieceController::class, 'updateState'])->name('pieces.state');
+    Route::post('pieces/bulk-update', [PieceController::class, 'bulkUpdateState'])->name('pieces.bulk-update');
 
     // User states (bulk)
     Route::get('user/states', [UserStateController::class, 'index'])->name('user.states');

@@ -3,11 +3,23 @@
     <NavBar :title="$t('pieces.title', 2)" show-back />
 
     <div class="max-w-7xl mx-auto px-4 py-6 pb-safe">
-      <h1 v-if="puzzle?.name" class="text-2xl font-bold text-navy-400 mb-6">{{ puzzle.name }}</h1>
+      <div class="flex items-center justify-between mb-6">
+        <h1 v-if="puzzle?.name" class="text-2xl font-bold text-navy-400">{{ puzzle.name }}</h1>
+      </div>
+
+      <button
+        v-if="puzzle && pieces.length > 0"
+        @click="markAllAsOwned"
+        :disabled="isMarkingAll"
+        class="justify-self-end p-3 bg-glow-600 hover:bg-glow-500 text-white font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+      >
+        <span v-if="!isMarkingAll">📦 {{ $t('pieces.mark_all_owned') }}</span>
+        <span v-else>{{ $t('common.loading') }}</span>
+      </button>
 
       <LoadingSpinner v-if="puzzleStore.loading && !puzzle" />
 
-      <div v-else-if="puzzle" class="space-y-6">
+      <div v-else-if="puzzle" class="space-y-6 p-6">
         <div v-if="puzzle.image_url" class="rounded-2xl overflow-hidden flex align-middle justify-center">
           <img :src="puzzle.image_url" :alt="puzzle.name" class="w-auto max-h-64" loading="lazy" />
         </div>
@@ -196,6 +208,7 @@ const pieces = computed(() => puzzle.value?.pieces || []);
 
 const showPieceDetails = ref(false);
 const selectedPiece = ref(null);
+const isMarkingAll = ref(false);
 
 const currentState = computed(() => {
   if (!selectedPiece.value) return { needs: false, owns: false, offers: 0 };
@@ -220,6 +233,12 @@ async function updatePieceData(updates) {
       updates,
       selectedPiece.value.is_tradeable
     );
+
+    // Refresh the puzzle overview to reflect the changes
+    const albumId = puzzle.value?.album_id;
+    if (albumId) {
+      await puzzleStore.refreshPuzzles(albumId);
+    }
   } catch (error) {
     console.error('Failed to update piece data:', error);
   }
@@ -272,6 +291,36 @@ function decrementOffers() {
     owns: false,
     offers: newOffers,
   });
+}
+
+async function markAllAsOwned() {
+  if (!puzzle.value || pieces.value.length === 0) return;
+
+  isMarkingAll.value = true;
+
+  try {
+    // Prepare bulk update data
+    const piecesData = pieces.value.map(piece => ({
+      pieceId: piece.id,
+      needs: false,
+      owns: true,
+      offers: 0,
+      isTradeable: piece.is_tradeable
+    }));
+
+    // Bulk update all pieces at once
+    await userStateStore.bulkUpdatePieceData(piecesData);
+
+    // Refresh the puzzle overview to reflect the changes
+    const albumId = puzzle.value.album_id;
+    if (albumId) {
+      await puzzleStore.refreshPuzzles(albumId);
+    }
+  } catch (error) {
+    console.error('Failed to mark all pieces as owned:', error);
+  } finally {
+    isMarkingAll.value = false;
+  }
 }
 
 onMounted(async () => {
